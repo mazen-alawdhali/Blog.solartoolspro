@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة إضافة المقالات | SolarToolsPro</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #ffffff;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 { font-size: 20px; color: #38bdf8; text-align: center; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px; }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+        textarea { height: 180px; resize: vertical; }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #10b981;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:disabled { background-color: #475569; }
+        #status { margin-top: 15px; text-align: center; font-size: 14px; }
+        .success { color: #34d399; }
+        .error { color: #f87171; }
+    </style>
+</head>
+<body>
+
+    <h1>🚀 لوحة إضافة مقال جديد</h1>
+
+    <div class="form-group">
+        <label>رمز الوصول الخاص (GitHub Token):</label>
+        <input type="password" id="ghToken" placeholder="الصق رمز GitHub Token هنا مرة واحدة">
+    </div>
+
+    <div class="form-group">
+        <label>عنوان المقال:</label>
+        <input type="text" id="postTitle" placeholder="مثال: دليل تحجيم إنفرترات Growatt">
+    </div>
+
+    <div class="form-group">
+        <label>مقدمة قصيرة (الوصف):</label>
+        <input type="text" id="postDesc" placeholder="نبذة مختصرة تظهر في بطاقة المقال">
+    </div>
+
+    <div class="form-group">
+        <label>محتوى المقال كاملاً:</label>
+        <textarea id="postBody" placeholder="اكتب نص المقال هنا بحرية تامة..."></textarea>
+    </div>
+
+    <button id="publishBtn" onclick="publishArticle()">نشر المقال فوراً 🚀</button>
+
+    <div id="status"></div>
+
+    <script>
+        // حفظ الرمز في المتصفح محلياً لكي لا تكتبه كل مرة
+        document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
+
+        async function publishArticle() {
+            const token = document.getElementById('ghToken').value.trim();
+            const title = document.getElementById('postTitle').value.trim();
+            const desc = document.getElementById('postDesc').value.trim();
+            const body = document.getElementById('postBody').value.trim();
+            const statusDiv = document.getElementById('status');
+            const btn = document.getElementById('publishBtn');
+
+            if (!token || !title || !desc || !body) {
+                statusDiv.className = 'error';
+                statusDiv.innerText = 'يرجى تعبئة جميع الحقول المطلوبة!';
+                return;
+            }
+
+            localStorage.setItem('gh_token', token);
+            btn.disabled = true;
+            statusDiv.className = '';
+            statusDiv.innerText = 'جاري الاتصال بالنظام ونشر المقال...';
+
+            const repoOwner = 'mazenalawdhali-4987'; // اسم حسابك في جيت هوب
+            const repoName = 'blog.solartoolspro.com'; // اسم مستودع المدونة
+            const filePath = 'articles.json';
+            const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
+
+            try {
+                // 1. جلب الملف الحالي
+                const getRes = await fetch(apiUrl, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                const fileData = await getRes.json();
+                
+                // فك تشفير المحتوى الحالي
+                const contentText = decodeURIComponent(escape(atob(fileData.content)));
+                let articles = JSON.parse(contentText);
+
+                // 2. إضافة المقال الجديد
+                const newArticle = {
+                    id: Date.now(),
+                    title: title,
+                    description: desc,
+                    body: body
+                };
+                articles.push(newArticle);
+
+                // 3. إعادة التشفير والحفظ في GitHub
+                const updatedContent = btoa(unescape(encodeURIComponent(JSON.stringify(articles, null, 2))));
+
+                const putRes = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `إضافة مقال جديد: ${title}`,
+                        content: updatedContent,
+                        sha: fileData.sha
+                    })
+                });
+
+                if (putRes.ok) {
+                    statusDiv.className = 'success';
+                    statusDiv.innerText = '✅ تم نشر المقال بنجاح! سيظهر على المدونة خلال ثوانٍ.';
+                    document.getElementById('postTitle').value = '';
+                    document.getElementById('postDesc').value = '';
+                    document.getElementById('postBody').value = '';
+                } else {
+                    throw new Error('فشل النشر، يرجى التأكد من الـ Token.');
+                }
+            } catch (err) {
+                statusDiv.className = 'error';
+                statusDiv.innerText = '❌ خطأ: ' + err.message;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
