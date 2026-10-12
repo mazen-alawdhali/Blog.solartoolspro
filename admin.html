@@ -7,6 +7,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="إدارة المدونة">
+    
+    <!-- ربط ملف التثبيت المباشر PWA -->
+    <link rel="manifest" href="manifest.json">
+    
     <title>لوحة إدارة المدونة | SolarToolsPro</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -72,7 +76,7 @@
             border-top-right-radius: 0;
         }
 
-        /* معرض معاينة الصور المرفوعة (Visual Gallery) */
+        /* معرض معاينة الصور المرفوعة */
         .image-preview-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -100,13 +104,13 @@
             margin-bottom: 4px;
         }
         .image-card button {
-            padding: 3px 6px;
-            font-size: 10px;
+            padding: 4px 6px;
+            font-size: 11px;
             width: 100%;
             margin-top: 2px;
         }
 
-        /* جدول المقالات */
+        /* جدول المقالات المنشورة */
         .articles-table {
             width: 100%;
             border-collapse: collapse;
@@ -127,7 +131,7 @@
         .action-btns { display: flex; gap: 6px; justify-content: flex-end; }
         .action-btns button { padding: 5px 10px; font-size: 12px; }
 
-        /* نافذة التحميل المنبثقة (Loading Modal) */
+        /* نافذة التحميل المنبثقة */
         #loadingModal {
             display: none;
             position: fixed;
@@ -184,7 +188,7 @@
         <button type="button" class="btn-purple" onclick="uploadImages()">رفع الصور وإضافتها للمعرض 🖼️</button>
         
         <!-- معرض معاينة الصور المرفوعة -->
-        <label style="margin-top: 10px;">معرض الصور المرفوعة (اضغط إدراج لإضافتها للمقال):</label>
+        <label style="margin-top: 10px;">معرض الصور المرفوعة (اضغط إدراج لإضافتها في مكان المؤشر):</label>
         <div id="imageGallery" class="image-preview-container">
             <span style="font-size: 12px; color: #64748b; grid-column: 1/-1; text-align: center; padding: 15px;">لم يتم رفع صور بعد.</span>
         </div>
@@ -234,7 +238,7 @@
             document.getElementById('loadingModal').style.display = 'none';
         }
 
-        // إدراج نص في موضع المؤشر
+        // إدراج نص في موضع المؤشر المحفوظ
         function insertTextAtCursor(text) {
             const textarea = document.getElementById('postBody');
             const pos = savedCursorPos > 0 ? savedCursorPos : textarea.value.length;
@@ -243,7 +247,7 @@
             textarea.focus();
         }
 
-        // تحويط النص المضلل بأوسمة
+        // تحويط النص المضلل بأوسمة تنسيق
         function insertTag(openTag, closeTag) {
             const textarea = document.getElementById('postBody');
             const start = textarea.selectionStart;
