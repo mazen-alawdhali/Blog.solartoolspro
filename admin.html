@@ -27,7 +27,7 @@
         h2 { font-size: 16px; margin-top: 30px; border-top: 1px solid #334155; padding-top: 20px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px; }
-        input, select {
+        input {
             width: 100%;
             padding: 12px;
             background-color: #1e293b;
@@ -97,7 +97,7 @@
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 
-        /* شريط أزرار التنسيق المرئي */
+        /* شريط أزرار التنسيق المرئي بتصميم أنيق */
         .toolbar {
             display: flex;
             flex-wrap: wrap;
@@ -117,15 +117,19 @@
             border-radius: 4px;
         }
         .tool-btn:hover { background-color: #475569; }
+        
+        /* قائمة منسدلة منسقة بأناقة للخطوط */
         .font-size-select {
             background-color: #334155;
             color: #e2e8f0;
-            border: none;
-            padding: 5px 8px;
+            border: 1px solid #475569;
+            padding: 6px 10px;
             font-size: 12px;
             border-radius: 4px;
-            width: auto;
+            outline: none;
+            cursor: pointer;
         }
+        .font-size-select:focus { border-color: #38bdf8; }
 
         /* محرر النصوص المرئي وضبط أبعاد الصور تلقائياً */
         .editor-box {
@@ -146,7 +150,6 @@
         }
         .editor-box:focus { border-color: #38bdf8; }
         
-        /* تقييد أبعاد الصور بداخل المحرر لمنع التمدد */
         .editor-box img {
             max-width: 100% !important;
             height: auto !important;
@@ -223,7 +226,7 @@
             <button type="button" class="tool-btn" onclick="execCmd('italic')"><i>I</i> مائل</button>
             <button type="button" class="tool-btn" onclick="execCmd('underline')"><u>U</u> خط تحته</button>
             
-            <!-- أداة التحكم بحجم الخط -->
+            <!-- قائمة منسدلة منسقة لحجم الخط -->
             <select class="font-size-select" onchange="execCmd('fontSize', this.value); this.value='';">
                 <option value="">حجم الخط 🔤</option>
                 <option value="2">صغير</option>
@@ -236,6 +239,10 @@
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h3>')">عنوان H3</button>
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<blockquote>')">اقتباس</button>
             <button type="button" class="tool-btn" onclick="execCmd('insertHorizontalRule')">خط فاصل</button>
+            
+            <!-- أزرار التراجع والإعادة -->
+            <button type="button" class="tool-btn" onclick="execCmd('undo')">تراجع ↩️</button>
+            <button type="button" class="tool-btn" onclick="execCmd('redo')">إعادة ↪️</button>
         </div>
         <div id="postBody" class="editor-box" contenteditable="true" placeholder="اكتب نص المقال هنا..."></div>
     </div>
@@ -384,7 +391,6 @@
 
                     const rawImageUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${fileName}`;
                     
-                    // إدراج وسم الصورة بأسلوب مرئي مضبوط الأبعاد تلقائياً
                     document.getElementById('postBody').focus();
                     document.execCommand('insertImage', false, rawImageUrl);
                 }
