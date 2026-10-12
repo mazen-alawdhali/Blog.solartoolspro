@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
     <title>مدونة حلول وطاقة | SolarToolsPro</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -11,65 +16,129 @@
             background-color: #0f172a;
             color: #ffffff;
             padding: 16px;
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
+            line-height: 1.6;
+            padding-bottom: 50px;
         }
+        
+        /* الهيدر والعنوان الرئيسي */
         header {
             text-align: center;
-            padding: 24px 0;
+            padding: 20px 0;
             border-bottom: 1px solid #334155;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
-        header h1 { font-size: 22px; color: #38bdf8; margin-bottom: 6px; }
-        header p { font-size: 13px; color: #94a3b8; }
+        header h1 {
+            font-size: 24px;
+            color: #38bdf8;
+            margin-bottom: 8px;
+        }
+        header p {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        /* كروت المقالات */
         .article-card {
             background-color: #1e293b;
             border: 1px solid #334155;
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            transition: transform 0.2s;
         }
         .article-title {
             font-size: 18px;
             color: #34d399;
-            font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         .article-desc {
             font-size: 14px;
             color: #cbd5e1;
-            line-height: 1.6;
-            margin-bottom: 14px;
+            margin-bottom: 15px;
         }
+
+        /* محتوى المقال الكامل وحلول تحجيم الصور */
         .article-body {
-            font-size: 14px;
-            color: #e2e8f0;
-            line-height: 1.8;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px dashed #475569;
             display: none;
-            white-space: pre-line;
+            padding-top: 15px;
+            border-top: 1px dashed #334155;
+            color: #e2e8f0;
+            font-size: 15px;
+            line-height: 1.8;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
-        .btn-read {
+        
+        /* ضبط أحجام وأبعاد الصور والشبكة تلقائياً داخل المقالات */
+        .article-body img {
+            max-width: 100% !important;
+            height: auto !important;
+            border-radius: 8px;
+            margin: 12px 0;
+            display: block;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .article-body blockquote {
+            border-right: 3px solid #38bdf8;
+            padding-right: 12px;
+            color: #cbd5e1;
+            margin: 12px 0;
+            font-style: italic;
+            background: rgba(56, 189, 248, 0.05);
+            padding-top: 6px;
+            padding-bottom: 6px;
+            border-radius: 0 6px 6px 0;
+        }
+        .article-body h2 {
+            font-size: 17px;
+            color: #38bdf8;
+            margin: 15px 0 8px 0;
+        }
+        .article-body h3 {
+            font-size: 15px;
+            color: #f59e0b;
+            margin: 12px 0 6px 0;
+        }
+
+        /* أزرار التفاعل */
+        .btn-toggle {
             background-color: #0284c7;
-            color: white;
+            color: #ffffff;
             border: none;
             padding: 8px 16px;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 13px;
             font-weight: bold;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 5px;
+            transition: 0.2s;
         }
-        .loading, .error { text-align: center; color: #94a3b8; padding: 20px; }
+        .btn-toggle:hover {
+            background-color: #0369a1;
+        }
+
+        /* رسالة التحميل والخطأ */
+        #statusMessage {
+            text-align: center;
+            padding: 30px;
+            font-size: 15px;
+            color: #94a3b8;
+        }
+        
         footer {
             text-align: center;
-            padding: 20px 0;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
             font-size: 12px;
             color: #64748b;
-            border-top: 1px solid #334155;
-            margin-top: 30px;
         }
     </style>
 </head>
@@ -77,64 +146,82 @@
 
     <header>
         <h1>⚡ مدونة SolarToolsPro</h1>
-        <p>أحدث المقالات والدول الهندسية في أنظمة الطاقة الشمسية</p>
+        <p>أحدث المقالات والدراسات الهندسية في أنظمة الطاقة الشمسية والبطاريات</p>
     </header>
 
-    <main id="articles-container">
-        <div class="loading">جاري تحميل المقالات...</div>
-    </main>
+    <div id="articlesContainer">
+        <div id="statusMessage">جاري تحميل أحدث المقالات... ⏳</div>
+    </div>
 
     <footer>
-        جميع الحقوق محفوظة © 2026 SolarToolsPro.com
+        جميع الحقوق محفوظة © SolarToolsPro.com 2026
     </footer>
 
     <script>
+        // تسجيل الـ Service Worker إن وجد لتعزيز الأداء
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+
+        // جلب المقالات المباشرة من سيرفر GitHub / Vercel
         async function loadArticles() {
-            const container = document.getElementById('articles-container');
+            const container = document.getElementById('articlesContainer');
+            
+            // استخدام Cache Buster لتجنب تخزين المتصفح القديم
+            const cacheBuster = `?v=${new Date().getTime()}`;
+            
             try {
-                // جلب المقالات مع معرف زمني لتجاوز التخزين المؤقت تماماً
-                const res = await fetch('articles.json?v=' + Date.now());
+                const res = await fetch(`articles.json${cacheBuster}`);
                 if (!res.ok) throw new Error('تعذر تحميل ملف المقالات');
                 
                 const articles = await res.json();
                 
                 if (!articles || articles.length === 0) {
-                    container.innerHTML = '<div class="loading">لا توجد مقالات منشورة حتى الآن.</div>';
+                    container.innerHTML = '<div id="statusMessage">لا توجد مقالات منشورة حالياً.</div>';
                     return;
                 }
 
-                // عكس الترتيب ليظهر المقال الجديد في أعلى القائمة فوراً
-                articles.reverse();
+                container.innerHTML = ''; // تفريغ رسالة التحميل
 
-                container.innerHTML = '';
-                articles.forEach((art, index) => {
+                // عرض المقالات مرتبة من الأحدث إلى الأقدم
+                articles.reverse().forEach((art) => {
                     const card = document.createElement('div');
                     card.className = 'article-card';
+
                     card.innerHTML = `
-                        <div class="article-title">${art.title}</div>
-                        <div class="article-desc">${art.description}</div>
-                        <div class="article-body" id="body-${index}">${art.body}</div>
-                        <button class="btn-read" onclick="toggleArticle(${index})">اقرأ المقال كاملاً ←</button>
+                        <h2 class="article-title">${art.title}</h2>
+                        <p class="article-desc">${art.description}</p>
+                        
+                        <div class="article-body" id="body-${art.id}">
+                            ${art.body}
+                        </div>
+
+                        <button class="btn-toggle" onclick="toggleArticle(${art.id}, this)">
+                            قراءة المقال كاملاً 📖
+                        </button>
                     `;
+
                     container.appendChild(card);
                 });
+
             } catch (err) {
-                container.innerHTML = `<div class="error">❌ خطأ في تحميل المقالات: ${err.message}</div>`;
+                container.innerHTML = `<div id="statusMessage" style="color: #f87171;">❌ خطأ في تحميل المقالات: ${err.message}</div>`;
             }
         }
 
-        function toggleArticle(index) {
-            const bodyEl = document.getElementById(`body-${index}`);
-            const btn = event.target;
-            if (bodyEl.style.display === 'block') {
-                bodyEl.style.display = 'none';
-                btn.innerText = 'اقرأ المقال كاملاً ←';
+        // إظهار وإخفاء محتوى المقال
+        function toggleArticle(id, btn) {
+            const body = document.getElementById(`body-${id}`);
+            if (body.style.display === 'block') {
+                body.style.display = 'none';
+                btn.innerHTML = 'قراءة المقال كاملاً 📖';
             } else {
-                bodyEl.style.display = 'block';
-                btn.innerText = 'إخفاء المقال ↗';
+                body.style.display = 'block';
+                btn.innerHTML = 'إخفاء المقال ↗';
             }
         }
 
+        // تشغيل التحميل فور فتح الصفحة
         loadArticles();
     </script>
 </body>
