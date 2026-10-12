@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="إدارة المدونة">
     
+    <!-- ربط ملف الـ Manifest الرسمي للتثبيت -->
     <link rel="manifest" href="manifest.json">
     
     <title>لوحة إدارة المدونة | SolarToolsPro</title>
@@ -52,6 +53,7 @@
         .btn-edit { background-color: #f59e0b; color: #fff; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
 
+        /* شريط التنبيه العلوي السلس */
         #topBanner {
             display: none;
             position: fixed;
@@ -66,6 +68,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
+        /* الإشعارات العصرية المنبثقة */
         #toastContainer {
             position: fixed;
             top: 20px;
@@ -95,6 +98,7 @@
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 
+        /* نافذة تأكيد الحذف المنبثقة المخصصة */
         #confirmModal {
             display: none;
             position: fixed;
@@ -121,6 +125,7 @@
         .confirm-btns { display: flex; gap: 10px; justify-content: center; }
         .confirm-btns button { flex: 1; padding: 10px; }
 
+        /* شريط أزرار التنسيق المرئي */
         .toolbar {
             display: flex;
             flex-wrap: wrap;
@@ -131,6 +136,7 @@
             border: 1px solid #334155;
             border-bottom: none;
             border-radius: 8px 8px 0 0;
+            position: relative;
         }
         .tool-btn {
             background-color: #334155;
@@ -144,17 +150,36 @@
         }
         .tool-btn:hover { background-color: #475569; }
         
-        .font-size-select {
-            background-color: #334155;
-            color: #e2e8f0;
-            border: 1px solid #475569;
-            padding: 6px 8px;
-            font-size: 12px;
-            border-radius: 6px;
-            outline: none;
-            cursor: pointer;
+        /* قائمة الخط المخصصة (Custom Dropdown Menu) */
+        .custom-dropdown {
+            position: relative;
+            display: inline-block;
         }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 105%;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            z-index: 1000;
+            min-width: 130px;
+            overflow: hidden;
+        }
+        .dropdown-item {
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #e2e8f0;
+            cursor: pointer;
+            border-bottom: 1px solid #2a3b59;
+            text-align: right;
+        }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background-color: #334155; color: #38bdf8; }
 
+        /* محرر النصوص المرئي وضبط أبعاد الصور تلقائياً */
         .editor-box {
             width: 100%;
             min-height: 220px;
@@ -216,6 +241,7 @@
     <div id="topBanner">جاري المعالجة...</div>
     <div id="toastContainer"></div>
 
+    <!-- نافذة تأكيد الحذف المنبثقة المخصصة -->
     <div id="confirmModal">
         <div class="confirm-card">
             <h3>⚠️ تأكيد الحذف</h3>
@@ -259,13 +285,16 @@
             <button type="button" class="tool-btn" onclick="execCmd('italic')" title="مائل"><i>I</i></button>
             <button type="button" class="tool-btn" onclick="execCmd('underline')" title="خط تحت النص"><u>U</u></button>
             
-            <select class="font-size-select" onchange="execCmd('fontSize', this.value); this.value='';">
-                <option value="">🔤 الخط</option>
-                <option value="2">صغير</option>
-                <option value="3">عادي</option>
-                <option value="5">كبير</option>
-                <option value="6">كبير جداً</option>
-            </select>
+            <!-- قائمة حجم الخط المخصصة والأنيقة -->
+            <div class="custom-dropdown">
+                <button type="button" class="tool-btn" onclick="toggleFontMenu()" title="حجم الخط">🔤</button>
+                <div id="fontDropdown" class="dropdown-menu">
+                    <div class="dropdown-item" onclick="setFontSize('2')">صغير</div>
+                    <div class="dropdown-item" onclick="setFontSize('3')">عادي</div>
+                    <div class="dropdown-item" onclick="setFontSize('5')">كبير</div>
+                    <div class="dropdown-item" onclick="setFontSize('6')">كبير جداً</div>
+                </div>
+            </div>
 
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h2>')" title="عنوان رئيسي">H2</button>
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h3>')" title="عنوان فرعي">H3</button>
@@ -293,6 +322,24 @@
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+
+        // إغلاق قائمة الخطوط عند النقر في أي مكان خارجها
+        window.onclick = function(event) {
+            if (!event.target.matches('.tool-btn') && !event.target.closest('.custom-dropdown')) {
+                document.getElementById('fontDropdown').style.display = 'none';
+            }
+        };
+
+        function toggleFontMenu() {
+            const menu = document.getElementById('fontDropdown');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function setFontSize(size) {
+            document.execCommand('fontSize', false, size);
+            document.getElementById('fontDropdown').style.display = 'none';
+            document.getElementById('postBody').focus();
         }
 
         function showToast(message, type = 'success') {
@@ -547,7 +594,6 @@
             }
         };
 
-        // دالة الحذف الذكية: تحذف المقال من JSON + تحذف ملفات صوره من GitHub تلقائياً
         async function deleteArticle(id) {
             const token = document.getElementById('ghToken').value.trim();
             showTopBanner('جاري حذف المقال وصوره من السيرفر...');
@@ -556,7 +602,6 @@
                 const { sha, articles } = await fetchFileFromGithub(token);
                 const targetArticle = articles.find(a => a.id == id);
                 
-                // استخراج مسارات الصور المرفقة في المقال لحذفها من المستودع
                 if (targetArticle && targetArticle.body) {
                     const imgRegex = /https:\/\/raw\.githubusercontent\.com\/[^\/]+\/[^\/]+\/[^\/]+\/(images\/[^"'\s>]+)/g;
                     let match;
