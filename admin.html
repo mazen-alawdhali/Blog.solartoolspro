@@ -49,6 +49,7 @@
         .btn-blue { background-color: #0284c7; color: #fff; width: 100%; margin-bottom: 10px; }
         .btn-purple { background-color: #6366f1; color: #fff; width: 100%; margin-bottom: 8px; }
         .btn-red { background-color: #ef4444; color: #fff; }
+        .btn-gray { background-color: #475569; color: #fff; }
         .btn-edit { background-color: #f59e0b; color: #fff; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -97,7 +98,34 @@
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 
-        /* شريط أزرار التنسيق المرئي بـ الرموز فقط لتوفير المساحة */
+        /* نافذة التأكيد المنبثقة المخصصة للحذف (Custom Confirm Modal) */
+        #confirmModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(6px);
+            z-index: 10001;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .confirm-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 20px;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        .confirm-card h3 { color: #f87171; font-size: 18px; margin-bottom: 10px; }
+        .confirm-card p { font-size: 14px; color: #cbd5e1; margin-bottom: 20px; }
+        .confirm-btns { display: flex; gap: 10px; justify-content: center; }
+        .confirm-btns button { flex: 1; padding: 10px; }
+
+        /* شريط أزرار التنسيق المرئي بـ الرموز فقط */
         .toolbar {
             display: flex;
             flex-wrap: wrap;
@@ -121,7 +149,6 @@
         }
         .tool-btn:hover { background-color: #475569; }
         
-        /* قائمة حجم الخط المنمقة */
         .font-size-select {
             background-color: #334155;
             color: #e2e8f0;
@@ -197,6 +224,18 @@
     <div id="topBanner">جاري المعالجة...</div>
     <div id="toastContainer"></div>
 
+    <!-- نافذة تأكيد الحذف المنبثقة الأنيقة -->
+    <div id="confirmModal">
+        <div class="confirm-card">
+            <h3>⚠️ تأكيد الحذف</h3>
+            <p>هل أنت متأكد من رغبتك في حذف هذا المقال نهائياً؟ لا يمكن التراجع عن هذه الخطوة.</p>
+            <div class="confirm-btns">
+                <button class="btn-red" id="confirmDeleteBtn">حذف 🗑️</button>
+                <button class="btn-gray" onclick="closeConfirmModal()">إلغاء ❌</button>
+            </div>
+        </div>
+    </div>
+
     <h1 id="formTitle">🚀 لوحة تحكم المدونة (PWA)</h1>
 
     <div class="form-group">
@@ -229,7 +268,6 @@
             <button type="button" class="tool-btn" onclick="execCmd('italic')" title="مائل"><i>I</i></button>
             <button type="button" class="tool-btn" onclick="execCmd('underline')" title="خط تحت النص"><u>U</u></button>
             
-            <!-- قائمة حجم الخط بالرموز -->
             <select class="font-size-select" onchange="execCmd('fontSize', this.value); this.value='';">
                 <option value="">🔤 الخط</option>
                 <option value="2">صغير</option>
@@ -258,6 +296,8 @@
     <div id="articlesList">اضغط على زر التحديث لعرض الجدول.</div>
 
     <script>
+        let articleToDeleteId = null;
+
         document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
 
         if ('serviceWorker' in navigator) {
@@ -335,7 +375,7 @@
                             <td>
                                 <div class="action-btns">
                                     <button class="btn-edit" onclick="prepareEdit(${art.id})">تعديل ✏️</button>
-                                    <button class="btn-red" onclick="deleteArticle(${art.id})">حذف 🗑️</button>
+                                    <button class="btn-red" onclick="openConfirmModal(${art.id})">حذف 🗑️</button>
                                 </div>
                             </td>
                         </tr>
@@ -499,10 +539,28 @@
             document.getElementById('cancelEditBtn').style.display = 'none';
         }
 
-        async function deleteArticle(id) {
-            if (!confirm('هل أنت متأكد من رغبتك في حذف هذا المقال نهائياً؟')) return;
-            const token = document.getElementById('ghToken').value.trim();
+        // إظهار نافذة التأكيد المخصصة للحذف
+        function openConfirmModal(id) {
+            articleToDeleteId = id;
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
 
+        function closeConfirmModal() {
+            articleToDeleteId = null;
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        // ربط زر التأكيد بالدالة
+        document.getElementById('confirmDeleteBtn').onclick = function() {
+            if (articleToDeleteId) {
+                deleteArticle(articleToDeleteId);
+                closeConfirmModal();
+            }
+        };
+
+        // تنفيذ الحذف الفعلي
+        async function deleteArticle(id) {
+            const token = document.getElementById('ghToken').value.trim();
             showTopBanner('جاري حذف المقال...');
 
             try {
