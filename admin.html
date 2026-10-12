@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة إضافة المقالات | SolarToolsPro</title>
+    <title>لوحة إدارة المدونة | SolarToolsPro</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -11,10 +11,11 @@
             background-color: #0f172a;
             color: #ffffff;
             padding: 20px;
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto;
         }
-        h1 { font-size: 20px; color: #38bdf8; text-align: center; margin-bottom: 20px; }
+        h1, h2 { font-size: 20px; color: #38bdf8; text-align: center; margin-bottom: 20px; }
+        h2 { font-size: 16px; margin-top: 30px; border-top: 1px solid #334155; padding-top: 20px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px; }
         input, textarea {
@@ -26,141 +27,258 @@
             color: #fff;
             font-size: 14px;
         }
-        textarea { height: 180px; resize: vertical; }
+        textarea { height: 160px; resize: vertical; }
         button {
             width: 100%;
-            padding: 14px;
-            background-color: #10b981;
-            color: #fff;
+            padding: 12px;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.2s;
         }
+        .btn-green { background-color: #10b981; color: #fff; }
+        .btn-blue { background-color: #0284c7; color: #fff; margin-bottom: 10px; }
+        .btn-red { background-color: #ef4444; color: #fff; padding: 6px 12px; font-size: 12px; width: auto; }
+        .btn-edit { background-color: #f59e0b; color: #fff; padding: 6px 12px; font-size: 12px; width: auto; margin-left: 5px; }
         button:disabled { background-color: #475569; }
         #status { margin-top: 15px; text-align: center; font-size: 14px; }
         .success { color: #34d399; }
         .error { color: #f87171; }
+        
+        /* قائمة المقالات للمراجعة والتعديل */
+        .article-item {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .article-info { font-size: 14px; font-weight: bold; color: #f8fafc; }
     </style>
 </head>
 <body>
 
-    <h1>🚀 لوحة إضافة مقال جديد</h1>
+    <h1 id="formTitle">🚀 لوحة إضافة مقال جديد</h1>
 
     <div class="form-group">
         <label>رمز الوصول الخاص (GitHub Token):</label>
-        <input type="password" id="ghToken" placeholder="الصق رمز GitHub Token هنا مرة واحدة">
+        <input type="password" id="ghToken" placeholder="الصق رمز GitHub Token هنا">
     </div>
+
+    <!-- معرّف المقال في حال التعديل -->
+    <input type="hidden" id="editArticleId" value="">
 
     <div class="form-group">
         <label>عنوان المقال:</label>
-        <input type="text" id="postTitle" placeholder="مثال: دليل تحجيم إنفرترات Growatt">
+        <input type="text" id="postTitle" placeholder="عنوان المقال">
     </div>
 
     <div class="form-group">
         <label>مقدمة قصيرة (الوصف):</label>
-        <input type="text" id="postDesc" placeholder="نبذة مختصرة تظهر في بطاقة المقال">
+        <input type="text" id="postDesc" placeholder="نبذة مختصرة تظهر في الكارت">
     </div>
 
     <div class="form-group">
         <label>محتوى المقال كاملاً:</label>
-        <textarea id="postBody" placeholder="اكتب نص المقال هنا بحرية تامة..."></textarea>
+        <textarea id="postBody" placeholder="نص المقال..."></textarea>
     </div>
 
-    <button id="publishBtn" onclick="publishArticle()">نشر المقال فوراً 🚀</button>
+    <button id="publishBtn" class="btn-green" onclick="saveArticle()">نشر المقال فوراً 🚀</button>
+    <button id="cancelEditBtn" class="btn-red" onclick="cancelEdit()" style="display:none; width:100%; margin-top:8px;">إلغاء التعديل</button>
 
     <div id="status"></div>
+
+    <h2>📚 المقالات المنشورة حالياً</h2>
+    <button class="btn-blue" onclick="loadArticlesList()">تحديث قائمة المقالات 🔄</button>
+    <div id="articlesList">اضغط على زر التحديث لعرض المقالات.</div>
 
     <script>
         document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
 
-        // دوال التشفير وفك التشفير الآمنة مع النصوص العربية UTF-8
-        function utf8_to_b64(str) {
-            return window.btoa(unescape(encodeURIComponent(str)));
+        function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
+        function b64_to_utf8(str) { return decodeURIComponent(escape(window.atob(str.replace(/\s/g, '')))); }
+
+        const repoOwner = 'mazen-alawdhali'; 
+        const repoName = 'blog.solartoolspro.com'; 
+        const filePath = 'articles.json';
+        const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
+
+        // 1. جلب وتحميل بيانات ملف JSON من GitHub
+        async function fetchFileFromGithub(token) {
+            const res = await fetch(apiUrl, { headers: { 'Authorization': `token ${token}` } });
+            if (!res.ok) throw new Error('تعذر جلب البيانات من GitHub');
+            const data = await res.json();
+            const content = b64_to_utf8(data.content);
+            return { sha: data.sha, articles: JSON.parse(content) };
         }
 
-        function b64_to_utf8(str) {
-            return decodeURIComponent(escape(window.atob(str.replace(/\s/g, ''))));
+        // 2. عرض قائمة المقالات مع أزرار التعديل والحذف
+        async function loadArticlesList() {
+            const token = document.getElementById('ghToken').value.trim();
+            const listDiv = document.getElementById('articlesList');
+            if (!token) return alert('يرجى إدخال الـ Token أولاً!');
+
+            listDiv.innerText = 'جاري تحضير القائمة...';
+            try {
+                const { articles } = await fetchFileFromGithub(token);
+                if (articles.length === 0) {
+                    listDiv.innerText = 'لا توجد مقالات منشورة.';
+                    return;
+                }
+                listDiv.innerHTML = '';
+                articles.forEach((art) => {
+                    const item = document.createElement('div');
+                    item.className = 'article-item';
+                    item.innerHTML = `
+                        <div class="article-info">${art.title}</div>
+                        <div>
+                            <button class="btn-edit" onclick="prepareEdit(${art.id})">تعديل ✏️</button>
+                            <button class="btn-red" onclick="deleteArticle(${art.id})">حذف 🗑️</button>
+                        </div>
+                    `;
+                    listDiv.appendChild(item);
+                });
+            } catch (err) {
+                listDiv.innerText = '❌ خطأ: ' + err.message;
+            }
         }
 
-        async function publishArticle() {
+        // 3. حفظ المقال (إضافة جديد أو حفظ التعديل)
+        async function saveArticle() {
             const token = document.getElementById('ghToken').value.trim();
             const title = document.getElementById('postTitle').value.trim();
             const desc = document.getElementById('postDesc').value.trim();
             const body = document.getElementById('postBody').value.trim();
+            const editId = document.getElementById('editArticleId').value;
             const statusDiv = document.getElementById('status');
             const btn = document.getElementById('publishBtn');
 
             if (!token || !title || !desc || !body) {
                 statusDiv.className = 'error';
-                statusDiv.innerText = 'يرجى تعبئة جميع الحقول المطلوبة!';
+                statusDiv.innerText = 'يرجى تعبئة كافة الحقول!';
                 return;
             }
 
             localStorage.setItem('gh_token', token);
             btn.disabled = true;
             statusDiv.className = '';
-            statusDiv.innerText = 'جاري الاتصال بالنظام ونشر المقال...';
-
-            const repoOwner = 'mazen-alawdhali'; 
-            const repoName = 'blog.solartoolspro.com'; 
-            const filePath = 'articles.json';
-            const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
+            statusDiv.innerText = 'جاري معالجة الطلب والتحديث على GitHub...';
 
             try {
-                // 1. جلب الملف الحالي
-                const getRes = await fetch(apiUrl, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
-                
-                if (!getRes.ok) throw new Error('تعذر الوصول إلى الملف، تأكد من الرمز واسم المستودع.');
-                
-                const fileData = await getRes.json();
-                
-                // فك التشفير بشكل آمن للغة العربية
-                const contentText = b64_to_utf8(fileData.content);
-                let articles = JSON.parse(contentText);
+                const { sha, articles } = await fetchFileFromGithub(token);
 
-                // 2. إضافة المقال الجديد
-                const newArticle = {
-                    id: Date.now(),
-                    title: title,
-                    description: desc,
-                    body: body
-                };
-                articles.push(newArticle);
+                if (editId) {
+                    // وضع التعديل
+                    const index = articles.findIndex(a => a.id == editId);
+                    if (index !== -1) {
+                        articles[index].title = title;
+                        articles[index].description = desc;
+                        articles[index].body = body;
+                    }
+                } else {
+                    // وضع الإضافة
+                    articles.push({ id: Date.now(), title, description: desc, body });
+                }
 
-                // 3. التشفير باللغة العربية والحفظ
                 const updatedContent = utf8_to_b64(JSON.stringify(articles, null, 2));
 
                 const putRes = await fetch(apiUrl, {
                     method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${token}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        message: `إضافة مقال جديد: ${title}`,
+                        message: editId ? `تعديل مقال: ${title}` : `إضافة مقال جديد: ${title}`,
                         content: updatedContent,
-                        sha: fileData.sha
+                        sha: sha
                     })
                 });
 
                 if (putRes.ok) {
                     statusDiv.className = 'success';
-                    statusDiv.innerText = '✅ تم نشر المقال بنجاح! سيظهر على المدونة خلال لحظات.';
-                    document.getElementById('postTitle').value = '';
-                    document.getElementById('postDesc').value = '';
-                    document.getElementById('postBody').value = '';
+                    statusDiv.innerText = editId ? '✅ تم تعديل المقال بنجاح!' : '✅ تم نشر المقال بنجاح!';
+                    cancelEdit();
+                    loadArticlesList();
                 } else {
-                    throw new Error('فشل النشر، يرجى التأكد من صلاحيات الـ Token.');
+                    throw new Error('فشل حفظ البيانات.');
                 }
             } catch (err) {
                 statusDiv.className = 'error';
                 statusDiv.innerText = '❌ خطأ: ' + err.message;
             } finally {
                 btn.disabled = false;
+            }
+        }
+
+        // 4. التجهيز للتعديل
+        async function prepareEdit(id) {
+            const token = document.getElementById('ghToken').value.trim();
+            try {
+                const { articles } = await fetchFileFromGithub(token);
+                const art = articles.find(a => a.id == id);
+                if (art) {
+                    document.getElementById('editArticleId').value = art.id;
+                    document.getElementById('postTitle').value = art.title;
+                    document.getElementById('postDesc').value = art.description;
+                    document.getElementById('postBody').value = art.body;
+                    
+                    document.getElementById('formTitle').innerText = '✏️ تعديل المقال';
+                    document.getElementById('publishBtn').innerText = 'حفظ التعديلات 💾';
+                    document.getElementById('cancelEditBtn').style.display = 'block';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } catch (err) { alert(err.message); }
+        }
+
+        // 5. إلغاء التعديل والرجوع لوضع الإضافة
+        function cancelEdit() {
+            document.getElementById('editArticleId').value = '';
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postDesc').value = '';
+            document.getElementById('postBody').value = '';
+            document.getElementById('formTitle').innerText = '🚀 لوحة إضافة مقال جديد';
+            document.getElementById('publishBtn').innerText = 'نشر المقال فوراً 🚀';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+        }
+
+        // 6. حذف مقال
+        async function deleteArticle(id) {
+            if (!confirm('هل أنت تأكد من رغبتك في حذف هذا المقال نهائياً؟')) return;
+            const token = document.getElementById('ghToken').value.trim();
+            const statusDiv = document.getElementById('status');
+
+            statusDiv.className = '';
+            statusDiv.innerText = 'جاري حذف المقال...';
+
+            try {
+                const { sha, articles } = await fetchFileFromGithub(token);
+                const filteredArticles = articles.filter(a => a.id != id);
+
+                const updatedContent = utf8_to_b64(JSON.stringify(filteredArticles, null, 2));
+
+                const putRes = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: `حذف مقال`,
+                        content: updatedContent,
+                        sha: sha
+                    })
+                });
+
+                if (putRes.ok) {
+                    statusDiv.className = 'success';
+                    statusDiv.innerText = '🗑️ تم حذف المقال بنجاح!';
+                    loadArticlesList();
+                } else {
+                    throw new Error('فشل الحذف.');
+                }
+            } catch (err) {
+                statusDiv.className = 'error';
+                statusDiv.innerText = '❌ خطأ: ' + err.message;
             }
         }
     </script>
