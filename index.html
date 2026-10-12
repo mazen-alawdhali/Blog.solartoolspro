@@ -4,58 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مدونة حلول وطاقة | SolarToolsPro</title>
-    <meta name="description" content="مقالات ونشرات فنية متخصصة في حسابات واختيارات المنظومات الشمسية والبطاريات.">
+    <meta name="description" content="مركز المقالات والشروحات الهندسية لتصميم منظومات الطاقة الشمسية والبطاريات.">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #0f172a;
             color: #f8fafc;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            line-height: 1.6;
         }
         header {
             background-color: #1e293b;
-            padding: 1rem 1.5rem;
+            padding: 1.2rem 1.5rem;
             border-bottom: 1px solid #334155;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
         }
         header h1 {
             font-size: 1.25rem;
             color: #38bdf8;
+            font-weight: 800;
         }
         header a {
             color: #94a3b8;
             text-decoration: none;
             font-size: 0.9rem;
+            font-weight: 700;
             transition: color 0.2s;
         }
         header a:hover {
-            color: #f8fafc;
+            color: #34d399;
         }
         main {
             flex: 1;
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 0 20px;
             width: 100%;
-            height: calc(100vh - 120px);
+            text-align: center;
         }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: #ffffff;
+        .blog-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 20px;
+            padding: 50px 30px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+        }
+        .blog-card h2 {
+            font-size: 26px;
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+        .blog-card p {
+            color: #94a3b8;
+            font-size: 16px;
+            margin-bottom: 35px;
+            max-width: 600px;
+            margin-inline: auto;
+        }
+        .btn-notion {
+            display: inline-block;
+            background-color: #059669;
+            color: #ffffff;
+            padding: 16px 35px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 800;
+            text-decoration: none;
+            transition: 0.2s;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+        .btn-notion:hover {
+            background-color: #10b981;
+            transform: translateY(-2px);
         }
         footer {
             background-color: #0f172a;
             border-top: 1px solid #1e293b;
             text-align: center;
-            padding: 1rem;
+            padding: 1.5rem;
             font-size: 0.85rem;
             color: #64748b;
         }
@@ -69,12 +102,17 @@
 
     <header>
         <h1>مركز المقالات والشروحات الفنية</h1>
-        <a href="https://solartoolspro.com" target="_blank">العودة للحاسبات الرئيسية ↩</a>
+        <a href="https://solartoolspro.com">العودة للحاسبات الرئيسية ↩</a>
     </header>
 
     <main>
-        <!-- تضمين صفحة وجدول Notion المباشر -->
-        <iframe src="https://v1.embednotion.com/embed/3f713bc9b6bb808fad7dc89e04ebc815" allowfullscreen></iframe>
+        <div class="blog-card">
+            <h2>📚 مكتبة المقالات الهندسية والدلائل الشاملة</h2>
+            <p>تصفح جميع المقالات والشروحات الفنية الخاصة بمنظومات الطاقة الشمسية والبطاريات المدعومة والمحدثة باستمرار.</p>
+            <a href="https://app.notion.com/p/3f713bc9b6bb808fad7dc89e04ebc815?source=copy_link" target="_blank" class="btn-notion">
+                تصفح المقالات مباشرة ➔
+            </a>
+        </div>
     </main>
 
     <footer>
