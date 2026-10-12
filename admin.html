@@ -136,7 +136,7 @@
             <button type="button" class="tool-btn" onclick="insertTag('<blockquote style=\'border-right:3px solid #38bdf8; padding-right:10px; color:#cbd5e1;\'>', '</blockquote>')">اقتباس</button>
             <button type="button" class="tool-btn" onclick="insertTextAtCursor('<hr style=\'border:0; border-top:1px dashed #334155; margin:15px 0;\'>\n')">خط فاصل</button>
         </div>
-        <textarea id="postBody" class="styled-textarea" placeholder="اكتب نص المقال هنا... يمكنك استخدام أزرار التنسيق أعلاه"></textarea>
+        <textarea id="postBody" class="styled-textarea" onblur="savedCursorPos = this.selectionStart" placeholder="اكتب نص المقال هنا... يمكنك استخدام أزرار التنسيق أعلاه"></textarea>
     </div>
 
     <button id="publishBtn" class="btn-green" onclick="saveArticle()">نشر المقال فوراً 🚀</button>
@@ -150,6 +150,8 @@
     <div id="articlesList">اضغط على زر التحديث لعرض جدول المقالات.</div>
 
     <script>
+        let savedCursorPos = 0; // متغير لحفظ موضع المؤشر بدقة على الجوال
+
         document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
 
         function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
@@ -160,13 +162,12 @@
         const filePath = 'articles.json';
         const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
 
-        // دالة إدراج النص في موضع مؤشر الكتابة الحالي
+        // دالة إدراج النص في موضع المؤشر المحفوظ
         function insertTextAtCursor(text) {
             const textarea = document.getElementById('postBody');
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            textarea.value = textarea.value.substring(0, start) + text + textarea.value.substring(end);
-            textarea.selectionStart = textarea.selectionEnd = start + text.length;
+            const pos = savedCursorPos > 0 ? savedCursorPos : textarea.value.length;
+            textarea.value = textarea.value.substring(0, pos) + text + textarea.value.substring(pos);
+            savedCursorPos = pos + text.length;
             textarea.focus();
         }
 
@@ -296,7 +297,7 @@
                     imagesCode += '</div>\n';
                 }
 
-                // إدراج الصور في مكان المؤشر مباشرة
+                // إدراج الصور في موضع المؤشر المحفوظ بدقة
                 insertTextAtCursor(imagesCode);
 
                 statusDiv.className = 'success';
