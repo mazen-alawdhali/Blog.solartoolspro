@@ -4,242 +4,138 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مدونة حلول وطاقة | SolarToolsPro</title>
-    <meta name="description" content="مقالات وشروحات هندسية متخصصة في حسابات واختيارات المنظومات الشمسية والبطاريات.">
-    
-    <!-- ⬇️ كود قوقل أدسينس التلقائي يوضع هنا مستقبلاً ⬇️ -->
-    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
-
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #0f172a;
             color: #ffffff;
-            line-height: 1.8;
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
         }
         header {
-            background-color: #1e293b;
-            padding: 20px;
+            text-align: center;
+            padding: 24px 0;
             border-bottom: 1px solid #334155;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
         }
-        header h1 {
-            font-size: 22px;
-            color: #38bdf8;
-            margin-bottom: 5px;
-        }
-        header p {
-            font-size: 13px;
-            color: #94a3b8;
-        }
-        .nav-back {
-            display: inline-block;
-            margin-top: 10px;
-            color: #34d399;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: bold;
-        }
-        main {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-        
-        /* AdSense Container */
-        .ad-space {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px dashed #334155;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            color: #64748b;
-            font-size: 12px;
-            margin: 20px 0;
-        }
-
-        /* Articles Grid */
-        .articles-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
+        header h1 { font-size: 22px; color: #38bdf8; margin-bottom: 6px; }
+        header p { font-size: 13px; color: #94a3b8; }
         .article-card {
             background-color: #1e293b;
             border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 20px;
-            transition: 0.2s;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-        .article-card:hover {
-            border-color: #10b981;
-            transform: translateY(-3px);
-        }
-        .article-card h2 {
+        .article-title {
             font-size: 18px;
             color: #34d399;
-            margin-bottom: 10px;
-            line-height: 1.4;
+            font-weight: bold;
+            margin-bottom: 8px;
         }
-        .article-card p {
+        .article-desc {
             font-size: 14px;
             color: #cbd5e1;
-            margin-bottom: 15px;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            line-height: 1.6;
+            margin-bottom: 14px;
         }
-        .read-btn {
-            display: inline-block;
-            background-color: #0284c7;
-            color: #ffffff;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: bold;
-            text-decoration: none;
-            cursor: pointer;
-            border: none;
-        }
-
-        /* Single Article View */
-        .full-article {
+        .article-body {
+            font-size: 14px;
+            color: #e2e8f0;
+            line-height: 1.8;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed #475569;
             display: none;
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 20px;
-            padding: 30px;
-        }
-        .full-article h1 {
-            font-size: 24px;
-            color: #38bdf8;
-            margin-bottom: 20px;
-        }
-        .full-article-content {
-            font-size: 15px;
-            color: #f1f5f9;
             white-space: pre-line;
         }
-        .close-btn {
-            background: #334155;
-            color: #fff;
+        .btn-read {
+            background-color: #0284c7;
+            color: white;
             border: none;
             padding: 8px 16px;
             border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 20px;
+            font-size: 13px;
             font-weight: bold;
+            cursor: pointer;
         }
-
+        .loading, .error { text-align: center; color: #94a3b8; padding: 20px; }
         footer {
             text-align: center;
-            padding: 25px 20px;
-            font-size: 13px;
+            padding: 20px 0;
+            font-size: 12px;
             color: #64748b;
-            border-top: 1px solid #1e293b;
-            margin-top: 40px;
+            border-top: 1px solid #334155;
+            margin-top: 30px;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>مركز المقالات والشروحات الفنية</h1>
-        <p>المنصة الهندسية المتخصصة في حلول الطاقة الشمسية والبطاريات</p>
-        <a href="https://solartoolspro.com" class="nav-back">↩ العودة للمنصة الرئيسية (SolarToolsPro.com)</a>
+        <h1>⚡ مدونة SolarToolsPro</h1>
+        <p>أحدث المقالات والدول الهندسية في أنظمة الطاقة الشمسية</p>
     </header>
 
-    <main>
-        <!-- مساحة إعلانية أعلى الصفحة -->
-        <div class="ad-space">مساحة إعلانية (Google AdSense)</div>
-
-        <!-- قائمة المقالات -->
-        <div id="articlesList" class="articles-grid">
-            
-            <div class="article-card">
-                <h2>دليل اختيار الألواح الشمسية لمنظومات الطاقة</h2>
-                <p>تعتبر الألواح الشمسية العنصر الأساسي لالتقاط الأشعة وتوليد التيار المستمر. يتطلب الاختيار الدقيق مراعاة المعامل الحراري وتكنولوجيا الخلايا Mono vs N-Type.</p>
-                <button class="read-btn" onclick="showArticle(1)">اقرأ المقال كاملاً ➔</button>
-            </div>
-
-            <div class="article-card">
-                <h2>الفرق بين بطاريات الليثيوم (LiFePO4) وبطاريات الجل</h2>
-                <p>مقارنة شاملة بين تقنيات التخزين الحديثة والتقليدية من حيث عمر الدورات، عمق التفريغ الآمن (DoD)، وأنظمة إدارة البطارية الذكية BMS.</p>
-                <button class="read-btn" onclick="showArticle(2)">اقرأ المقال كاملاً ➔</button>
-            </div>
-
-            <div class="article-card">
-                <h2>كيفية حساب مقاطع الكابلات وقواطع الحماية (DC/AC)</h2>
-                <p>خطوات هندسية لحساب مقاس السلك النحاسي وقاطع الحماية المناسب لتفادي هبوط الجهد (Voltage Drop) وارتفاع الحرارة الميدانية.</p>
-                <button class="read-btn" onclick="showArticle(3)">اقرأ المقال كاملاً ➔</button>
-            </div>
-
-        </div>
-
-        <!-- عرض المقال المنفرد -->
-        <div id="fullArticleView" class="full-article">
-            <button class="close-btn" onclick="closeArticle()">➔ العودة لقائمة المقالات</button>
-            <h1 id="articleTitle"></h1>
-            
-            <!-- مساحة إعلانية داخل المقال -->
-            <div class="ad-space">مساحة إعلانية داخل المقال (Google AdSense)</div>
-
-            <div id="articleBody" class="full-article-content"></div>
-        </div>
-
-        <!-- مساحة إعلانية أسفل الصفحة -->
-        <div class="ad-space">مساحة إعلانية (Google AdSense)</div>
+    <main id="articles-container">
+        <div class="loading">جاري تحميل المقالات...</div>
     </main>
 
     <footer>
-        تصميم وتطوير مازن العوذلي © 2026 جميع الحقوق محفوظة | SolarToolsPro.com
+        جميع الحقوق محفوظة © 2026 SolarToolsPro.com
     </footer>
 
     <script>
-        const articlesData = {
-            1: {
-                title: "دليل اختيار الألواح الشمسية لمنظومات الطاقة",
-                body: `عند التخطيط لتركيب منظومة طاقة شمسية، يُعد اختيار الألواح الشمسية المناسبة الخطوة الأهم لضمان استقرار التوليد على المدى الطويل. تختلف الألواح الشمسية من حيث التكنولوجيا المستخدمة، مثل ألواح أحادية البلورة (Monocrystalline) المشهورة بكفاءتها العالية في المساحات المحدودة، وألواح N-Type الحديثة التي تتميز بمعامل حراري ممتاز يقلل من فقدان القدرة في أجواء الصيف الحارة.
+        async function loadArticles() {
+            const container = document.getElementById('articles-container');
+            try {
+                // جلب المقالات مع معرف زمني لتجاوز التخزين المؤقت تماماً
+                const res = await fetch('articles.json?v=' + Date.now());
+                if (!res.ok) throw new Error('تعذر تحميل ملف المقالات');
+                
+                const articles = await res.json();
+                
+                if (!articles || articles.length === 0) {
+                    container.innerHTML = '<div class="loading">لا توجد مقالات منشورة حتى الآن.</div>';
+                    return;
+                }
 
-أهم المعايير عند اختيار الألواح:
-• المعامل الحراري (Temperature Coefficient): يحدد مقدار انخفاض أداء اللوح عند ارتفاع درجات الحرارة عن 25 درجة مئوية.
-• كفاءة اللوح (Efficiency): يفضل اختيار ألواح بكفاءة تتجاوز 21% للاستفادة القصوى من المساحة المتاحة.
-• جهد الدائرة المفتوحة (Voc) وتيار القصر (Isc): ضروريان جداً لمطابقة مواصفات منظم الشحن (MPPT) أو الإنفرتر الهجين لتجنب احتراق المدخلات.`
-            },
-            2: {
-                title: "الفرق بين بطاريات الليثيوم (LiFePO4) وبطاريات الجل وكيف تختار الأنسب؟",
-                body: `أحدثت بطاريات فوسفات حديد الليثيوم (LiFePO4) ثورة في عالم تخزين الطاقة الشمسية بفضل عمرها الافتراضي الطويل وكفاءتها العالية. مقارنة ببطاريات الجل (Gel) والأسيد التقليدية، توفر بطاريات الليثيوم عمق تفريغ آمن يصل إلى 80%-90% دون التأثير الجسيم على عدد الدورات (Cycle Life).
+                // عكس الترتيب ليظهر المقال الجديد في أعلى القائمة فوراً
+                articles.reverse();
 
-مقارنة سريعة:
-• عمر الدورات: تتجاوز بطاريات الليثيوم 4000-6000 دورة تفريغ، بينما تتراوح بطاريات الجل بين 1000-1500 دورة.
-• نظام إدارة البطارية (BMS): تحتوي بطاريات الليثيوم على نظام BMS ذكي يحمي الخلايا من الشحن الزائد، التفريغ العميق، وارتفاع الحرارة.
-• الوزن والمساحة: توفر بطاريات الليثيوم أكثر من 60% من الوزن والمساحة مقارنة ببنوك بطاريات الجل ذات نفس السعة الفعالة.`
-            },
-            3: {
-                title: "كيفية حساب مقاطع الكابلات وقواطع الحماية (DC/AC) لمنظومة الطاقة الشمسية",
-                body: `تُعتبر الكابلات وقواطع الحماية الشرايين الرئيسية لأي منظومة طاقة شمسية. إن اختيار مقطع كابل غير مناسب يؤدي إلى هبوط عالي في الجهد (Voltage Drop) وارتفاع حرارة الأسلاك مما يشكل خطراً حقيقياً.
-
-قواعد حساب السلك والقواطع:
-• نسبة هبوط الجهد الآمنة: يجب ألا تتجاوز 1.5% إلى 2% في خطوط التيار المستمر (DC) بين الألواح والإنفرتر.
-• اختيار مقطع النحاس: يتم حساب المقطع بناءً على التيار الأقصى (Amperes) والمسافة بالمتر بين المكونات.
-• قواطع التيار المستمر (DC Breakers): يجب استخدام قواطع مخصصة للتيار المستمر قطبية (Polarized) أو غير قطبية تتحمل الجهد العالي الناتج عن مصفوفة الألواح.`
+                container.innerHTML = '';
+                articles.forEach((art, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'article-card';
+                    card.innerHTML = `
+                        <div class="article-title">${art.title}</div>
+                        <div class="article-desc">${art.description}</div>
+                        <div class="article-body" id="body-${index}">${art.body}</div>
+                        <button class="btn-read" onclick="toggleArticle(${index})">اقرأ المقال كاملاً ←</button>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                container.innerHTML = `<div class="error">❌ خطأ في تحميل المقالات: ${err.message}</div>`;
             }
-        };
-
-        function showArticle(id) {
-            document.getElementById('articlesList').style.display = 'none';
-            document.getElementById('fullArticleView').style.display = 'block';
-            document.getElementById('articleTitle').innerText = articlesData[id].title;
-            document.getElementById('articleBody').innerText = articlesData[id].body;
-            window.scrollTo(0, 0);
         }
 
-        function closeArticle() {
-            document.getElementById('fullArticleView').style.display = 'none';
-            document.getElementById('articlesList').style.display = 'grid';
+        function toggleArticle(index) {
+            const bodyEl = document.getElementById(`body-${index}`);
+            const btn = event.target;
+            if (bodyEl.style.display === 'block') {
+                bodyEl.style.display = 'none';
+                btn.innerText = 'اقرأ المقال كاملاً ←';
+            } else {
+                bodyEl.style.display = 'block';
+                btn.innerText = 'إخفاء المقال ↗';
+            }
         }
+
+        loadArticles();
     </script>
 </body>
 </html>
