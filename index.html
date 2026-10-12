@@ -19,11 +19,11 @@
             padding-bottom: 40px;
         }
 
-        /* الهيدر البانورامي الاحترافي المطابق للموقع الرئيسي */
+        /* الهيدر البانورامي الاحترافي بصورة محلية */
         .hero-header {
             position: relative;
-            background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(11, 19, 41, 0.95)), 
-                        url('https://images.unsplash.com/photo-1509391365360-2e959784a276?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;
+            background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(11, 19, 41, 0.95)), 
+                        url('images/hero.jpg') center/cover no-repeat;
             text-align: center;
             padding: 45px 20px 35px 20px;
             border-bottom: 1px solid #1e293b;
@@ -67,7 +67,7 @@
             gap: 8px;
         }
 
-        /* كروت المقالات بالتصميم المحدث */
+        /* كروت المقالات */
         .article-card {
             background-color: #162032;
             border: 1px solid #24334c;
@@ -89,7 +89,7 @@
             margin-bottom: 16px;
         }
 
-        /* تفاصيل محتوى المقال */
+        /* محتوى المقال */
         .article-body {
             display: none;
             padding-top: 18px;
@@ -119,18 +119,9 @@
             background: rgba(56, 189, 248, 0.06);
             border-radius: 0 8px 8px 0;
         }
-        .article-body h2 {
-            font-size: 17px;
-            color: #38bdf8;
-            margin: 18px 0 8px 0;
-        }
-        .article-body h3 {
-            font-size: 15px;
-            color: #f59e0b;
-            margin: 14px 0 6px 0;
-        }
+        .article-body h2 { font-size: 17px; color: #38bdf8; margin: 18px 0 8px 0; }
+        .article-body h3 { font-size: 15px; color: #f59e0b; margin: 14px 0 6px 0; }
 
-        /* أزرار التفاعل */
         .btn-toggle {
             background-color: #0284c7;
             color: #ffffff;
@@ -149,32 +140,6 @@
         }
         .btn-toggle:hover { background-color: #0369a1; }
 
-        /* زر مشاهدة المزيد الجذاب تحت المقال */
-        .more-articles-banner {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px dashed #2a3b59;
-            text-align: center;
-        }
-        .btn-more-link {
-            display: inline-block;
-            width: 100%;
-            background: linear-gradient(135deg, #059669, #10b981);
-            color: #ffffff;
-            text-decoration: none;
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: bold;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .btn-more-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-        }
-
-        /* رسالة التحميل والخطأ */
         #statusMessage {
             text-align: center;
             padding: 40px 20px;
@@ -182,7 +147,6 @@
             color: #94a3b8;
         }
         
-        /* الفوتر الرسمي المطابق للموقع الرئيسي */
         footer {
             text-align: center;
             margin-top: 45px;
@@ -192,11 +156,7 @@
             color: #94a3b8;
             background-color: #0b1329;
         }
-        footer a {
-            color: #38bdf8;
-            text-decoration: none;
-            margin: 0 6px;
-        }
+        footer a { color: #38bdf8; text-decoration: none; margin: 0 6px; }
         .footer-links {
             margin-bottom: 12px;
             display: flex;
@@ -204,11 +164,7 @@
             justify-content: center;
             gap: 10px;
         }
-        .footer-credits {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #64748b;
-        }
+        .footer-credits { margin-top: 10px; font-size: 12px; color: #64748b; }
     </style>
 </head>
 <body>
@@ -243,12 +199,6 @@
         <div class="footer-credits">
             تصميم وتطوير <strong style="color: #34d399;">مازن العوذلي</strong> © 2026 جميع الحقوق محفوظة
         </div>
-
-        <div style="margin-top: 10px; font-size: 12px; color: #475569;">
-            <a href="https://solartoolspro.com">الحاسبة الذكية</a> | 
-            <a href="https://solartoolspro.com">حاسبة الألواح</a> | 
-            <a href="https://solartoolspro.com">حاسبة البطارية</a>
-        </div>
     </footer>
 
     <script>
@@ -273,7 +223,6 @@
 
                 container.innerHTML = '';
 
-                // عرض المقالات مرتبة من الأحدث إلى الأقدم
                 articles.reverse().forEach((art) => {
                     const card = document.createElement('div');
                     card.className = 'article-card';
@@ -289,13 +238,6 @@
                         <button class="btn-toggle" onclick="toggleArticle(${art.id}, this)">
                             قراءة المقال كاملاً 📖
                         </button>
-
-                        <!-- بنر مشاهدة المزيد من المقالات -->
-                        <div class="more-articles-banner">
-                            <a href="https://solartoolspro.com" class="btn-more-link" target="_blank">
-                                ⚡ لمشاهدة المزيد من مقالات الطاقة الشمسية ومكوناتها وأخبارها اضغط هنا
-                            </a>
-                        </div>
                     `;
 
                     container.appendChild(card);
