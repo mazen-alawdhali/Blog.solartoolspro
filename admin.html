@@ -97,12 +97,12 @@
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 
-        /* شريط أزرار التنسيق المرئي بتصميم أنيق */
+        /* شريط أزرار التنسيق المرئي بـ الرموز فقط لتوفير المساحة */
         .toolbar {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             background-color: #1e293b;
             padding: 8px;
             border: 1px solid #334155;
@@ -112,20 +112,23 @@
         .tool-btn {
             background-color: #334155;
             color: #e2e8f0;
-            padding: 6px 10px;
-            font-size: 12px;
-            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 6px;
+            min-width: 36px;
+            text-align: center;
         }
         .tool-btn:hover { background-color: #475569; }
         
-        /* قائمة منسدلة منسقة بأناقة للخطوط */
+        /* قائمة حجم الخط المنمقة */
         .font-size-select {
             background-color: #334155;
             color: #e2e8f0;
             border: 1px solid #475569;
-            padding: 6px 10px;
+            padding: 6px 8px;
             font-size: 12px;
-            border-radius: 4px;
+            border-radius: 6px;
             outline: none;
             cursor: pointer;
         }
@@ -222,27 +225,26 @@
     <div class="form-group">
         <label>محتوى المقال (محرر مرئي مباشر):</label>
         <div class="toolbar">
-            <button type="button" class="tool-btn" onclick="execCmd('bold')"><b>B</b> عريض</button>
-            <button type="button" class="tool-btn" onclick="execCmd('italic')"><i>I</i> مائل</button>
-            <button type="button" class="tool-btn" onclick="execCmd('underline')"><u>U</u> خط تحته</button>
+            <button type="button" class="tool-btn" onclick="execCmd('bold')" title="عريض"><b>B</b></button>
+            <button type="button" class="tool-btn" onclick="execCmd('italic')" title="مائل"><i>I</i></button>
+            <button type="button" class="tool-btn" onclick="execCmd('underline')" title="خط تحت النص"><u>U</u></button>
             
-            <!-- قائمة منسدلة منسقة لحجم الخط -->
+            <!-- قائمة حجم الخط بالرموز -->
             <select class="font-size-select" onchange="execCmd('fontSize', this.value); this.value='';">
-                <option value="">حجم الخط 🔤</option>
+                <option value="">🔤 الخط</option>
                 <option value="2">صغير</option>
                 <option value="3">عادي</option>
                 <option value="5">كبير</option>
                 <option value="6">كبير جداً</option>
             </select>
 
-            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h2>')">عنوان H2</button>
-            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h3>')">عنوان H3</button>
-            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<blockquote>')">اقتباس</button>
-            <button type="button" class="tool-btn" onclick="execCmd('insertHorizontalRule')">خط فاصل</button>
+            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h2>')" title="عنوان رئيسي">H2</button>
+            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h3>')" title="عنوان فرعي">H3</button>
+            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<blockquote>')" title="اقتباس">❞</button>
+            <button type="button" class="tool-btn" onclick="execCmd('insertHorizontalRule')" title="خط فاصل">―</button>
             
-            <!-- أزرار التراجع والإعادة -->
-            <button type="button" class="tool-btn" onclick="execCmd('undo')">تراجع ↩️</button>
-            <button type="button" class="tool-btn" onclick="execCmd('redo')">إعادة ↪️</button>
+            <button type="button" class="tool-btn" onclick="execCmd('undo')" title="تراجع">↩️</button>
+            <button type="button" class="tool-btn" onclick="execCmd('redo')" title="إعادة">↪️</button>
         </div>
         <div id="postBody" class="editor-box" contenteditable="true" placeholder="اكتب نص المقال هنا..."></div>
     </div>
@@ -258,7 +260,6 @@
     <script>
         document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
 
-        // تسجيل الـ Service Worker لتفعيل خيار التثبيت الرسمي (PWA)
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
