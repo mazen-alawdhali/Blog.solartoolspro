@@ -53,7 +53,29 @@
         .btn-edit { background-color: #f59e0b; color: #fff; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* شريط التنبيه العلوي السلس */
+        /* شاشة تسجيل الدخول السرية (الحماية بكلمة مرور) */
+        #authOverlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #0f172a;
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .auth-card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 14px;
+            border: 1px solid #334155;
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        /* شريط التنبيه العلوي والسلس */
         #topBanner {
             display: none;
             position: fixed;
@@ -150,7 +172,7 @@
         }
         .tool-btn:hover { background-color: #475569; }
         
-        /* القائمة المنسدلة المخصصة المماثلة لـ قائمة نسبة التشغيل (Duty) */
+        /* القائمة المنسدلة المخصصة لحجم الخط */
         .custom-dropdown {
             position: relative;
             display: inline-block;
@@ -240,6 +262,16 @@
 </head>
 <body>
 
+    <!-- طبقة حماية كلمة المرور عند فتح اللوحة -->
+    <div id="authOverlay">
+        <div class="auth-card">
+            <h3 style="color:#38bdf8; margin-bottom:10px; font-size:18px;">🔒 منطقة الإدارة المحمية</h3>
+            <p style="color:#94a3b8; font-size:13px; margin-bottom:15px;">الرجاء إدخال كلمة المرور للمتابعة</p>
+            <input type="password" id="sitePassword" placeholder="كلمة المرور السرية" style="width:100%; padding:12px; background:#0f172a; border:1px solid #475569; color:#fff; border-radius:8px; margin-bottom:15px; text-align:center; font-size:14px;" onkeydown="if(event.key==='Enter') checkMasterPassword()">
+            <button onclick="checkMasterPassword()" style="width:100%; background:#10b981; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">دخول 🚀</button>
+        </div>
+    </div>
+
     <div id="topBanner">جاري المعالجة...</div>
     <div id="toastContainer"></div>
 
@@ -256,6 +288,11 @@
     </div>
 
     <h1 id="formTitle">🚀 لوحة تحكم المدونة (PWA)</h1>
+
+    <!-- زر قفل وتسجيل الخروج (يحافظ على التوكن مخزناً ولا يحذفه) -->
+    <div style="text-align: center; margin-bottom: 20px;">
+        <button onclick="lockAdminPanel()" style="background: #334155; color: #f87171; border: 1px solid #475569; padding: 7px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: bold;">قفل لوحة التحكم (تسجيل خروج) 🔒</button>
+    </div>
 
     <div class="form-group">
         <label>رمز الوصول الخاص (GitHub Token):</label>
@@ -287,7 +324,7 @@
             <button type="button" class="tool-btn" onclick="execCmd('italic')" title="مائل"><i>I</i></button>
             <button type="button" class="tool-btn" onclick="execCmd('underline')" title="خط تحت النص"><u>U</u></button>
             
-            <!-- القائمة المنسدلة المخصصة بنفس ستايل تطبيق الحاسبة -->
+            <!-- القائمة المنسدلة المخصصة لحجم الخط -->
             <div class="custom-dropdown">
                 <button type="button" class="tool-btn" onclick="toggleFontMenu(event)" title="حجم الخط">🔤 ▼</button>
                 <div id="fontDropdown" class="dropdown-menu">
@@ -318,6 +355,32 @@
     <div id="articlesList">اضغط على زر التحديث لعرض الجدول.</div>
 
     <script>
+        // 🔑 كلمة المرور السرية الخاصة بك (يمكنك تغييرها هنا متى شئت)
+        const MASTER_PASS = "Mazen@Solar2026"; 
+
+        // التحقق من حالة المصادقة عند التحميل
+        if (localStorage.getItem('admin_authenticated') === 'true') {
+            document.getElementById('authOverlay').style.display = 'none';
+        }
+
+        function checkMasterPassword() {
+            const inputPass = document.getElementById('sitePassword').value;
+            if (inputPass === MASTER_PASS) {
+                localStorage.setItem('admin_authenticated', 'true');
+                document.getElementById('authOverlay').style.display = 'none';
+            } else {
+                alert('❌ كلمة المرور غير صحيحة!');
+            }
+        }
+
+        // دالة قفل اللوحة (تسجيل الخروج) مع الحفاظ التام على التوكن وعدم حذفه
+        function lockAdminPanel() {
+            localStorage.removeItem('admin_authenticated');
+            document.getElementById('sitePassword').value = '';
+            document.getElementById('authOverlay').style.display = 'flex';
+            showToast('🔒 تم قفل لوحة التحكم بنجاح', 'success');
+        }
+
         let articleToDeleteId = null;
 
         document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
@@ -326,7 +389,7 @@
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
 
-        // إغلاق قائمة الخطوط المنسدلة عند الضغط في أي مكان خارجها
+        // إغلاق قائمة الخطوط المنسدلة عند الضغط خارجها
         document.addEventListener('click', function(e) {
             const dropdown = document.getElementById('fontDropdown');
             if (dropdown && !e.target.closest('.custom-dropdown')) {
