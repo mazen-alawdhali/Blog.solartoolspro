@@ -1,6 +1,6 @@
 {
   "name": "لوحة تحكم المدونة",
-  "short_name": "المدونة",
+  "short_name": "إدارة المدونة",
   "start_url": "/admin.html",
   "display": "standalone",
   "background_color": "#0f172a",
@@ -8,9 +8,13 @@
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/3233/3233483.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3233/3233483.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ]
 }
-
