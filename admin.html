@@ -40,6 +40,7 @@
         }
         .btn-green { background-color: #10b981; color: #fff; }
         .btn-blue { background-color: #0284c7; color: #fff; margin-bottom: 10px; }
+        .btn-purple { background-color: #6366f1; color: #fff; margin-bottom: 10px; }
         .btn-red { background-color: #ef4444; color: #fff; padding: 6px 12px; font-size: 12px; width: auto; }
         .btn-edit { background-color: #f59e0b; color: #fff; padding: 6px 12px; font-size: 12px; width: auto; margin-left: 5px; }
         button:disabled { background-color: #475569; }
@@ -81,6 +82,12 @@
     <div class="form-group">
         <label>مقدمة قصيرة (الوصف):</label>
         <input type="text" id="postDesc" placeholder="نبذة مختصرة تظهر في الكارت">
+    </div>
+
+    <div class="form-group">
+        <label>إدراج صور متعددة في المقال:</label>
+        <input type="file" id="imageInput" accept="image/*" multiple style="padding: 8px; margin-bottom: 5px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff;">
+        <button type="button" class="btn-purple" onclick="uploadMultipleImages()">رفع وترتيب الصور تلقائياً في المقال 🖼️</button>
     </div>
 
     <div class="form-group">
@@ -148,7 +155,81 @@
             }
         }
 
-        // 3. حفظ المقال (إضافة جديد أو حفظ التعديل)
+        // 3. رفع وترتيب الصور المتعددة دفعة واحدة
+        async function uploadMultipleImages() {
+            const fileInput = document.getElementById('imageInput');
+            const token = document.getElementById('ghToken').value.trim();
+            const statusDiv = document.getElementById('status');
+
+            if (!token) {
+                alert('يرجى إدخال رمز الوصول (GitHub Token) في الأعلى أولاً!');
+                return;
+            }
+            if (fileInput.files.length === 0) {
+                alert('يرجى اختيار صورة واحدة على الأقل من هاتفك!');
+                return;
+            }
+
+            const files = Array.from(fileInput.files);
+            statusDiv.className = '';
+            statusDiv.innerText = `جاري رفع وترتيب ${files.length} صور إلى GitHub...`;
+
+            let uploadedUrls = [];
+
+            try {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    statusDiv.innerText = `جاري رفع الصورة ${i + 1} من ${files.length}...`;
+                    
+                    const base64Content = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = () => resolve(reader.result.split(',')[1]);
+                        reader.onerror = error => reject(error);
+                    });
+
+                    const fileName = `images/${Date.now()}_${i}_${file.name.replace(/\s+/g, '_')}`;
+                    const imgApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${fileName}`;
+
+                    const res = await fetch(imgApiUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: `رفع صورة متعددة: ${file.name}`,
+                            content: base64Content
+                        })
+                    });
+
+                    if (!res.ok) throw new Error(`فشل رفع الصورة ${file.name}`);
+
+                    const rawImageUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${fileName}`;
+                    uploadedUrls.push(rawImageUrl);
+                }
+
+                // تصميم معرض صور شبكي (Grid) جميل ومتجاوب مع الجوال لترتيب الصور تلقائياً
+                let galleryHtml = '\n<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 15px 0;">\n';
+                uploadedUrls.forEach(url => {
+                    galleryHtml += `  <img src="${url}" alt="صورة توضيحية" style="width: 100%; height: 160px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">\n`;
+                });
+                galleryHtml += '</div>\n';
+
+                // إدراج معرض الصور تلقائياً في صندوق محتوى المقال
+                const bodyTextArea = document.getElementById('postBody');
+                bodyTextArea.value += galleryHtml;
+
+                statusDiv.className = 'success';
+                statusDiv.innerText = `✅ تم رفع وترتيب ${files.length} صور وإضافتها بنجاح للمقال!`;
+                fileInput.value = '';
+            } catch (err) {
+                statusDiv.className = 'error';
+                statusDiv.innerText = '❌ خطأ أثناء رفع الصور: ' + err.message;
+            }
+        }
+
+        // 4. حفظ المقال (إضافة جديد أو حفظ التعديل)
         async function saveArticle() {
             const token = document.getElementById('ghToken').value.trim();
             const title = document.getElementById('postTitle').value.trim();
@@ -213,7 +294,7 @@
             }
         }
 
-        // 4. التجهيز للتعديل
+        // 5. التجهيز للتعديل
         async function prepareEdit(id) {
             const token = document.getElementById('ghToken').value.trim();
             try {
@@ -233,7 +314,7 @@
             } catch (err) { alert(err.message); }
         }
 
-        // 5. إلغاء التعديل والرجوع لوضع الإضافة
+        // 6. إلغاء التعديل والرجوع لوضع الإضافة
         function cancelEdit() {
             document.getElementById('editArticleId').value = '';
             document.getElementById('postTitle').value = '';
@@ -244,9 +325,9 @@
             document.getElementById('cancelEditBtn').style.display = 'none';
         }
 
-        // 6. حذف مقال
-        async function deleteArticle(id) {
-            if (!confirm('هل أنت تأكد من رغبتك في حذف هذا المقال نهائياً؟')) return;
+        // 7. حذف مقال
+        async function deleteArticle(id, event) {
+            if (!confirm('هل أنت متأكد من رغبتك في حذف هذا المقال نهائياً؟')) return;
             const token = document.getElementById('ghToken').value.trim();
             const statusDiv = document.getElementById('status');
 
@@ -277,7 +358,7 @@
                     throw new Error('فشل الحذف.');
                 }
             } catch (err) {
-                statusDiv.className = 'error';
+                statusDiv.className, 'error';
                 statusDiv.innerText = '❌ خطأ: ' + err.message;
             }
         }
