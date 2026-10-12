@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="إدارة المدونة">
     
-    <!-- PWA Manifest embedded directly -->
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%D9%84%D9%88%D8%AD%D8%A9%20%D8%AA%D8%AD%D9%83%D9%85%20%D8%A7%D9%84%D9%85%D8%AF%D9%88%D9%86%D8%A9%22%2C%22short_name%22%3A%22%D8%A7%D9%84%D9%85%D8%AF%D9%88%D9%86%D8%A9%22%2C%22start_url%22%3A%22%2Fadmin.html%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%230f172a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F3233%2F3233483.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%22%7D%5D%7D">
+    <!-- ربط ملف الـ Manifest الرسمي للتثبيت -->
+    <link rel="manifest" href="manifest.json">
     
     <title>لوحة إدارة المدونة | SolarToolsPro</title>
     <style>
@@ -27,7 +27,7 @@
         h2 { font-size: 16px; margin-top: 30px; border-top: 1px solid #334155; padding-top: 20px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px; }
-        input {
+        input, select {
             width: 100%;
             padding: 12px;
             background-color: #1e293b;
@@ -52,7 +52,7 @@
         .btn-edit { background-color: #f59e0b; color: #fff; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* شريط التنبيه العلوي السلس (Top Status Banner) */
+        /* شريط التنبيه العلوي السلس */
         #topBanner {
             display: none;
             position: fixed;
@@ -67,7 +67,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        /* الإشعارات العصرية المنبثقة (Toast Alerts) */
+        /* الإشعارات العصرية المنبثقة */
         #toastContainer {
             position: fixed;
             top: 20px;
@@ -101,6 +101,7 @@
         .toolbar {
             display: flex;
             flex-wrap: wrap;
+            align-items: center;
             gap: 6px;
             background-color: #1e293b;
             padding: 8px;
@@ -116,13 +117,23 @@
             border-radius: 4px;
         }
         .tool-btn:hover { background-color: #475569; }
+        .font-size-select {
+            background-color: #334155;
+            color: #e2e8f0;
+            border: none;
+            padding: 5px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+            width: auto;
+        }
 
-        /* محرر النصوص المرئي الاحترافي (Rich Editor) */
+        /* محرر النصوص المرئي وضبط أبعاد الصور تلقائياً */
         .editor-box {
             width: 100%;
             min-height: 220px;
             max-height: 450px;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 12px;
             background-color: #1e293b;
             border: 1px solid #334155;
@@ -134,13 +145,16 @@
             outline: none;
         }
         .editor-box:focus { border-color: #38bdf8; }
+        
+        /* تقييد أبعاد الصور بداخل المحرر لمنع التمدد */
         .editor-box img {
-            max-width: 100%;
-            height: auto;
+            max-width: 100% !important;
+            height: auto !important;
             border-radius: 8px;
             margin: 10px 0;
             display: block;
             border: 1px solid #334155;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         .editor-box blockquote {
             border-right: 3px solid #38bdf8;
@@ -174,10 +188,7 @@
 </head>
 <body>
 
-    <!-- شريط حالة الرفع العلوي (لا يحجب الكتابة) -->
     <div id="topBanner">جاري المعالجة...</div>
-
-    <!-- حاوية الإشعارات المنبثقة -->
     <div id="toastContainer"></div>
 
     <h1 id="formTitle">🚀 لوحة تحكم المدونة (PWA)</h1>
@@ -211,13 +222,22 @@
             <button type="button" class="tool-btn" onclick="execCmd('bold')"><b>B</b> عريض</button>
             <button type="button" class="tool-btn" onclick="execCmd('italic')"><i>I</i> مائل</button>
             <button type="button" class="tool-btn" onclick="execCmd('underline')"><u>U</u> خط تحته</button>
+            
+            <!-- أداة التحكم بحجم الخط -->
+            <select class="font-size-select" onchange="execCmd('fontSize', this.value); this.value='';">
+                <option value="">حجم الخط 🔤</option>
+                <option value="2">صغير</option>
+                <option value="3">عادي</option>
+                <option value="5">كبير</option>
+                <option value="6">كبير جداً</option>
+            </select>
+
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h2>')">عنوان H2</button>
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h3>')">عنوان H3</button>
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<blockquote>')">اقتباس</button>
             <button type="button" class="tool-btn" onclick="execCmd('insertHorizontalRule')">خط فاصل</button>
         </div>
-        <!-- صندوق المحرر المرئي التفاعلي -->
-        <div id="postBody" class="editor-box" contenteditable="true" placeholder="اكتب نص المقال هنا... حدد أي نص لتطبيق التنسيق مباشرة عليه!"></div>
+        <div id="postBody" class="editor-box" contenteditable="true" placeholder="اكتب نص المقال هنا..."></div>
     </div>
 
     <button id="publishBtn" class="btn-green" onclick="saveArticle()">نشر المقال فوراً 🚀</button>
@@ -231,11 +251,9 @@
     <script>
         document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
 
-        // تسجيل Service Worker مدمج لتفعيل خيار التثبيت الرسمي (PWA)
+        // تسجيل الـ Service Worker لتفعيل خيار التثبيت الرسمي (PWA)
         if ('serviceWorker' in navigator) {
-            const swCode = `self.addEventListener('fetch', function(e){});`;
-            const blob = new Blob([swCode], { type: 'text/javascript' });
-            navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+            navigator.serviceWorker.register('sw.js').catch(() => {});
         }
 
         function showToast(message, type = 'success') {
@@ -256,7 +274,6 @@
             document.getElementById('topBanner').style.display = 'none';
         }
 
-        // تطبيق التنسيق المرئي المباشر على النص
         function execCmd(command, value = null) {
             document.execCommand(command, false, value);
             document.getElementById('postBody').focus();
@@ -278,7 +295,6 @@
             return { sha: data.sha, articles: JSON.parse(content) };
         }
 
-        // عرض جدول المقالات المنشورة
         async function loadArticlesList() {
             const token = document.getElementById('ghToken').value.trim();
             const listDiv = document.getElementById('articlesList');
@@ -327,7 +343,6 @@
             }
         }
 
-        // رفع الصور وإدراجها مرئياً مباشرة في المحرر
         async function uploadAndInsertImages() {
             const fileInput = document.getElementById('imageInput');
             const token = document.getElementById('ghToken').value.trim();
@@ -336,7 +351,7 @@
             if (fileInput.files.length === 0) return showToast('يرجى اختيار صور أولاً!', 'error');
 
             const files = Array.from(fileInput.files);
-            showTopBanner(`جاري رفع ${files.length} صورة إلى السيرفر... (يمكنك إكمال الكتابة)`);
+            showTopBanner(`جاري رفع ${files.length} صورة إلى السيرفر...`);
 
             try {
                 for (let i = 0; i < files.length; i++) {
@@ -369,13 +384,13 @@
 
                     const rawImageUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${fileName}`;
                     
-                    // إدراج وسم الصورة مرئياً في المحرر المباشر
+                    // إدراج وسم الصورة بأسلوب مرئي مضبوط الأبعاد تلقائياً
                     document.getElementById('postBody').focus();
                     document.execCommand('insertImage', false, rawImageUrl);
                 }
 
                 hideTopBanner();
-                showToast(`✅ تم رفع وإدراج ${files.length} صورة في المقال بنجاح!`, 'success');
+                showToast(`✅ تم رفع وإدراج ${files.length} صورة بنجاح!`, 'success');
                 fileInput.value = '';
 
             } catch (err) {
@@ -384,7 +399,6 @@
             }
         }
 
-        // حفظ أو تعديل مقال
         async function saveArticle() {
             const token = document.getElementById('ghToken').value.trim();
             const title = document.getElementById('postTitle').value.trim();
@@ -444,7 +458,6 @@
             }
         }
 
-        // تجهيز للتعديل
         async function prepareEdit(id) {
             const token = document.getElementById('ghToken').value.trim();
             showTopBanner('جاري تحميل بيانات المقال...');
@@ -469,7 +482,6 @@
             }
         }
 
-        // إلغاء التعديل
         function cancelEdit() {
             document.getElementById('editArticleId').value = '';
             document.getElementById('postTitle').value = '';
@@ -480,7 +492,6 @@
             document.getElementById('cancelEditBtn').style.display = 'none';
         }
 
-        // حذف مقال
         async function deleteArticle(id) {
             if (!confirm('هل أنت متأكد من رغبتك في حذف هذا المقال نهائياً؟')) return;
             const token = document.getElementById('ghToken').value.trim();
