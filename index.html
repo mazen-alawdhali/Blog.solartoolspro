@@ -6,10 +6,14 @@
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="مدونة الطاقة الشمسية">
+    <meta name="apple-mobile-web-app-title" content="مدونة الطاقة">
     
-    <!-- ربط ملف الـ Manifest الرسمي للتثبيت كـ PWA -->
-    <link rel="manifest" href="manifest.json">
+    <!-- وسوم الأيقونات الشاملة المعتمدة رسمياً من favicon.zip -->
+    <link rel="icon" type="image/png" href="favicon-96x96.png?v=3" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3" />
+    <link rel="shortcut icon" href="favicon.ico?v=3" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=3" />
+    <link rel="manifest" href="site.webmanifest" />
     
     <title>مدونة أدوات الطاقة الشمسية الاحترافية - SolarToolsPro</title>
     <style>
@@ -25,9 +29,9 @@
             line-height: 1.7;
         }
         
-        /* الهيدر مع صورة البنر والتدرج الجذاب */
+        /* الهيدر مع صورة البنر بوضوح نقي وتدرج خفيف جداً */
         header {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(30, 41, 59, 0.85)), url('images/header_balanced_sky_600w.webp') center/cover no-repeat;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.55)), url('images/header_balanced_sky_600w.webp') center/cover no-repeat;
             border-bottom: 1px solid #334155;
             border-radius: 16px;
             padding: 35px 20px;
@@ -87,6 +91,7 @@
             padding: 20px;
             margin-bottom: 18px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            scroll-margin-top: 20px;
         }
         .article-card h2 { font-size: 18px; color: #f8fafc; margin-bottom: 8px; line-height: 1.4; }
         .article-meta {
@@ -161,6 +166,35 @@
         .btn-telegram { background-color: #0ea5e9; }
         .btn-copy { background-color: #475569; }
 
+        /* نظام التنبيهات المنبثقة العصري (Toasts) */
+        #toastContainer {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 90%;
+            max-width: 400px;
+            pointer-events: none;
+        }
+        .toast {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            animation: slideDown 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+            text-align: center;
+        }
+        .toast-success { background: rgba(16, 185, 129, 0.95); border: 1px solid #34d399; }
+        .toast-error { background: rgba(239, 68, 68, 0.95); border: 1px solid #f87171; }
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
+
         /* الفوتر المطابق تماماً للدومين الأساسي */
         footer {
             background-color: #0f172a;
@@ -217,6 +251,8 @@
 </head>
 <body>
 
+    <div id="toastContainer"></div>
+
     <header>
         <h1>مدونة أدوات الطاقة الشمسية الاحترافية - SolarToolsPro</h1>
         <p class="subtitle">أحدث المقالات والأدلة التقنية لأنظمة الطاقة الشمسية والبطاريات</p>
@@ -255,10 +291,19 @@
 
     <script>
         let allArticles = [];
-        let currentCategory = 'all';
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+
+        // نظام التنبيهات العصري (Toasts)
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
 
         async function fetchArticles() {
@@ -266,7 +311,25 @@
                 const res = await fetch('articles.json?t=' + Date.now());
                 if (!res.ok) throw new Error('تعذر تحميل المقالات');
                 allArticles = await res.json();
-                applyFilters();
+                displayArticles(allArticles);
+
+                // معالجة فتح المقال مباشرة عند القدوم من رابط مشاركة (WhatsApp/Telegram Hash)
+                if (window.location.hash) {
+                    const targetId = window.location.hash.replace('#', '');
+                    setTimeout(() => {
+                        const bodyDiv = document.getElementById(`body-${targetId}`);
+                        const btn = document.getElementById(`btn-${targetId}`);
+                        const card = document.getElementById(`card-${targetId}`);
+                        
+                        if (bodyDiv && bodyDiv.style.display !== 'block') {
+                            bodyDiv.style.display = 'block';
+                            if (btn) btn.innerText = 'إخفاء المقال ✖';
+                        }
+                        if (card) {
+                            card.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }, 300);
+                }
             } catch (err) {
                 document.getElementById('articlesContainer').innerHTML = `<div class="error-msg">❌ لا توجد مقالات منشورة حالياً أو تعذر الاتصال بالسيرفر.</div>`;
             }
@@ -292,7 +355,6 @@
                     <div class="article-card" id="card-${art.id}">
                         <div class="article-meta">
                             <span>⏱️ ${readTime} دقائق قراءة</span>
-                            ${art.category ? `<span>📂 ${art.category}</span>` : ''}
                         </div>
                         <h2>${art.title}</h2>
                         <p>${art.description}</p>
@@ -328,34 +390,30 @@
             }
         }
 
-        function applyFilters() {
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            
-            const filtered = allArticles.filter(art => {
-                const matchesCategory = (currentCategory === 'all') || 
-                    (art.category && art.category.toLowerCase().includes(currentCategory));
-                
-                const matchesQuery = !query || (
-                    art.title.toLowerCase().includes(query) || 
-                    art.description.toLowerCase().includes(query) ||
-                    art.body.toLowerCase().includes(query)
-                );
-
-                return matchesCategory && matchesQuery;
-            });
-
-            displayArticles(filtered);
-        }
-
         function filterArticles() {
-            applyFilters();
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filtered = allArticles.filter(art => 
+                art.title.toLowerCase().includes(query) || 
+                art.description.toLowerCase().includes(query) ||
+                art.body.toLowerCase().includes(query)
+            );
+            displayArticles(filtered);
         }
 
         function filterByCategory(category, btnElement) {
             document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
             btnElement.classList.add('active');
-            currentCategory = category;
-            applyFilters();
+
+            if (category === 'all') {
+                displayArticles(allArticles);
+            } else {
+                const filtered = allArticles.filter(art => 
+                    art.title.toLowerCase().includes(category) || 
+                    art.description.toLowerCase().includes(category) ||
+                    art.body.toLowerCase().includes(category)
+                );
+                displayArticles(filtered);
+            }
         }
 
         function shareToWhatsApp(id) {
@@ -379,7 +437,7 @@
             if (!art) return;
             const url = window.location.href.split('#')[0] + '#' + art.id;
             navigator.clipboard.writeText(url).then(() => {
-                alert('📋 تم نسخ رابط المقال بنجاح!');
+                showToast('📋 تم نسخ رابط المقال بنجاح!', 'success');
             });
         }
 
