@@ -19,13 +19,13 @@
             background-color: #0f172a;
             color: #ffffff;
             padding: 16px;
-            max-width: 700px;
+            max-width: 650px;
             margin: 0 auto;
             padding-bottom: 50px;
         }
         header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             border-bottom: 1px solid #334155;
             padding-bottom: 15px;
         }
@@ -73,17 +73,15 @@
             border-color: #0284c7;
         }
 
-        /* بطاقات المقالات */
+        /* تصميم كروت المقالات الأصلي الأنيق */
         .article-card {
             background-color: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 16px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-        .article-card:active { transform: scale(0.99); }
         .article-card h2 { font-size: 18px; color: #f8fafc; margin-bottom: 8px; line-height: 1.4; }
         .article-meta {
             display: flex;
@@ -95,49 +93,16 @@
         }
         .article-card p { font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 15px; }
         
-        .read-more-btn {
-            background-color: #0284c7;
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
+        .article-body {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #e2e8f0;
+            border-top: 1px solid #334155;
+            padding-top: 15px;
+            margin-top: 15px;
+            display: none; /* مخفي حتى يضغط القارئ على قراءة المقال */
         }
-
-        /* نافذة قراءة المقال الكاملة (Modal) */
-        #articleModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.96);
-            backdrop-filter: blur(8px);
-            z-index: 10000;
-            overflow-y: auto;
-            padding: 20px 12px;
-        }
-        .modal-card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 20px;
-            max-width: 650px;
-            margin: 0 auto;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.7);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 12px;
-            margin-bottom: 15px;
-        }
-        .modal-title { font-size: 20px; color: #38bdf8; line-height: 1.4; }
-        .modal-body { font-size: 15px; line-height: 1.8; color: #e2e8f0; margin-bottom: 20px; }
-        .modal-body img {
+        .article-body img {
             max-width: 100% !important;
             height: auto !important;
             border-radius: 10px;
@@ -145,7 +110,7 @@
             display: block;
             border: 1px solid #334155;
         }
-        .modal-body blockquote {
+        .article-body blockquote {
             border-right: 3px solid #38bdf8;
             padding-right: 12px;
             color: #cbd5e1;
@@ -153,26 +118,37 @@
             font-style: italic;
         }
 
-        /* أزرار المشاركة السريعة داخل المقال */
-        .share-section {
-            border-top: 1px solid #334155;
-            padding-top: 15px;
-            margin-top: 20px;
-            text-align: center;
-        }
-        .share-section p { font-size: 13px; color: #94a3b8; margin-bottom: 10px; }
-        .share-btns { display: flex; gap: 10px; justify-content: center; }
-        .share-btn {
-            padding: 8px 16px;
+        .toggle-btn {
+            background-color: #0284c7;
+            color: #fff;
+            border: none;
+            padding: 9px 16px;
             border-radius: 8px;
             font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.2s;
+        }
+        .toggle-btn:hover { background-color: #0284c7dd; }
+
+        /* أزرار المشاركة السريعة أسفل المقال المفتوح */
+        .share-section {
+            border-top: 1px solid #334155;
+            padding-top: 12px;
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .share-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
             font-weight: bold;
             color: #fff;
             border: none;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
         .btn-whatsapp { background-color: #22c55e; }
         .btn-telegram { background-color: #0ea5e9; }
@@ -204,30 +180,8 @@
         <div class="loading">جاري تحميل المقالات... ⏳</div>
     </div>
 
-    <!-- نافذة عرض المقال الكاملة (Modal) -->
-    <div id="articleModal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">عنوان المقال</h2>
-                <button class="cat-btn" onclick="closeArticleModal()" style="padding: 6px 12px;">إغلاق ✖</button>
-            </div>
-            <div class="modal-body" id="modalBody">محتوى المقال...</div>
-            
-            <!-- قسم المشاركة السريعة -->
-            <div class="share-section">
-                <p>مشاركة المقال مع الأصدقاء والتقنيين:</p>
-                <div class="share-btns">
-                    <button class="share-btn btn-whatsapp" onclick="shareToWhatsApp()">واتساب 💚</button>
-                    <button class="share-btn btn-telegram" onclick="shareToTelegram()">تلجرام 💙</button>
-                    <button class="share-btn btn-copy" onclick="copyArticleLink()">نسخ الرابط 🔗</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         let allArticles = [];
-        let currentSelectedArticle = null;
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
@@ -246,7 +200,7 @@
 
         function calculateReadingTime(text) {
             const words = text.replace(/<[^>]*>/g, '').split(/\s+/).length;
-            const minutes = Math.ceil(words / 150); // المعدل التقريبي للقراءة 150 كلمة في الدقيقة
+            const minutes = Math.ceil(words / 150);
             return minutes < 1 ? 1 : minutes;
         }
 
@@ -261,17 +215,41 @@
             articles.forEach(art => {
                 const readTime = calculateReadingTime(art.body || '');
                 html += `
-                    <div class="article-card" onclick="openArticleModal(${art.id})">
+                    <div class="article-card" id="card-${art.id}">
                         <div class="article-meta">
                             <span>⏱️ ${readTime} دقائق قراءة</span>
                         </div>
                         <h2>${art.title}</h2>
-                        <p>${art.description}</p>
-                        <button class="read-more-btn">قراءة المقال كاملاً 📖</button>
+                        <p id="desc-${art.id}">${art.description}</p>
+                        
+                        <div class="article-body" id="body-${art.id}">
+                            ${art.body}
+                            
+                            <div class="share-section">
+                                <button class="share-btn btn-whatsapp" onclick="shareToWhatsApp(${art.id})">واتساب 💚</button>
+                                <button class="share-btn btn-telegram" onclick="shareToTelegram(${art.id})">تلجرام 💙</button>
+                                <button class="share-btn btn-copy" onclick="copyArticleLink(${art.id})">نسخ الرابط 🔗</button>
+                            </div>
+                        </div>
+
+                        <button class="toggle-btn" id="btn-${art.id}" onclick="toggleArticle(${art.id})">قراءة المقال كاملاً 📖</button>
                     </div>
                 `;
             });
             container.innerHTML = html;
+        }
+
+        function toggleArticle(id) {
+            const bodyDiv = document.getElementById(`body-${id}`);
+            const btn = document.getElementById(`btn-${id}`);
+
+            if (bodyDiv.style.display === 'block') {
+                bodyDiv.style.display = 'none';
+                btn.innerText = 'قراءة المقال كاملاً 📖';
+            } else {
+                bodyDiv.style.display = 'block';
+                btn.innerText = 'إخفاء المقال ✖';
+            }
         }
 
         function filterArticles() {
@@ -300,45 +278,31 @@
             }
         }
 
-        function openArticleModal(id) {
+        function shareToWhatsApp(id) {
             const art = allArticles.find(a => a.id == id);
             if (!art) return;
-            currentSelectedArticle = art;
-
-            document.getElementById('modalTitle').innerText = art.title;
-            document.getElementById('modalBody').innerHTML = art.body;
-            document.getElementById('articleModal').style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function closeArticleModal() {
-            document.getElementById('articleModal').style.display = 'none';
-            currentSelectedArticle = null;
-        }
-
-        function shareToWhatsApp() {
-            if (!currentSelectedArticle) return;
-            const url = window.location.href.split('#')[0] + '#' + currentSelectedArticle.id;
-            const text = `📌 ${currentSelectedArticle.title}\n\n${currentSelectedArticle.description}\n\nاقرأ المقال كاملاً عبر الرابط:\n${url}`;
+            const url = window.location.href.split('#')[0] + '#' + art.id;
+            const text = `📌 ${art.title}\n\n${art.description}\n\nاقرأ المقال كاملاً:\n${url}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        function shareToTelegram() {
-            if (!currentSelectedArticle) return;
-            const url = window.location.href.split('#')[0] + '#' + currentSelectedArticle.id;
-            const text = `📌 ${currentSelectedArticle.title}\n\n${currentSelectedArticle.description}`;
+        function shareToTelegram(id) {
+            const art = allArticles.find(a => a.id == id);
+            if (!art) return;
+            const url = window.location.href.split('#')[0] + '#' + art.id;
+            const text = `📌 ${art.title}\n\n${art.description}`;
             window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        function copyArticleLink() {
-            if (!currentSelectedArticle) return;
-            const url = window.location.href.split('#')[0];
+        function copyArticleLink(id) {
+            const art = allArticles.find(a => a.id == id);
+            if (!art) return;
+            const url = window.location.href.split('#')[0] + '#' + art.id;
             navigator.clipboard.writeText(url).then(() => {
                 alert('📋 تم نسخ رابط المقال بنجاح!');
             });
         }
 
-        // جلب المقالات عند تحميل الصفحة
         fetchArticles();
     </script>
 </body>
