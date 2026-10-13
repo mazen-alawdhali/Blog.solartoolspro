@@ -156,7 +156,7 @@
         .btn-telegram { background-color: #0ea5e9; }
         .btn-copy { background-color: #475569; }
 
-        /* الفوتر المطابق طبق الأصل للدومين الأساسي[span_0](start_span)[span_0](end_span) */
+        /* الفوتر المطابق طبق الأصل للدومين الأساسي[span_1](start_span)[span_1](end_span) */
         footer {
             background-color: #0f172a;
             border-top: 1px solid #334155;
@@ -233,7 +233,7 @@
         <div class="loading">جاري تحميل المقالات... ⏳</div>
     </main>
 
-    <!-- الفوتر المنسوخ طبق الأصل من الدومين الأساسي[span_1](start_span)[span_1](end_span) -->
+    <!-- الفوتر المطابق تماماً للدومين الأساسي[span_2](start_span)[span_2](end_span) -->
     <footer>
         <div class="footer-nav">
             <a href="privacy.html">سياسة الخصوصية</a> |
@@ -242,9 +242,9 @@
         </div>
         <p>تصميم وتطوير <strong style="color:#10b981;">مازن العوذلي</strong> &copy; 2026 جميع الحقوق محفوظة</p>
         <div class="footer-links">
-            <a href="https://solartoolspro.com" target="_blank">الحاسبة الذكية</a> |
-            <a href="https://solartoolspro.com" target="_blank">حاسبة الألواح</a> |
-            <a href="https://solartoolspro.com" target="_blank">حاسبة البطارية</a>
+            <a onclick="openApp('https://calc.solartoolspro.com')">الحاسبة الذكية</a> |
+            <a onclick="openApp('https://panels.solartoolspro.com')">حاسبة الألواح</a> |
+            <a onclick="openApp('https://battery.solartoolspro.com')">حاسبة البطارية</a>
         </div>
     </footer>
 
@@ -370,6 +370,10 @@
             navigator.clipboard.writeText(url).then(() => {
                 alert('📋 تم نسخ رابط المقال بنجاح!');
             });
+        }
+
+        function openApp(baseUrl) {
+            window.open(baseUrl, '_blank');
         }
 
         fetchArticles();
