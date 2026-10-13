@@ -451,7 +451,9 @@
             showToast('🔒 تم قفل لوحة التحكم بنجاح', 'success');
         }
 
-        let articleToDeleteId = null;         let loadedArticles = [];         let currentFileSha = '';
+        let articleToDeleteId = null;
+        let loadedArticles = [];
+        let currentFileSha = '';
         let autoSaveTimer = null;
 
         document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
@@ -599,7 +601,9 @@
 
             showTopBanner('جاري جلب جدول المقالات...');
             try {
-                const result = await fetchFileFromGithub(token);                 loadedArticles = result.articles;                 currentFileSha = result.sha;
+                const result = await fetchFileFromGithub(token);
+                loadedArticles = result.articles;
+                currentFileSha = result.sha;
                 hideTopBanner();
                 if (loadedArticles.length === 0) {
                     listDiv.innerText = 'لا توجد مقالات منشورة.';
@@ -607,11 +611,11 @@
                 }
 
                 let tableHtml = `
-                    <table class="articles-table">
+                    <table class="articles-table" style="table-layout: fixed; width: 100%;">
                         <thead>
                             <tr>
-                                <th>عنوان المقال</th>
-                                <th style="width: 130px; text-align: center;">الإجراءات</th>
+                                <th style="width: 65%;">عنوان المقال</th>
+                                <th style="width: 35%; text-align: center;">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -620,11 +624,13 @@
                 loadedArticles.forEach((art, index) => {
                     tableHtml += `
                         <tr>
-                            <td><b>${index + 1}.${art.title}</b></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-gray" onclick="moveArticle(${index}, -1)" title="أعلى">⬆️</button> <button class="btn-gray" onclick="moveArticle(${index}, 1)" title="أسفل">⬇️</button> <button class="btn-edit" onclick="prepareEdit(${art.id})">تعديل</button>
-                                    <button class="btn-red" onclick="openConfirmModal(${art.id})">حذف 🗑️</button>
+                            <td style="word-break: break-word; vertical-align: middle;"><b>${index + 1}. ${art.title}</b></td>
+                            <td style="text-align: center; vertical-align: middle; padding: 6px 2px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; max-width: 100px; margin: 0 auto;">
+                                    <button class="btn-gray" onclick="moveArticle(${index}, -1)" title="أعلى" style="padding: 4px; font-size: 11px;">⬆️</button>
+                                    <button class="btn-gray" onclick="moveArticle(${index}, 1)" title="أسفل" style="padding: 4px; font-size: 11px;">⬇️</button>
+                                    <button class="btn-edit" onclick="prepareEdit(${art.id})" style="padding: 4px; font-size: 11px;">تعديل</button>
+                                    <button class="btn-red" onclick="openConfirmModal(${art.id})" style="padding: 4px; font-size: 11px;">حذف</button>
                                 </div>
                             </td>
                         </tr>
@@ -632,7 +638,8 @@
                 });
 
                 tableHtml += `</tbody></table>`;
-                tableHtml += `<button class="btn-green" style="margin-top: 12px; font-size: 14px; padding: 10px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`; listDiv.innerHTML = tableHtml;
+                tableHtml += `<button class="btn-green" style="margin-top: 12px; font-size: 14px; padding: 10px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`;
+                listDiv.innerHTML = tableHtml;
             } catch (err) {
                 hideTopBanner();
                 listDiv.innerText = '❌ خطأ: ' + err.message;
@@ -766,7 +773,6 @@
                 if (art) {
                     document.getElementById('editArticleId').value = art.id;
                     
-                    // البحث عن مسودة تعديل سابقة غير محفوظة لهذا المقال
                     const savedEditDraftRaw = localStorage.getItem(`article_draft_edit_${id}`);
                     if (savedEditDraftRaw) {
                         try {
@@ -826,7 +832,78 @@
             document.getElementById('draftStatus').innerText = '';
         }
 
-        function moveArticle(index, direction) {             const newIndex = index + direction;             if (newIndex < 0 || newIndex >= loadedArticles.length) return;             const temp = loadedArticles[index];             loadedArticles[index] = loadedArticles[newIndex];             loadedArticles[newIndex] = temp;              let tableHtml = `                 <table class="articles-table">                     <thead>                         <tr>                             <th>عنوان المقال</th>                             <th style="width: 170px; text-align: center;">الإجراءات</th>                         </tr>                     </thead>                     <tbody>             `;              loadedArticles.forEach((art, idx) => {                 tableHtml += `                     <tr>                         <td><b>${idx + 1}. ${art.title}</b></td>                         <td style="width: 170px; text-align: center;">                             <div class="action-btns" style="justify-content: center;">                                 <button class="btn-gray" onclick="moveArticle(${idx}, -1)" title="أعلى">⬆️</button>                                 <button class="btn-gray" onclick="moveArticle(${idx}, 1)" title="أسفل">⬇️</button>                                 <button class="btn-edit" onclick="prepareEdit(${art.id})">تعديل</button>                                 <button class="btn-red" onclick="openConfirmModal(${art.id})">حذف</button>                             </div>                         </td>                     </tr>                 `;             });              tableHtml += `</tbody></table>`;             tableHtml += `<button class="btn-green" style="margin-top: 12px; font-size: 14px; padding: 10px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`;             document.getElementById('articlesList').innerHTML = tableHtml;         }          async function saveArticlesOrder() {             const token = document.getElementById('ghToken').value.trim();             if (!token) return showToast('يرجى إدخال رمز الـ Token أولاً!', 'error');              showTopBanner('جاري حفظ الترتيب الجديد على GitHub...');             try {                 const updatedContent = utf8_to_b64(JSON.stringify(loadedArticles, null, 2));                 const putRes = await fetch(apiUrl, {                     method: 'PUT',                     headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },                     body: JSON.stringify({                         message: 'إعادة ترتيب المقالات',                         content: updatedContent,                         sha: currentFileSha                     })                 });                  hideTopBanner();                 if (putRes.ok) {                     const data = await putRes.json();                     currentFileSha = data.content.sha;                     showToast('✅ تم حفظ الترتيب الجديد بنجاح!', 'success');                     loadArticlesList();                 } else {                     throw new Error('فشل حفظ الترتيب على السيرفر.');                 }             } catch (err) {                 hideTopBanner();                 showToast('❌ خطأ: ' + err.message, 'error');             }         }          function openConfirmModal(id) {
+        function moveArticle(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= loadedArticles.length) return;
+            const temp = loadedArticles[index];
+            loadedArticles[index] = loadedArticles[newIndex];
+            loadedArticles[newIndex] = temp;
+
+            let tableHtml = `
+                <table class="articles-table" style="table-layout: fixed; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="width: 65%;">عنوان المقال</th>
+                            <th style="width: 35%; text-align: center;">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            loadedArticles.forEach((art, idx) => {
+                tableHtml += `
+                    <tr>
+                        <td style="word-break: break-word; vertical-align: middle;"><b>${idx + 1}. ${art.title}</b></td>
+                        <td style="text-align: center; vertical-align: middle; padding: 6px 2px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; max-width: 100px; margin: 0 auto;">
+                                <button class="btn-gray" onclick="moveArticle(${idx}, -1)" title="أعلى" style="padding: 4px; font-size: 11px;">⬆️</button>
+                                <button class="btn-gray" onclick="moveArticle(${idx}, 1)" title="أسفل" style="padding: 4px; font-size: 11px;">⬇️</button>
+                                <button class="btn-edit" onclick="prepareEdit(${art.id})" style="padding: 4px; font-size: 11px;">تعديل</button>
+                                <button class="btn-red" onclick="openConfirmModal(${art.id})" style="padding: 4px; font-size: 11px;">حذف</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `</tbody></table>`;
+            tableHtml += `<button class="btn-green" style="margin-top: 12px; font-size: 14px; padding: 10px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`;
+            document.getElementById('articlesList').innerHTML = tableHtml;
+        }
+
+        async function saveArticlesOrder() {
+            const token = document.getElementById('ghToken').value.trim();
+            if (!token) return showToast('يرجى إدخال رمز الـ Token أولاً!', 'error');
+
+            showTopBanner('جاري حفظ الترتيب الجديد على GitHub...');
+            try {
+                const updatedContent = utf8_to_b64(JSON.stringify(loadedArticles, null, 2));
+                const putRes = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: 'إعادة ترتيب المقالات',
+                        content: updatedContent,
+                        sha: currentFileSha
+                    })
+                });
+
+                hideTopBanner();
+                if (putRes.ok) {
+                    const data = await putRes.json();
+                    currentFileSha = data.content.sha;
+                    showToast('✅ تم حفظ الترتيب الجديد بنجاح!', 'success');
+                    loadArticlesList();
+                } else {
+                    throw new Error('فشل حفظ الترتيب على السيرفر.');
+                }
+            } catch (err) {
+                hideTopBanner();
+                showToast('❌ خطأ: ' + err.message, 'error');
+            }
+        }
+
+        function openConfirmModal(id) {
             articleToDeleteId = id;
             document.getElementById('confirmModal').style.display = 'flex';
         }
