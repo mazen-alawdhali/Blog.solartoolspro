@@ -397,7 +397,7 @@
             <button type="button" class="tool-btn" onclick="execCmd('undo')" title="تراجع">↩️</button>
             <button type="button" class="tool-btn" onclick="execCmd('redo')" title="إعادة">↪️</button>
         </div>
-        <div id="postBody" class="editor-box" contenteditable="true" placeholder="اكتب نص المقال هنا..." oninput="scheduleAutoSave()"></div>
+        <div id="postBody" class="editor-box" contenteditable="true" placeholder="اكتب نص المقال هنا..." oninput="scheduleAutoSave()" onkeyup="scheduleAutoSave()" onblur="saveDraftToLocal()" onpaste="setTimeout(scheduleAutoSave, 200)"></div>
         <div id="draftStatus" class="draft-status"></div>
     </div>
 
@@ -448,7 +448,7 @@
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
 
-        // استعادة المسودة تلقائياً إذا وجدت
+        // استعادة المسودة تلقائياً عند الفتح
         window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('admin_authenticated') === 'true') {
                 checkSavedDraft();
@@ -458,7 +458,7 @@
         function scheduleAutoSave() {
             document.getElementById('draftStatus').innerText = 'جاري الكتابة...';
             clearTimeout(autoSaveTimer);
-            autoSaveTimer = setTimeout(saveDraftToLocal, 1500);
+            autoSaveTimer = setTimeout(saveDraftToLocal, 1000);
         }
 
         function saveDraftToLocal() {
@@ -520,7 +520,7 @@
             document.getElementById('postBody').focus();
         }
 
-        /* ووظائف المعاينة المباشرة (Live Preview) */
+        /* وظائف المعاينة المباشرة (Live Preview) */
         function openPreviewModal() {
             const title = document.getElementById('postTitle').value.trim() || 'عنوان المقال المعاين';
             const desc = document.getElementById('postDesc').value.trim() || 'نبذة مختصرة عن المقال...';
