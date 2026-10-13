@@ -75,7 +75,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
-        /* شريط التنبيه العلوي والسلس */
+        /* شريط التنبيه العلوي السلس */
         #topBanner {
             display: none;
             position: fixed;
@@ -96,7 +96,7 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 10000;
+            z-index: 100000;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -289,7 +289,7 @@
 
     <h1 id="formTitle">🚀 لوحة تحكم المدونة (PWA)</h1>
 
-    <!-- زر قفل وتسجيل الخروج (يحافظ على التوكن مخزناً ولا يحذفه) -->
+    <!-- زر قفل وتسجيل الخروج -->
     <div style="text-align: center; margin-bottom: 20px;">
         <button onclick="lockAdminPanel()" style="background: #334155; color: #f87171; border: 1px solid #475569; padding: 7px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: bold;">قفل لوحة التحكم (تسجيل خروج) 🔒</button>
     </div>
@@ -355,8 +355,8 @@
     <div id="articlesList">اضغط على زر التحديث لعرض الجدول.</div>
 
     <script>
-        // 🔑 كلمة المرور السرية الخاصة بك (يمكنك تغييرها هنا متى شئت)
-        const MASTER_PASS = "Mazen@Solar2026"; 
+        // 🔑 كلمة المرور المعتمدة
+        const MASTER_PASS = "771005555#"; 
 
         // التحقق من حالة المصادقة عند التحميل
         if (localStorage.getItem('admin_authenticated') === 'true') {
@@ -368,8 +368,9 @@
             if (inputPass === MASTER_PASS) {
                 localStorage.setItem('admin_authenticated', 'true');
                 document.getElementById('authOverlay').style.display = 'none';
+                showToast('تم تسجيل الدخول بنجاح! 👋', 'success');
             } else {
-                alert('❌ كلمة المرور غير صحيحة!');
+                showToast('❌ كلمة المرور غير صحيحة!', 'error');
             }
         }
 
