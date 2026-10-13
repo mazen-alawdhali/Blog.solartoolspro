@@ -48,6 +48,7 @@
         .btn-green { background-color: #10b981; color: #fff; width: 100%; font-size: 16px; padding: 12px; }
         .btn-blue { background-color: #0284c7; color: #fff; width: 100%; margin-bottom: 10px; }
         .btn-purple { background-color: #6366f1; color: #fff; width: 100%; margin-bottom: 8px; }
+        .btn-cyan { background-color: #06b6d4; color: #fff; width: 100%; margin-bottom: 8px; font-size: 15px; padding: 11px; }
         .btn-red { background-color: #ef4444; color: #fff; }
         .btn-gray { background-color: #475569; color: #fff; }
         .btn-edit { background-color: #f59e0b; color: #fff; }
@@ -147,6 +148,40 @@
         .confirm-btns { display: flex; gap: 10px; justify-content: center; }
         .confirm-btns button { flex: 1; padding: 10px; }
 
+        /* نافذة المعاينة المباشرة المنبثقة (Live Preview Modal) */
+        #previewModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 10002;
+            overflow-y: auto;
+            padding: 20px 12px;
+        }
+        .preview-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+        .preview-header h3 { color: #38bdf8; font-size: 16px; }
+        .preview-content h1 { font-size: 22px; color: #f8fafc; margin-bottom: 10px; line-height: 1.4; }
+        .preview-content .preview-desc { font-size: 14px; color: #94a3b8; border-right: 3px solid #38bdf8; padding-right: 10px; margin-bottom: 20px; font-style: italic; }
+        .preview-body { font-size: 15px; line-height: 1.8; color: #e2e8f0; border-top: 1px solid #334155; padding-top: 15px; }
+        .preview-body img { max-width: 100% !important; height: auto !important; border-radius: 8px; margin: 12px 0; border: 1px solid #334155; }
+
         /* شريط أزرار التنسيق المرئي */
         .toolbar {
             display: flex;
@@ -173,15 +208,11 @@
         .tool-btn:hover { background-color: #475569; }
         
         /* القائمة المنسدلة المخصصة لحجم الخط */
-        .custom-dropdown {
-            position: relative;
-            display: inline-block;
-        }
+        .custom-dropdown { position: relative; display: inline-block; }
         .dropdown-menu {
             display: none;
             position: absolute;
-            top: 110%;
-            right: 0;
+            top: 110%; right: 0;
             background-color: #1a2536;
             border: 1px solid #334155;
             border-radius: 10px;
@@ -258,6 +289,14 @@
         .articles-table tr:last-child td { border-bottom: none; }
         .action-btns { display: flex; gap: 6px; justify-content: flex-end; }
         .action-btns button { padding: 5px 10px; font-size: 12px; }
+
+        .draft-status {
+            font-size: 12px;
+            color: #10b981;
+            text-align: left;
+            margin-top: 4px;
+            min-height: 18px;
+        }
     </style>
 </head>
 <body>
@@ -287,6 +326,21 @@
         </div>
     </div>
 
+    <!-- نافذة المعاينة المباشرة المنبثقة (Live Preview Modal) -->
+    <div id="previewModal">
+        <div class="preview-card">
+            <div class="preview-header">
+                <h3>👁️ معاينة المقال قبل النشر</h3>
+                <button class="btn-gray" onclick="closePreviewModal()" style="padding: 6px 12px; font-size: 12px;">إغلاق ✖</button>
+            </div>
+            <div class="preview-content">
+                <h1 id="pvTitle">عنوان المقال المعاين</h1>
+                <div class="preview-desc" id="pvDesc">نبذة مختصرة عن المقال...</div>
+                <div class="preview-body" id="pvBody">محتوى المقال الكامل...</div>
+            </div>
+        </div>
+    </div>
+
     <h1 id="formTitle">🚀 لوحة تحكم المدونة (PWA)</h1>
 
     <!-- زر قفل وتسجيل الخروج -->
@@ -303,12 +357,12 @@
 
     <div class="form-group">
         <label>عنوان المقال:</label>
-        <input type="text" id="postTitle" placeholder="عنوان المقال">
+        <input type="text" id="postTitle" placeholder="عنوان المقال" oninput="scheduleAutoSave()">
     </div>
 
     <div class="form-group">
         <label>مقدمة قصيرة (الوصف):</label>
-        <input type="text" id="postDesc" placeholder="نبذة مختصرة تظهر في الكارت الرئيسي">
+        <input type="text" id="postDesc" placeholder="نبذة مختصرة تظهر في الكارت الرئيسي" oninput="scheduleAutoSave()">
     </div>
 
     <div class="form-group">
@@ -343,9 +397,12 @@
             <button type="button" class="tool-btn" onclick="execCmd('undo')" title="تراجع">↩️</button>
             <button type="button" class="tool-btn" onclick="execCmd('redo')" title="إعادة">↪️</button>
         </div>
-        <div id="postBody" class="editor-box" contenteditable="true" placeholder="اكتب نص المقال هنا..."></div>
+        <div id="postBody" class="editor-box" contenteditable="true" placeholder="اكتب نص المقال هنا..." oninput="scheduleAutoSave()"></div>
+        <div id="draftStatus" class="draft-status"></div>
     </div>
 
+    <!-- أزرار المعاينة والنشر -->
+    <button type="button" class="btn-cyan" onclick="openPreviewModal()">معاينة المقال مباشر قبل النشر 👁️</button>
     <button id="publishBtn" class="btn-green" onclick="saveArticle()">نشر المقال فوراً 🚀</button>
     <button id="cancelEditBtn" class="btn-red" onclick="cancelEdit()" style="display:none; width:100%; margin-top:8px;">إلغاء التعديل</button>
 
@@ -369,12 +426,12 @@
                 localStorage.setItem('admin_authenticated', 'true');
                 document.getElementById('authOverlay').style.display = 'none';
                 showToast('تم تسجيل الدخول بنجاح! 👋', 'success');
+                checkSavedDraft();
             } else {
                 showToast('❌ كلمة المرور غير صحيحة!', 'error');
             }
         }
 
-        // دالة قفل اللوحة (تسجيل الخروج) مع الحفاظ التام على التوكن وعدم حذفه
         function lockAdminPanel() {
             localStorage.removeItem('admin_authenticated');
             document.getElementById('sitePassword').value = '';
@@ -383,11 +440,64 @@
         }
 
         let articleToDeleteId = null;
+        let autoSaveTimer = null;
 
         document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+
+        // استعادة المسودة تلقائياً إذا وجدت
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('admin_authenticated') === 'true') {
+                checkSavedDraft();
+            }
+        });
+
+        function scheduleAutoSave() {
+            document.getElementById('draftStatus').innerText = 'جاري الكتابة...';
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(saveDraftToLocal, 1500);
+        }
+
+        function saveDraftToLocal() {
+            const title = document.getElementById('postTitle').value.trim();
+            const desc = document.getElementById('postDesc').value.trim();
+            const body = document.getElementById('postBody').innerHTML.trim();
+            const editId = document.getElementById('editArticleId').value;
+
+            // لا نحفظ مسودة إذا كنا نعدل مقال قديم
+            if (editId) return;
+
+            if (title || desc || body) {
+                const draft = { title, desc, body, savedAt: new Date().toLocaleTimeString('ar-SA') };
+                localStorage.setItem('article_draft', JSON.stringify(draft));
+                document.getElementById('draftStatus').innerText = `💾 تم حفظ المسودة تلقائياً (${draft.savedAt})`;
+            } else {
+                document.getElementById('draftStatus').innerText = '';
+            }
+        }
+
+        function checkSavedDraft() {
+            const draftRaw = localStorage.getItem('article_draft');
+            if (draftRaw && !document.getElementById('editArticleId').value) {
+                try {
+                    const draft = JSON.parse(draftRaw);
+                    if (draft.title || draft.desc || draft.body) {
+                        document.getElementById('postTitle').value = draft.title || '';
+                        document.getElementById('postDesc').value = draft.desc || '';
+                        document.getElementById('postBody').innerHTML = draft.body || '';
+                        document.getElementById('draftStatus').innerText = `📄 تم استعادة المسودة المحفوظة تلقائياً (${draft.savedAt})`;
+                        showToast('📄 تم استعادة مسودتك الأخيرة بنجاح!', 'success');
+                    }
+                } catch(e) {}
+            }
+        }
+
+        function clearDraft() {
+            localStorage.removeItem('article_draft');
+            document.getElementById('draftStatus').innerText = '';
         }
 
         // إغلاق قائمة الخطوط المنسدلة عند الضغط خارجها
@@ -408,6 +518,23 @@
             document.execCommand('fontSize', false, size);
             document.getElementById('fontDropdown').style.display = 'none';
             document.getElementById('postBody').focus();
+        }
+
+        /* ووظائف المعاينة المباشرة (Live Preview) */
+        function openPreviewModal() {
+            const title = document.getElementById('postTitle').value.trim() || 'عنوان المقال المعاين';
+            const desc = document.getElementById('postDesc').value.trim() || 'نبذة مختصرة عن المقال...';
+            const body = document.getElementById('postBody').innerHTML.trim() || '<p style="color:#64748b;">لا يوجد محتوى للمقال بعد...</p>';
+
+            document.getElementById('pvTitle').innerText = title;
+            document.getElementById('pvDesc').innerText = desc;
+            document.getElementById('pvBody').innerHTML = body;
+
+            document.getElementById('previewModal').style.display = 'block';
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').style.display = 'none';
         }
 
         function showToast(message, type = 'success') {
@@ -431,6 +558,7 @@
         function execCmd(command, value = null) {
             document.execCommand(command, false, value);
             document.getElementById('postBody').focus();
+            scheduleAutoSave();
         }
 
         function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
@@ -540,6 +668,7 @@
                     
                     document.getElementById('postBody').focus();
                     document.execCommand('insertImage', false, rawImageUrl);
+                    scheduleAutoSave();
                 }
 
                 hideTopBanner();
@@ -599,6 +728,7 @@
 
                 if (putRes.ok) {
                     showToast(editId ? '✅ تم تعديل المقال بنجاح!' : '🚀 تم نشر المقال الجديد بنجاح!', 'success');
+                    clearDraft();
                     cancelEdit();
                     loadArticlesList();
                 } else {
@@ -643,6 +773,7 @@
             document.getElementById('formTitle').innerText = '🚀 لوحة تحكم المدونة (PWA)';
             document.getElementById('publishBtn').innerText = 'نشر المقال فوراً 🚀';
             document.getElementById('cancelEditBtn').style.display = 'none';
+            document.getElementById('draftStatus').innerText = '';
         }
 
         function openConfirmModal(id) {
