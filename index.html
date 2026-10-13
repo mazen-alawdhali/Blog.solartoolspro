@@ -124,20 +124,20 @@
         }
         .article-card p { font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 15px; }
         
-        /* تنسيق محتوى المقال: النص أبيض ناصع، والعناوين باللون الأزرق الجميل */
+        /* تنسيق محتوى المقال: إجبار كل النصوص الداخلية لتكون بيضاء ناصعة */
         .article-body {
             font-size: 15px;
             line-height: 1.8;
-            color: #ffffff;
+            color: #ffffff !important;
             border-top: 1px solid #334155;
             padding-top: 15px;
             margin-top: 15px;
             display: none;
         }
-        .article-body p, .article-body li {
+        .article-body * {
             color: #ffffff !important;
         }
-        /* تلوين جميع أنواع العناوين الرئيسية والفرعية باللون الأزرق الجميل */
+        /* تلوين جميع أنواع العناوين الرئيسية والفرعية داخل المقال باللون الأزرق الجميل */
         .article-body h1, 
         .article-body h2, 
         .article-body h3, 
@@ -159,7 +159,7 @@
         .article-body blockquote {
             border-right: 3px solid #38bdf8;
             padding-right: 12px;
-            color: #cbd5e1;
+            color: #cbd5e1 !important;
             margin: 12px 0;
             font-style: italic;
         }
@@ -474,7 +474,7 @@
         }
 
         function copyArticleLink(id) {
-            const art = allArticles.find(a => a.id == id);
+            const art = allArticles.find(a => al.id == id);
             if (!art) return;
             const url = window.location.href.split('#')[0] + '#' + art.id;
             navigator.clipboard.writeText(url).then(() => {
