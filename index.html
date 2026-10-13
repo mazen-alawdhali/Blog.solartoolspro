@@ -262,7 +262,7 @@
 
         async function fetchArticles() {
             try {
-                const res = await fetch('articles.json');
+                const res = await fetch('articles.json?t=' + Date.now());
                 if (!res.ok) throw new Error('تعذر تحميل المقالات');
                 allArticles = await res.json();
                 displayArticles(allArticles);
