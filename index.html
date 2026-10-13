@@ -11,7 +11,7 @@
     <!-- ربط ملف الـ Manifest الرسمي للتثبيت كـ PWA -->
     <link rel="manifest" href="manifest.json">
     
-    <title>مدونة SolarToolsPro | أدلة ومقالات الطاقة الشمسية</title>
+    <title>مدونة أدوات الطاقة الشمسية الاحترافية - SolarToolsPro</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -29,7 +29,7 @@
             border-bottom: 1px solid #334155;
             padding-bottom: 15px;
         }
-        h1 { font-size: 22px; color: #38bdf8; margin-bottom: 6px; }
+        h1 { font-size: 20px; color: #38bdf8; margin-bottom: 6px; line-height: 1.4; }
         p.subtitle { font-size: 13px; color: #94a3b8; }
 
         /* شريط البحث والتصنيفات */
@@ -100,7 +100,7 @@
             border-top: 1px solid #334155;
             padding-top: 15px;
             margin-top: 15px;
-            display: none; /* مخفي حتى يضغط القارئ على قراءة المقال */
+            display: none;
         }
         .article-body img {
             max-width: 100% !important;
@@ -129,22 +129,23 @@
             cursor: pointer;
             width: 100%;
             transition: 0.2s;
+            margin-bottom: 15px; /* مسافة أمان واضحة بين الزر والمحتوى أسفله */
         }
         .toggle-btn:hover { background-color: #0284c7dd; }
 
-        /* أزرار المشاركة السريعة أسفل المقال المفتوح */
+        /* أزرار المشاركة السريعة مع مسافة واضحة للأعلى */
         .share-section {
             border-top: 1px solid #334155;
-            padding-top: 12px;
-            margin-top: 15px;
+            padding-top: 15px;
+            margin-top: 20px;
             display: flex;
             gap: 8px;
             justify-content: center;
         }
         .share-btn {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
             font-weight: bold;
             color: #fff;
             border: none;
@@ -154,14 +155,37 @@
         .btn-telegram { background-color: #0ea5e9; }
         .btn-copy { background-color: #475569; }
 
+        /* الفوتر الاحترافي مع الارتباطات التشعبية */
+        footer {
+            margin-top: 40px;
+            border-top: 1px solid #334155;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+        .footer-links a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .footer-links a:hover { text-decoration: underline; color: #7dd3fc; }
+
         .loading, .error-msg { text-align: center; padding: 30px; color: #94a3b8; font-size: 14px; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>⚡ مدونة SolarToolsPro</h1>
-        <p class="subtitle">أحدث المقالات والأدلة التقنية لأنظمة الطاقة الشمسية والبطاريات</p>
+        <h1>مدونة أدوات الطاقة الشمسية الاحترافية - SolarToolsPro</h1>
     </header>
 
     <!-- شريط البحث السريع -->
@@ -179,6 +203,16 @@
     <div id="articlesContainer">
         <div class="loading">جاري تحميل المقالات... ⏳</div>
     </div>
+
+    <!-- الفوتر التشعبي الاحترافي -->
+    <footer>
+        <div class="footer-links">
+            <a href="https://solartoolspro.com" target="_blank">حاسبة الطاقة الشمسية</a>
+            <a href="admin.html">لوحة الإدارة 🔒</a>
+            <a href="https://github.com/mazen-alawdhali" target="_blank">مستودع المشروع</a>
+        </div>
+        <p>© 2026 SolarToolsPro. جميع الحقوق محفوظة.</p>
+    </footer>
 
     <script>
         let allArticles = [];
@@ -222,6 +256,8 @@
                         <h2>${art.title}</h2>
                         <p id="desc-${art.id}">${art.description}</p>
                         
+                        <button class="toggle-btn" id="btn-${art.id}" onclick="toggleArticle(${art.id})">قراءة المقال كاملاً 📖</button>
+
                         <div class="article-body" id="body-${art.id}">
                             ${art.body}
                             
@@ -231,8 +267,6 @@
                                 <button class="share-btn btn-copy" onclick="copyArticleLink(${art.id})">نسخ الرابط 🔗</button>
                             </div>
                         </div>
-
-                        <button class="toggle-btn" id="btn-${art.id}" onclick="toggleArticle(${art.id})">قراءة المقال كاملاً 📖</button>
                     </div>
                 `;
             });
@@ -270,9 +304,9 @@
                 displayArticles(allArticles);
             } else {
                 const filtered = allArticles.filter(art => 
+                    art.title.toLowerCase().includes(query) || 
                     art.title.toLowerCase().includes(category) || 
-                    art.description.toLowerCase().includes(category) ||
-                    art.body.toLowerCase().includes(category)
+                    art.description.toLowerCase().includes(category)
                 );
                 displayArticles(filtered);
             }
