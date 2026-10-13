@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <!-- المدونة الرئيسية -->
+    <url>
+        <loc>https://blog.solartoolspro.com/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <!-- الحاسبة الذكية -->
+    <url>
+        <loc>https://calc.solartoolspro.com/</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <!-- حاسبة الألواح الشمسية -->
+    <url>
+        <loc>https://panels.solartoolspro.com/</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <!-- حاسبة ومراقب البطارية -->
+    <url>
+        <loc>https://battery.solartoolspro.com/</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+</urlset>
