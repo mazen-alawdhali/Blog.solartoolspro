@@ -33,7 +33,7 @@
         }
         
         label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: bold; }
-        input, textarea, select {
+        input, textarea {
             width: 100%;
             padding: 12px;
             background-color: #0f172a;
@@ -44,7 +44,7 @@
             margin-bottom: 15px;
             outline: none;
         }
-        input:focus, textarea:focus, select:focus { border-color: #38bdf8; }
+        input:focus, textarea:focus { border-color: #38bdf8; }
         textarea { resize: vertical; height: 150px; }
 
         .btn {
@@ -62,23 +62,42 @@
         .btn:hover { background-color: #0369a1; }
         .btn-success { background-color: #10b981; }
         .btn-success:hover { background-color: #059669; }
-        .btn-danger { background-color: #ef4444; width: auto; padding: 6px 12px; font-size: 12px; }
-        .btn-warning { background-color: #f59e0b; width: auto; padding: 6px 12px; font-size: 12px; color: #000; }
-        .btn-move { background-color: #475569; width: auto; padding: 6px 10px; font-size: 12px; }
-
-        .article-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            gap: 10px;
+        
+        /* تنسيقات جدول المقالات المكتملة */
+        .articles-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
         }
-        .article-info { flex-grow: 1; font-size: 14px; color: #f8fafc; font-weight: bold; }
-        .article-actions { display: flex; gap: 6px; align-items: center; }
+        .articles-table th, .articles-table td {
+            border: 1px solid #334155;
+            padding: 10px;
+            text-align: right;
+            font-size: 13px;
+        }
+        .articles-table th {
+            background-color: #0f172a;
+            color: #38bdf8;
+        }
+        .action-btns {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn-action {
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            color: #fff;
+        }
+        .btn-edit { background-color: #f59e0b; color: #000; }
+        .btn-delete { background-color: #ef4444; }
+        .btn-move { background-color: #334155; color: #38bdf8; border: 1px solid #475569; }
+        .btn-move:hover { background-color: #0284c7; color: #fff; }
 
         .login-screen { max-width: 400px; margin: 80px auto; }
         .hidden { display: none !important; }
@@ -90,7 +109,7 @@
     <!-- شاشة تسجيل الدخول -->
     <div id="loginScreen" class="login-screen card">
         <h1>🔐 تسجيـل الدخول لوحة الإدارة</h1>
-        <p style="font-size: 12px; color: #94a3b8; margin-bottom: 15px;">أدخل كلمة المرور أو GitHub PAT للوصول.</p>
+        <p style="font-size: 12px; color: #94a3b8; margin-bottom: 15px;">أدخل رمز المرور / GitHub PAT للوصول.</p>
         <input type="password" id="patInput" placeholder="أدخل رمز المرور / PAT...">
         <button class="btn" onclick="login()">دخول ➔</button>
         <p id="loginError" style="color: #ef4444; font-size: 12px; text-align: center; margin-top: 10px;"></p>
@@ -114,27 +133,41 @@
             <label>وصف مختصر (مقدمة الكارت):</label>
             <textarea style="height: 80px;" id="artDesc" placeholder="أدخل وصفاً مختصراً..." oninput="autoSaveDraft()"></textarea>
 
-            <label>محتوى المقال (يدعم HTML مثل &lt;p&gt;, &lt;img&gt;, &lt;blockquote&gt;):</label>
+            <label>محتوى المقال (يدعم HTML):</label>
             <textarea id="artBody" placeholder="أدخل محتوى المقال كاملاً..." oninput="autoSaveDraft()"></textarea>
 
             <button class="btn btn-success" onclick="saveArticle()">نشر / حفظ التغييرات على GitHub 🚀</button>
             <p id="statusMsg" class="status-msg"></p>
         </div>
 
-        <!-- قائمة المقالات الحالية وإعادة الترتيب -->
+        <!-- قائمة المقالات الحالية وازرار إعادة الترتيب -->
         <div class="card">
-            <h2 style="font-size: 16px; color: #38bdf8; margin-bottom: 15px;">📚 المقالات المنشورة (ترتيب العرض)</h2>
-            <p style="font-size: 12px; color: #94a3b8; margin-bottom: 15px;">استخدم أزرار (⬆️ أسفل / ⬇️ أعلى) لتغيير الترتيب ثم اضغط حفظ الترتيب.</p>
-            <div id="articlesList">
-                <p style="text-align: center; color: #94a3b8;">جاري تحميل المقالات... ⏳</p>
+            <h2 style="font-size: 16px; color: #38bdf8; margin-bottom: 10px;">📚 المقالات المنشورة حالياً</h2>
+            <button class="btn" onclick="fetchArticlesFromGitHub()" style="margin-bottom: 15px;">تحديث جدول المقالات 🔄</button>
+            
+            <div style="overflow-x: auto;">
+                <table class="articles-table">
+                    <thead>
+                        <tr>
+                            <th>عنوان المقال</th>
+                            <th style="text-align: center; width: 140px;">الإجراءات والترتيب</th>
+                        </tr>
+                    </thead>
+                    <tbody id="articlesTableBody">
+                        <tr>
+                            <td colspan="2" style="text-align: center; color: #94a3b8;">جاري تحميل المقالات... ⏳</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <button class="btn" style="margin-top: 15px;" onclick="saveArticlesOrder()">💾 حفظ وترتيب المقالات في GitHub</button>
+
+            <button class="btn btn-success" style="margin-top: 15px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>
         </div>
     </div>
 
     <script>
         const REPO_OWNER = "mazen-alawdhali";
-        const REPO_NAME = "solartoolspro-blog"; // اسم مستودع المدونة على GitHub
+        const REPO_NAME = "solartoolspro-blog";
         const FILE_PATH = "articles.json";
 
         let token = localStorage.getItem('stp_github_token') || '';
@@ -167,7 +200,7 @@
                 const res = await window.fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
                     headers: { 'Authorization': `token ${token}` }
                 });
-                if (!res.ok) throw new Error('فشل الاتصال بـ GitHub أو الرمز غير صحيح');
+                if (!res.ok) throw new Error('فشل الاتصال بـ GitHub');
                 const data = await res.json();
                 fileSha = data.sha;
                 const jsonContent = decodeURIComponent(escape(window.atob(data.content)));
@@ -175,31 +208,33 @@
                 renderAdminList();
                 status.innerText = '✅ تم تحميل المقالات بنجاح.';
             } catch (err) {
-                status.innerText = '❌ خطأ في الجلب: تأكد من الصلاحيات أو اسم المستودع.';
+                status.innerText = '❌ خطأ في الجلب: تأكد من رمز الوصول أو اسم المستودع.';
             }
         }
 
         function renderAdminList() {
-            const container = document.getElementById('articlesList');
+            const tbody = document.getElementById('articlesTableBody');
             if (articles.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: #94a3b8;">لا توجد مقالات منشورة حالياً.</p>`;
+                tbody.innerHTML = `<tr><td colspan="2" style="text-align: center; color: #94a3b8;">لا توجد مقالات منشورة حالياً.</td></tr>`;
                 return;
             }
             let html = '';
             articles.forEach((art, index) => {
                 html += `
-                    <div class="article-row">
-                        <div class="article-info">${index + 1}. ${art.title}</div>
-                        <div class="article-actions">
-                            <button class="btn btn-move" onclick="moveArticle(${index}, -1)">⬆️</button>
-                            <button class="btn btn-move" onclick="moveArticle(${index}, 1)">⬇️</button>
-                            <button class="btn btn-warning" onclick="editArticle(${index})">تعديل</button>
-                            <button class="btn btn-danger" onclick="deleteArticle(${index})">حذف</button>
-                        </div>
-                    </div>
+                    <tr>
+                        <td style="font-weight: bold; color: #f8fafc;">${index + 1}. ${art.title}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn-action btn-move" onclick="moveArticle(${index}, -1)" title="أعلى">⬆️</button>
+                                <button class="btn-action btn-move" onclick="moveArticle(${index}, 1)" title="أسفل">⬇️</button>
+                                <button class="btn-action btn-edit" onclick="editArticle(${index})">تعديل ✏️</button>
+                                <button class="btn-action btn-delete" onclick="deleteArticle(${index})">حذف 🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
                 `;
             });
-            container.innerHTML = html;
+            tbody.innerHTML = html;
         }
 
         function moveArticle(index, direction) {
@@ -233,9 +268,6 @@
                 document.getElementById('artDesc').value = draft.description || '';
                 document.getElementById('artBody').value = draft.body || '';
                 document.getElementById('editIndex').value = draft.editIndex || '-1';
-                if (draft.title) {
-                    document.getElementById('formTitle').innerText = '✍️ مسودة محفوظة (قيد التعديل/الإضافة)';
-                }
             }
         });
 
@@ -276,12 +308,11 @@
             if (editIndex >= 0) {
                 articles[editIndex] = newArt;
             } else {
-                articles.unshift(newArt); // إضافة المقال الجديد في البداية
+                articles.unshift(newArt);
             }
 
             await commitToGitHub(editIndex >= 0 ? `تعديل المقال: ${title}` : `إضافة مقال جديد: ${title}`);
             
-            // تنظيف المسودة بعد النجاح
             localStorage.removeItem('stp_article_draft');
             document.getElementById('artTitle').value = '';
             document.getElementById('artDesc').value = '';
