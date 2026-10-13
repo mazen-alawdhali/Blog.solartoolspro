@@ -19,17 +19,17 @@
             background-color: #0f172a;
             color: #ffffff;
             padding: 16px;
-            max-width: 650px;
+            max-width: 700px;
             margin: 0 auto;
             padding-bottom: 50px;
         }
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             border-bottom: 1px solid #334155;
             padding-bottom: 15px;
         }
-        h1 { font-size: 20px; color: #38bdf8; margin-bottom: 6px; line-height: 1.4; }
+        h1 { font-size: 22px; color: #38bdf8; margin-bottom: 6px; }
         p.subtitle { font-size: 13px; color: #94a3b8; }
 
         /* شريط البحث والتصنيفات */
@@ -73,7 +73,7 @@
             border-color: #0284c7;
         }
 
-        /* تصميم كروت المقالات الأنيق */
+        /* كروت المقالات */
         .article-card {
             background-color: #1e293b;
             border: 1px solid #334155;
@@ -122,8 +122,8 @@
             background-color: #0284c7;
             color: #fff;
             border: none;
-            padding: 9px 16px;
-            border-radius: 8px;
+            padding: 10px 16px;
+            border-radius: 10px;
             font-size: 13px;
             font-weight: bold;
             cursor: pointer;
@@ -131,13 +131,13 @@
             transition: 0.2s;
             margin-top: 15px;
         }
-        .toggle-btn:hover { background-color: #0284c7dd; }
+        .toggle-btn:hover { background-color: #0369a1; }
 
-        /* أزرار المشاركة السريعة */
+        /* أزرار المشاركة */
         .share-section {
             border-top: 1px solid #334155;
             padding-top: 15px;
-            margin-top: 15px;
+            margin-top: 20px;
             display: flex;
             gap: 8px;
             justify-content: center;
@@ -155,43 +155,56 @@
         .btn-telegram { background-color: #0ea5e9; }
         .btn-copy { background-color: #475569; }
 
-        /* الفوتر الأصلي المتكامل */
+        /* الفوتر المطابق تماماً للدومين الأساسي */
         footer {
-            margin-top: 40px;
+            background-color: #0f172a;
             border-top: 1px solid #334155;
-            padding-top: 25px;
             text-align: center;
-            font-size: 13px;
-            color: #94a3b8;
+            padding: 35px 20px;
+            font-size: 14px;
+            color: #ffffff;
+            margin-top: 40px;
         }
-        .footer-links-top {
+
+        .footer-nav {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
             gap: 15px;
-            margin-bottom: 12px;
+            margin-bottom: 18px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #1e293b;
         }
-        .footer-links-top a {
+
+        .footer-nav a {
             color: #38bdf8;
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 700;
+            transition: color 0.2s;
         }
-        .footer-links-top a:hover { text-decoration: underline; }
 
-        .footer-links-bottom {
+        .footer-nav a:hover {
+            color: #34d399;
+        }
+
+        .footer-links {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 12px;
-            font-size: 12px;
-            color: #94a3b8;
+            gap: 15px;
+            margin-top: 14px;
         }
-        .footer-links-bottom a {
-            color: #94a3b8;
+
+        .footer-links a {
+            color: #cbd5e1;
             text-decoration: none;
+            transition: color 0.2s;
+            cursor: pointer;
         }
-        .footer-links-bottom a:hover { color: #38bdf8; }
+
+        .footer-links a:hover {
+            color: #10b981;
+        }
 
         .loading, .error-msg { text-align: center; padding: 30px; color: #94a3b8; font-size: 14px; }
     </style>
@@ -200,6 +213,7 @@
 
     <header>
         <h1>مدونة أدوات الطاقة الشمسية الاحترافية - SolarToolsPro</h1>
+        <p class="subtitle">أحدث المقالات والأدلة التقنية لأنظمة الطاقة الشمسية والبطاريات</p>
     </header>
 
     <!-- شريط البحث السريع -->
@@ -214,27 +228,23 @@
         <button class="cat-btn" onclick="filterByCategory('حماية', this)">الحماية والأحمال</button>
     </div>
 
-    <div id="articlesContainer">
+    <main id="articlesContainer">
         <div class="loading">جاري تحميل المقالات... ⏳</div>
-    </div>
+    </main>
 
-    <!-- الفوتر الأصلي المتكامل والمطابق لطلبك -->
+    <!-- الفوتر المطابق تماماً لطلبك -->
     <footer>
-        <div class="footer-links-top">
-            <a href="https://solartoolspro.com" target="_blank">حاسبة الطاقة الشمسية</a>
+        <div class="footer-nav">
+            <a href="privacy.html">سياسة الخصوصية</a> |
+            <a href="about.html">نبذة عنا</a> |
+            <a href="contact.html">اتصل بنا</a> |
             <a href="admin.html">لوحة الإدارة 🔒</a>
-            <a href="https://github.com/mazen-alawdhali" target="_blank">مستودع المشروع</a>
         </div>
-        
-        <p style="margin: 10px 0; color: #e2e8f0;">تصميم وتطوير <span style="color: #10b981; font-weight: bold;">م. مازن العوذلي</span> © 2026 جميع الحقوق محفوظة.</p>
-
-        <div class="footer-links-bottom">
-            <a href="#">الحاسبة الذكية</a> | 
-            <a href="#">حاسبة الألواح</a> | 
-            <a href="#">حاسبة البطارية</a> | 
-            <a href="#">سياسة الخصوصية</a> | 
-            <a href="#">نبذة عنا</a> | 
-            <a href="#">اتصل بنا</a>
+        <p>تصميم وتطوير <strong style="color:#10b981;">مازن العوذلي</strong> &copy; 2026 جميع الحقوق محفوظة</p>
+        <div class="footer-links">
+            <a href="https://solartoolspro.com" target="_blank">الحاسبة الذكية</a> |
+            <a href="https://solartoolspro.com" target="_blank">حاسبة الألواح</a> |
+            <a href="https://solartoolspro.com" target="_blank">حاسبة البطارية</a>
         </div>
     </footer>
 
@@ -278,7 +288,7 @@
                             <span>⏱️ ${readTime} دقائق قراءة</span>
                         </div>
                         <h2>${art.title}</h2>
-                        <p id="desc-${art.id}">${art.description}</p>
+                        <p>${art.description}</p>
                         
                         <div class="article-body" id="body-${art.id}">
                             ${art.body}
