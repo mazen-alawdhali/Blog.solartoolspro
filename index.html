@@ -73,7 +73,7 @@
             border-color: #0284c7;
         }
 
-        /* تصميم كروت المقالات الأصلي الأنيق */
+        /* تصميم كروت المقالات الأنيق */
         .article-card {
             background-color: #1e293b;
             border: 1px solid #334155;
@@ -129,15 +129,15 @@
             cursor: pointer;
             width: 100%;
             transition: 0.2s;
-            margin-bottom: 15px; /* مسافة أمان واضحة بين الزر والمحتوى أسفله */
+            margin-top: 15px;
         }
         .toggle-btn:hover { background-color: #0284c7dd; }
 
-        /* أزرار المشاركة السريعة مع مسافة واضحة للأعلى */
+        /* أزرار المشاركة السريعة */
         .share-section {
             border-top: 1px solid #334155;
             padding-top: 15px;
-            margin-top: 20px;
+            margin-top: 15px;
             display: flex;
             gap: 8px;
             justify-content: center;
@@ -155,29 +155,43 @@
         .btn-telegram { background-color: #0ea5e9; }
         .btn-copy { background-color: #475569; }
 
-        /* الفوتر الاحترافي مع الارتباطات التشعبية */
+        /* الفوتر الأصلي المتكامل */
         footer {
             margin-top: 40px;
             border-top: 1px solid #334155;
-            padding-top: 20px;
+            padding-top: 25px;
             text-align: center;
             font-size: 13px;
             color: #94a3b8;
         }
-        .footer-links {
+        .footer-links-top {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
             gap: 15px;
             margin-bottom: 12px;
         }
-        .footer-links a {
+        .footer-links-top a {
             color: #38bdf8;
             text-decoration: none;
             font-weight: bold;
-            transition: 0.2s;
         }
-        .footer-links a:hover { text-decoration: underline; color: #7dd3fc; }
+        .footer-links-top a:hover { text-decoration: underline; }
+
+        .footer-links-bottom {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .footer-links-bottom a {
+            color: #94a3b8;
+            text-decoration: none;
+        }
+        .footer-links-bottom a:hover { color: #38bdf8; }
 
         .loading, .error-msg { text-align: center; padding: 30px; color: #94a3b8; font-size: 14px; }
     </style>
@@ -204,14 +218,24 @@
         <div class="loading">جاري تحميل المقالات... ⏳</div>
     </div>
 
-    <!-- الفوتر التشعبي الاحترافي -->
+    <!-- الفوتر الأصلي المتكامل والمطابق لطلبك -->
     <footer>
-        <div class="footer-links">
+        <div class="footer-links-top">
             <a href="https://solartoolspro.com" target="_blank">حاسبة الطاقة الشمسية</a>
             <a href="admin.html">لوحة الإدارة 🔒</a>
             <a href="https://github.com/mazen-alawdhali" target="_blank">مستودع المشروع</a>
         </div>
-        <p>© 2026 SolarToolsPro. جميع الحقوق محفوظة.</p>
+        
+        <p style="margin: 10px 0; color: #e2e8f0;">تصميم وتطوير <span style="color: #10b981; font-weight: bold;">م. مازن العوذلي</span> © 2026 جميع الحقوق محفوظة.</p>
+
+        <div class="footer-links-bottom">
+            <a href="#">الحاسبة الذكية</a> | 
+            <a href="#">حاسبة الألواح</a> | 
+            <a href="#">حاسبة البطارية</a> | 
+            <a href="#">سياسة الخصوصية</a> | 
+            <a href="#">نبذة عنا</a> | 
+            <a href="#">اتصل بنا</a>
+        </div>
     </footer>
 
     <script>
@@ -256,8 +280,6 @@
                         <h2>${art.title}</h2>
                         <p id="desc-${art.id}">${art.description}</p>
                         
-                        <button class="toggle-btn" id="btn-${art.id}" onclick="toggleArticle(${art.id})">قراءة المقال كاملاً 📖</button>
-
                         <div class="article-body" id="body-${art.id}">
                             ${art.body}
                             
@@ -267,6 +289,8 @@
                                 <button class="share-btn btn-copy" onclick="copyArticleLink(${art.id})">نسخ الرابط 🔗</button>
                             </div>
                         </div>
+
+                        <button class="toggle-btn" id="btn-${art.id}" onclick="toggleArticle(${art.id})">قراءة المقال كاملاً 📖</button>
                     </div>
                 `;
             });
@@ -280,6 +304,7 @@
             if (bodyDiv.style.display === 'block') {
                 bodyDiv.style.display = 'none';
                 btn.innerText = 'قراءة المقال كاملاً 📖';
+                document.getElementById(`card-${id}`).scrollIntoView({ behavior: 'smooth' });
             } else {
                 bodyDiv.style.display = 'block';
                 btn.innerText = 'إخفاء المقال ✖';
@@ -304,9 +329,9 @@
                 displayArticles(allArticles);
             } else {
                 const filtered = allArticles.filter(art => 
-                    art.title.toLowerCase().includes(query) || 
                     art.title.toLowerCase().includes(category) || 
-                    art.description.toLowerCase().includes(category)
+                    art.description.toLowerCase().includes(category) ||
+                    art.body.toLowerCase().includes(category)
                 );
                 displayArticles(filtered);
             }
