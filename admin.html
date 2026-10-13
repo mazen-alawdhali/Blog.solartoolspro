@@ -270,25 +270,8 @@
             font-style: italic;
         }
 
-        .articles-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            background-color: #1e293b;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #334155;
-        }
-        .articles-table th, .articles-table td {
-            padding: 12px;
-            text-align: right;
-            border-bottom: 1px solid #334155;
-            font-size: 13px;
-        }
-        .articles-table th { background-color: #0f172a; color: #38bdf8; font-size: 14px; }
-        .articles-table tr:last-child td { border-bottom: none; }
         .action-btns { display: flex; gap: 6px; justify-content: flex-end; }
-        .action-btns button { padding: 5px 10px; font-size: 12px; }
+        .action-btns button { padding: 6px 12px; font-size: 12px; }
 
         .draft-status {
             font-size: 12px;
@@ -610,35 +593,28 @@
                     return;
                 }
 
-                let tableHtml = `
-                    <table class="articles-table" style="table-layout: fixed; width: 100%;">
-                        <thead>
-                            <tr>
-                                <th style="width: 65%;">عنوان المقال</th>
-                                <th style="width: 35%; text-align: center;">الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
+                let tableHtml = `<div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">`;
 
                 loadedArticles.forEach((art, index) => {
                     tableHtml += `
-                        <tr>
-                            <td style="word-break: break-word; vertical-align: middle;"><b>${index + 1}. ${art.title}</b></td>
-                            <td style="text-align: center; vertical-align: middle; padding: 6px 2px;">
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; max-width: 100px; margin: 0 auto;">
-                                    <button class="btn-gray" onclick="moveArticle(${index}, -1)" title="أعلى" style="padding: 4px; font-size: 11px;">⬆️</button>
-                                    <button class="btn-gray" onclick="moveArticle(${index}, 1)" title="أسفل" style="padding: 4px; font-size: 11px;">⬇️</button>
-                                    <button class="btn-edit" onclick="prepareEdit(${art.id})" style="padding: 4px; font-size: 11px;">تعديل</button>
-                                    <button class="btn-red" onclick="openConfirmModal(${art.id})" style="padding: 4px; font-size: 11px;">حذف</button>
-                                </div>
-                            </td>
-                        </tr>
+                        <div style="background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 12px;">
+                            <!-- الصف العلوي: العنوان كاملاً -->
+                            <div style="font-size: 14px; font-weight: bold; color: #f8fafc; margin-bottom: 10px; line-height: 1.5;">
+                                ${index + 1}. ${art.title}
+                            </div>
+                            <!-- الصف السفلي: الأزرار متقابلة ومريحة -->
+                            <div class="action-btns" style="display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap;">
+                                <button class="btn-gray" onclick="moveArticle(${index}, -1)" title="أعلى" style="padding: 6px 14px;">⬆️ أعلى</button>
+                                <button class="btn-gray" onclick="moveArticle(${index}, 1)" title="أسفل" style="padding: 6px 14px;">⬇️ أسفل</button>
+                                <button class="btn-edit" onclick="prepareEdit(${art.id})" style="padding: 6px 14px;">تعديل ✏️</button>
+                                <button class="btn-red" onclick="openConfirmModal(${art.id})" style="padding: 6px 14px;">حذف 🗑️</button>
+                            </div>
+                        </div>
                     `;
                 });
 
-                tableHtml += `</tbody></table>`;
-                tableHtml += `<button class="btn-green" style="margin-top: 12px; font-size: 14px; padding: 10px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`;
+                tableHtml += `</div>`;
+                tableHtml += `<button class="btn-green" style="margin-top: 15px; font-size: 15px; padding: 12px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`;
                 listDiv.innerHTML = tableHtml;
             } catch (err) {
                 hideTopBanner();
@@ -839,35 +815,28 @@
             loadedArticles[index] = loadedArticles[newIndex];
             loadedArticles[newIndex] = temp;
 
-            let tableHtml = `
-                <table class="articles-table" style="table-layout: fixed; width: 100%;">
-                    <thead>
-                        <tr>
-                            <th style="width: 65%;">عنوان المقال</th>
-                            <th style="width: 35%; text-align: center;">الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
+            let tableHtml = `<div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">`;
 
             loadedArticles.forEach((art, idx) => {
                 tableHtml += `
-                    <tr>
-                        <td style="word-break: break-word; vertical-align: middle;"><b>${idx + 1}. ${art.title}</b></td>
-                        <td style="text-align: center; vertical-align: middle; padding: 6px 2px;">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; max-width: 100px; margin: 0 auto;">
-                                <button class="btn-gray" onclick="moveArticle(${idx}, -1)" title="أعلى" style="padding: 4px; font-size: 11px;">⬆️</button>
-                                <button class="btn-gray" onclick="moveArticle(${idx}, 1)" title="أسفل" style="padding: 4px; font-size: 11px;">⬇️</button>
-                                <button class="btn-edit" onclick="prepareEdit(${art.id})" style="padding: 4px; font-size: 11px;">تعديل</button>
-                                <button class="btn-red" onclick="openConfirmModal(${art.id})" style="padding: 4px; font-size: 11px;">حذف</button>
-                            </div>
-                        </td>
-                    </tr>
+                    <div style="background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 12px;">
+                        <!-- الصف العلوي: العنوان كاملاً -->
+                        <div style="font-size: 14px; font-weight: bold; color: #f8fafc; margin-bottom: 10px; line-height: 1.5;">
+                            ${idx + 1}. ${art.title}
+                        </div>
+                        <!-- الصف السفلي: الأزرار متقابلة ومريحة -->
+                        <div class="action-btns" style="display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap;">
+                            <button class="btn-gray" onclick="moveArticle(${idx}, -1)" title="أعلى" style="padding: 6px 14px;">⬆️ أعلى</button>
+                            <button class="btn-gray" onclick="moveArticle(${idx}, 1)" title="أسفل" style="padding: 6px 14px;">⬇️ أسفل</button>
+                            <button class="btn-edit" onclick="prepareEdit(${art.id})" style="padding: 6px 14px;">تعديل ✏️</button>
+                            <button class="btn-red" onclick="openConfirmModal(${art.id})" style="padding: 6px 14px;">حذف 🗑️</button>
+                        </div>
+                    </div>
                 `;
             });
 
-            tableHtml += `</tbody></table>`;
-            tableHtml += `<button class="btn-green" style="margin-top: 12px; font-size: 14px; padding: 10px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`;
+            tableHtml += `</div>`;
+            tableHtml += `<button class="btn-green" style="margin-top: 15px; font-size: 15px; padding: 12px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`;
             document.getElementById('articlesList').innerHTML = tableHtml;
         }
 
