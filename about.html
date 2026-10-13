@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="aboutTabTitle">نبذة عن المنصة | أدوات الطاقة الشمسية الاحترافية</title>
+
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-title" content="Solar Tools">
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="theme-color" content="#0f172a">
+
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0f172a; color: #ffffff; margin: 0; padding: 0; line-height: 1.8; position: relative; }
+        .container { max-width: 800px; margin: 30px auto; background: #1e293b; padding: 30px; border-radius: 16px; border: 1px solid #334155; }
+        
+        .lang-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            backdrop-filter: blur(5px);
+            transition: 0.2s;
+            z-index: 10;
+        }
+        [dir="ltr"] .lang-btn { left: auto; right: 20px; }
+        .lang-btn:hover { background: rgba(255, 255, 255, 0.25); }
+
+        .header-title-box {
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            padding: 16px 20px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1 { color: #10b981; font-size: 20px; margin: 0; font-weight: 800; }
+        h2 { color: #38bdf8; font-size: 17px; margin-top: 25px; }
+        p { color: #f8fafc; font-size: 14px; text-align: justify; }
+        .back-btn { display: inline-block; margin-bottom: 20px; background: #334155; color: #fff; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.2s; }
+        .back-btn:hover { background: #0284c7; }
+
+        footer {
+            background-color: #0f172a;
+            border-top: 1px solid #334155;
+            text-align: center;
+            padding: 35px 20px;
+            font-size: 14px;
+            color: #ffffff;
+            margin-top: 50px;
+        }
+
+        .footer-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 18px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .footer-nav a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+
+        .footer-nav a:hover {
+            color: #34d399;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 14px;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #10b981;
+        }
+    </style>
+</head>
+<body>
+    <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
+    <div class="container">
+        <a href="index.html" class="back-btn" data-i18n="backBtn">➔ العودة للرئيسية</a>
+        
+        <div class="header-title-box">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <h1 data-i18n="aboutHeading">نبذة عن منصة أدوات الطاقة الشمسية الاحترافية</h1>
+        </div>
+
+        <p data-i18n="aboutIntro">تم تأسيس منصة <strong>أدوات الطاقة الشمسية الاحترافية</strong> بواسطة المهندس <strong>مازن العوذلي</strong> لتكون المرجع الهندسي والميداني لفنيي ومهندسي ومستخدمي أنظمة الطاقة الشمسية في اليمن والوطن العربي والعالم.</p>
+
+        <h2 data-i18n="tool1Title">1. حاسبة الطاقة الشمسية الذكية (Smart Solar Calculator)</h2>
+        <p data-i18n="tool1Desc">تعتبر المنظومة الحسابية الأساسية لتقدير الأحمال المنزلية والتجارية، حساب بطاريات الليثيوم والرصاص، سعة العواكس الهجينة، مقاطع الكابلات والقواطع مع إمكانية طباعة تقرير هندسي موثق PDF بدون الحاجة لإنترنت.</p>
+
+        <h2 data-i18n="tool2Title">2. حاسبة الألواح الشمسية (Solar Panels Calculator)</h2>
+        <p data-i18n="tool2Desc">أداة متخصصة ودقيقة لحساب قدرة مصفوفة التوليد الشمسي والعدد المطلوب من الألواح لشحن بنوك البطاريات بمختلف سعاتها ووحداتها (kWh/Wh/Ah) استناداً إلى ساعات الذروة الشمسية وكفاءة المنطقة.</p>
+
+        <h2 data-i18n="tool3Title">3. حاسبة ومراقب البطارية (Battery Calculator & Monitor)</h2>
+        <p data-i18n="tool3Desc">تطبيق ميداني مخصص لقياس زمن تشغيل الأحمال المتبقي، ومراقبة عمق التفريغ الآمن (DoD) لحماية البطاريات واحتساب السعة الفعلية بالأمبير-ساعة والكيلوواط-ساعة.</p>
+    </div>
+
+    <footer>
+        <div class="footer-nav">
+            <a href="privacy.html" data-i18n="privacyPolicy">سياسة الخصوصية</a> |
+            <a href="about.html" data-i18n="aboutUs">نبذة عنا</a> |
+            <a href="contact.html" data-i18n="contactUs">اتصل بنا</a>
+        </div>
+        <p data-i18n="copyright">تصميم وتطوير <strong style="color:#10b981;">مازن العوذلي</strong> &copy; 2026 جميع الحقوق محفوظة</p>
+        <div class="footer-links">
+            <a href="https://calc.solartoolspro.com" target="_blank" data-i18n="fl1">الحاسبة الذكية</a> |
+            <a href="https://panels.solartoolspro.com" target="_blank" data-i18n="fl2">حاسبة الألواح</a> |
+            <a href="https://battery.solartoolspro.com" target="_blank" data-i18n="fl3">حاسبة البطارية</a>
+        </div>
+    </footer>
+
+    <script>
+        const dict = {
+            ar: {
+                aboutTabTitle: "نبذة عن المنصة | أدوات الطاقة الشمسية الاحترافية",
+                backBtn: "➔ العودة للرئيسية",
+                aboutHeading: "نبذة عن منصة أدوات الطاقة الشمسية الاحترافية",
+                aboutIntro: "تم تأسيس منصة <strong>أدوات الطاقة الشمسية الاحترافية</strong> بواسطة المهندس <strong>مازن العوذلي</strong> لتكون المرجع الهندسي والميداني لفنيي ومهندسي ومستخدمي أنظمة الطاقة الشمسية في اليمن والوطن العربي والعالم.",
+                tool1Title: "1. حاسبة الطاقة الشمسية الذكية (Smart Solar Calculator)",
+                tool1Desc: "تعتبر المنظومة الحسابية الأساسية لتقدير الأحمال المنزلية والتجارية، حساب بطاريات الليثيوم والرصاص، سعة العواكس الهجينة، مقاطع الكابلات والقواطع مع إمكانية طباعة تقرير هندسي موثق PDF بدون الحاجة لإنترنت.",
+                tool2Title: "2. حاسبة الألواح الشمسية (Solar Panels Calculator)",
+                tool2Desc: "أداة متخصصة ودقيقة لحساب قدرة مصفوفة التوليد الشمسي والعدد المطلوب من الألواح لشحن بنوك البطاريات بمختلف سعاتها ووحداتها (kWh/Wh/Ah) استناداً إلى ساعات الذروة الشمسية وكفاءة المنطقة.",
+                tool3Title: "3. حاسبة ومراقب البطارية (Battery Calculator & Monitor)",
+                tool3Desc: "تطبيق ميداني مخصص لقياس زمن تشغيل الأحمال المتبقي، ومراقبة عمق التفريغ الآمن (DoD) لحماية البطاريات واحتساب السعة الفعلية بالأمبير-ساعة والكيلوواط-ساعة.",
+                privacyPolicy: "سياسة الخصوصية",
+                aboutUs: "نبذة عنا",
+                contactUs: "اتصل بنا",
+                copyright: "تصميم وتطوير <strong style=\"color:#10b981;\">مازن العوذلي</strong> &copy; 2026 جميع الحقوق محفوظة",
+                fl1: "الحاسبة الذكية", fl2: "حاسبة الألواح", fl3: "حاسبة البطارية"
+            },
+            en: {
+                aboutTabTitle: "About Us | Solar Tools Pro",
+                backBtn: "➔ Back to Home",
+                aboutHeading: "About Solar Tools Pro Platform",
+                aboutIntro: "<strong>Solar Tools Pro</strong> platform was founded by Eng. <strong>Mazen Alawdhali</strong> to serve as the premier engineering and field reference for solar energy technicians, engineers, and users in Yemen, the Arab world, and globally.",
+                tool1Title: "1. Smart Solar System Calculator",
+                tool1Desc: "The primary computational system for sizing residential and commercial loads, Lithium & Lead-Acid battery banks, hybrid inverter capacities, cable gauges, and protection breakers with offline PDF technical report generation.",
+                tool2Title: "2. Solar Panels Calculator",
+                tool2Desc: "A specialized precision tool to calculate total PV array wattage and required panel count to charge battery banks across all units (kWh/Wh/Ah) based on peak sun hours and regional efficiency.",
+                tool3Title: "3. Battery Calculator & Monitor",
+                tool3Desc: "A practical field companion to measure remaining appliance runtime, monitor safe Depth of Discharge (DoD) to maximize battery cycle life, and calculate usable Ah and kWh capacities.",
+                privacyPolicy: "Privacy Policy",
+                aboutUs: "About Us",
+                contactUs: "Contact Us",
+                copyright: "Designed & Developed by <strong style=\"color:#10b981;\">Mazen Alawdhali</strong> &copy; 2026 All Rights Reserved",
+                fl1: "Smart Calculator", fl2: "Panels Calculator", fl3: "Battery Calculator"
+            }
+        };
+
+        let currentLang = localStorage.getItem('solar_app_lang') || localStorage.getItem('stp_main_lang') || 'ar';
+
+        function toggleLang() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            localStorage.setItem('solar_app_lang', currentLang);
+            localStorage.setItem('stp_main_lang', currentLang);
+            applyLang();
+        }
+
+        function applyLang() {
+            const t = dict[currentLang];
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('langBtn').innerText = currentLang === 'ar' ? 'EN' : 'AR';
+            document.title = t.aboutTabTitle;
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(t[key]) el.innerHTML = t[key];
+            });
+        }
+
+        applyLang();
+    </script>
+</body>
+</html>
