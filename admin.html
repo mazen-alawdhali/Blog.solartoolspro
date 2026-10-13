@@ -3,15 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0f172a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="إدارة المدونة">
-    
-    <!-- ربط ملف الـ Manifest الرسمي للتثبيت -->
-    <link rel="manifest" href="manifest.json">
-    
-    <title>لوحة إدارة المدونة | SolarToolsPro</title>
+    <title>لوحة الإدارة - مدونة SolarToolsPro</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -19,883 +11,312 @@
             background-color: #0f172a;
             color: #ffffff;
             padding: 16px;
-            max-width: 650px;
+            max-width: 700px;
             margin: 0 auto;
-            padding-bottom: 40px;
+            padding-bottom: 50px;
         }
-        h1, h2 { font-size: 20px; color: #38bdf8; text-align: center; margin-bottom: 20px; }
-        h2 { font-size: 16px; margin-top: 30px; border-top: 1px solid #334155; padding-top: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px; }
-        input {
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 15px;
+        }
+        h1 { font-size: 20px; color: #38bdf8; margin-bottom: 6px; }
+        
+        .card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: bold; }
+        input, textarea, select {
             width: 100%;
             padding: 12px;
-            background-color: #1e293b;
+            background-color: #0f172a;
             border: 1px solid #334155;
             border-radius: 8px;
             color: #fff;
             font-size: 14px;
+            margin-bottom: 15px;
+            outline: none;
         }
-        button {
-            padding: 10px 14px;
+        input:focus, textarea:focus, select:focus { border-color: #38bdf8; }
+        textarea { resize: vertical; height: 150px; }
+
+        .btn {
+            background-color: #0284c7;
+            color: #fff;
             border: none;
+            padding: 12px 20px;
             border-radius: 8px;
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
+            width: 100%;
             transition: 0.2s;
         }
-        .btn-green { background-color: #10b981; color: #fff; width: 100%; font-size: 16px; padding: 12px; }
-        .btn-blue { background-color: #0284c7; color: #fff; width: 100%; margin-bottom: 10px; }
-        .btn-purple { background-color: #6366f1; color: #fff; width: 100%; margin-bottom: 8px; }
-        .btn-cyan { background-color: #06b6d4; color: #fff; width: 100%; margin-bottom: 8px; font-size: 15px; padding: 11px; }
-        .btn-red { background-color: #ef4444; color: #fff; }
-        .btn-gray { background-color: #475569; color: #fff; }
-        .btn-edit { background-color: #f59e0b; color: #fff; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn:hover { background-color: #0369a1; }
+        .btn-success { background-color: #10b981; }
+        .btn-success:hover { background-color: #059669; }
+        .btn-danger { background-color: #ef4444; width: auto; padding: 6px 12px; font-size: 12px; }
+        .btn-warning { background-color: #f59e0b; width: auto; padding: 6px 12px; font-size: 12px; color: #000; }
+        .btn-move { background-color: #475569; width: auto; padding: 6px 10px; font-size: 12px; }
 
-        /* شاشة تسجيل الدخول السرية (الحماية بكلمة مرور) */
-        #authOverlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: #0f172a;
-            z-index: 99999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .auth-card {
-            background: #1e293b;
-            padding: 25px;
-            border-radius: 14px;
-            border: 1px solid #334155;
-            width: 100%;
-            max-width: 340px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-
-        /* شريط التنبيه العلوي السلس */
-        #topBanner {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            background: #0284c7;
-            color: #fff;
-            padding: 10px 16px;
-            font-size: 13px;
-            font-weight: bold;
-            text-align: center;
-            z-index: 9999;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-
-        /* الإشعارات العصرية المنبثقة */
-        #toastContainer {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100000;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: 90%;
-            max-width: 400px;
-            pointer-events: none;
-        }
-        .toast {
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #fff;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            backdrop-filter: blur(8px);
-            animation: slideDown 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
-            text-align: center;
-        }
-        .toast-success { background: rgba(16, 185, 129, 0.95); border: 1px solid #34d399; }
-        .toast-error { background: rgba(239, 68, 68, 0.95); border: 1px solid #f87171; }
-        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
-
-        /* نافذة تأكيد الحذف المنبثقة المخصصة */
-        #confirmModal, #restoreDraftModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(6px);
-            z-index: 10001;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .confirm-card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 14px;
-            padding: 20px;
-            width: 100%;
-            max-width: 380px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        }
-        .confirm-card h3 { color: #f87171; font-size: 18px; margin-bottom: 10px; }
-        .confirm-card p { font-size: 14px; color: #cbd5e1; margin-bottom: 20px; line-height: 1.5; }
-        .confirm-btns { display: flex; gap: 10px; justify-content: center; }
-        .confirm-btns button { flex: 1; padding: 10px; }
-
-        /* نافذة المعاينة المباشرة المنبثقة (Live Preview Modal) */
-        #previewModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(8px);
-            z-index: 10002;
-            overflow-y: auto;
-            padding: 20px 12px;
-        }
-        .preview-card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 14px;
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-        }
-        .preview-header {
+        .article-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 12px;
-            margin-bottom: 15px;
-        }
-        .preview-header h3 { color: #38bdf8; font-size: 16px; }
-        .preview-content h1 { font-size: 22px; color: #f8fafc; margin-bottom: 10px; line-height: 1.4; }
-        .preview-content .preview-desc { font-size: 14px; color: #94a3b8; border-right: 3px solid #38bdf8; padding-right: 10px; margin-bottom: 20px; font-style: italic; }
-        .preview-body { font-size: 15px; line-height: 1.8; color: #e2e8f0; border-top: 1px solid #334155; padding-top: 15px; }
-        .preview-body img { max-width: 100% !important; height: auto !important; border-radius: 8px; margin: 12px 0; border: 1px solid #334155; }
-
-        /* شريط أزرار التنسيق المرئي */
-        .toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 5px;
-            background-color: #1e293b;
-            padding: 8px;
+            background-color: #0f172a;
             border: 1px solid #334155;
-            border-bottom: none;
-            border-radius: 8px 8px 0 0;
-            position: relative;
-        }
-        .tool-btn {
-            background-color: #334155;
-            color: #e2e8f0;
-            padding: 6px 12px;
-            font-size: 13px;
-            font-weight: bold;
-            border-radius: 6px;
-            min-width: 36px;
-            text-align: center;
-        }
-        .tool-btn:hover { background-color: #475569; }
-        
-        /* القائمة المنسدلة المخصصة لحجم الخط */
-        .custom-dropdown { position: relative; display: inline-block; }
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 110%; right: 0;
-            background-color: #1a2536;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-            z-index: 1000;
-            min-width: 110px;
-            overflow: hidden;
-        }
-        .dropdown-item {
-            padding: 10px 14px;
-            font-size: 13px;
-            color: #e2e8f0;
-            cursor: pointer;
-            border-bottom: 1px solid #28374d;
-            text-align: center;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-        .dropdown-item:last-child { border-bottom: none; }
-        .dropdown-item:hover { background-color: #0284c7; color: #ffffff; }
-
-        /* محرر النصوص المرئي وضبط أبعاد الصور تلقائياً */
-        .editor-box {
-            width: 100%;
-            min-height: 220px;
-            max-height: 450px;
-            overflow-y: auto;
-            overflow-x: hidden;
             padding: 12px;
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-            color: #fff;
-            font-size: 14px;
-            line-height: 1.7;
-            outline: none;
-        }
-        .editor-box:focus { border-color: #38bdf8; }
-        
-        .editor-box img {
-            max-width: 100% !important;
-            height: auto !important;
             border-radius: 8px;
-            margin: 10px 0;
-            display: block;
-            border: 1px solid #334155;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+            gap: 10px;
         }
-        .editor-box blockquote {
-            border-right: 3px solid #38bdf8;
-            padding-right: 10px;
-            color: #cbd5e1;
-            margin: 10px 0;
-            font-style: italic;
-        }
+        .article-info { flex-grow: 1; font-size: 14px; color: #f8fafc; font-weight: bold; }
+        .article-actions { display: flex; gap: 6px; align-items: center; }
 
-        .articles-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            background-color: #1e293b;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #334155;
-        }
-        .articles-table th, .articles-table td {
-            padding: 12px;
-            text-align: right;
-            border-bottom: 1px solid #334155;
-            font-size: 13px;
-        }
-        .articles-table th { background-color: #0f172a; color: #38bdf8; font-size: 14px; }
-        .articles-table tr:last-child td { border-bottom: none; }
-        .action-btns { display: flex; gap: 6px; justify-content: flex-end; }
-        .action-btns button { padding: 5px 10px; font-size: 12px; }
-
-        .draft-status {
-            font-size: 12px;
-            color: #10b981;
-            text-align: left;
-            margin-top: 4px;
-            min-height: 18px;
-        }
+        .login-screen { max-width: 400px; margin: 80px auto; }
+        .hidden { display: none !important; }
+        .status-msg { text-align: center; margin-top: 10px; font-size: 13px; color: #38bdf8; }
     </style>
 </head>
 <body>
 
-    <!-- طبقة حماية كلمة المرور عند فتح اللوحة -->
-    <div id="authOverlay">
-        <div class="auth-card">
-            <h3 style="color:#38bdf8; margin-bottom:10px; font-size:18px;">🔒 منطقة الإدارة المحمية</h3>
-            <p style="color:#94a3b8; font-size:13px; margin-bottom:15px;">الرجاء إدخال كلمة المرور للمتابعة</p>
-            <input type="password" id="sitePassword" placeholder="كلمة المرور السرية" style="width:100%; padding:12px; background:#0f172a; border:1px solid #475569; color:#fff; border-radius:8px; margin-bottom:15px; text-align:center; font-size:14px;" onkeydown="if(event.key==='Enter') checkMasterPassword()">
-            <button onclick="checkMasterPassword()" style="width:100%; background:#10b981; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">دخول 🚀</button>
-        </div>
+    <!-- شاشة تسجيل الدخول -->
+    <div id="loginScreen" class="login-screen card">
+        <h1>🔐 تسجيـل الدخول لوحة الإدارة</h1>
+        <p style="font-size: 12px; color: #94a3b8; margin-bottom: 15px;">أدخل كلمة المرور أو GitHub PAT للوصول.</p>
+        <input type="password" id="patInput" placeholder="أدخل رمز المرور / PAT...">
+        <button class="btn" onclick="login()">دخول ➔</button>
+        <p id="loginError" style="color: #ef4444; font-size: 12px; text-align: center; margin-top: 10px;"></p>
     </div>
 
-    <div id="topBanner">جاري المعالجة...</div>
-    <div id="toastContainer"></div>
+    <!-- لوحة التحكم الرئيسية -->
+    <div id="adminPanel" class="hidden">
+        <header>
+            <h1>🛠️ لوحة إدارة مدونة SolarToolsPro</h1>
+            <p style="font-size: 12px; color: #94a3b8;">إضافة، تعديل، وترتيب المقالات المنشورة</p>
+        </header>
 
-    <!-- نافذة تأكيد الحذف المنبثقة المخصصة -->
-    <div id="confirmModal">
-        <div class="confirm-card">
-            <h3>⚠️ تأكيد الحذف</h3>
-            <p>هل أنت متأكد من رغبتك في حذف هذا المقال نهائياً وصوره المرفقة؟</p>
-            <div class="confirm-btns">
-                <button class="btn-red" id="confirmDeleteBtn">حذف 🗑️</button>
-                <button class="btn-gray" onclick="closeConfirmModal()">إلغاء ❌</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة استعادة المسودة العصرية المنبثقة المخصصة -->
-    <div id="restoreDraftModal">
-        <div class="confirm-card">
-            <h3 style="color:#38bdf8;">📄 مسودة غير محفوظة</h3>
-            <p id="restoreDraftText">وجدنا تعديلاً سابقاً غير محفوظ لهذا المقال. هل ترغب باستعادته؟</p>
-            <div class="confirm-btns">
-                <button class="btn-green" id="confirmRestoreBtn">استعادة المسودة 💾</button>
-                <button class="btn-gray" id="ignoreRestoreBtn">تجاهل البدء من جديد 🔄</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة المعاينة المباشرة المنبثقة (Live Preview Modal) -->
-    <div id="previewModal">
-        <div class="preview-card">
-            <div class="preview-header">
-                <h3>👁️ معاينة المقال قبل النشر</h3>
-                <button class="btn-gray" onclick="closePreviewModal()" style="padding: 6px 12px; font-size: 12px;">إغلاق ✖</button>
-            </div>
-            <div class="preview-content">
-                <h1 id="pvTitle">عنوان المقال المعاين</h1>
-                <div class="preview-desc" id="pvDesc">نبذة مختصرة عن المقال...</div>
-                <div class="preview-body" id="pvBody">محتوى المقال الكامل...</div>
-            </div>
-        </div>
-    </div>
-
-    <h1 id="formTitle">🚀 لوحة تحكم المدونة (PWA)</h1>
-
-    <!-- زر قفل وتسجيل الخروج -->
-    <div style="text-align: center; margin-bottom: 20px;">
-        <button onclick="lockAdminPanel()" style="background: #334155; color: #f87171; border: 1px solid #475569; padding: 7px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: bold;">قفل لوحة التحكم (تسجيل خروج) 🔒</button>
-    </div>
-
-    <div class="form-group">
-        <label>رمز الوصول الخاص (GitHub Token):</label>
-        <input type="password" id="ghToken" placeholder="الصق رمز GitHub Token هنا">
-    </div>
-
-    <input type="hidden" id="editArticleId" value="">
-
-    <div class="form-group">
-        <label>عنوان المقال:</label>
-        <input type="text" id="postTitle" placeholder="عنوان المقال" oninput="scheduleAutoSave()">
-    </div>
-
-    <div class="form-group">
-        <label>مقدمة قصيرة (الوصف):</label>
-        <input type="text" id="postDesc" placeholder="نبذة مختصرة تظهر في الكارت الرئيسي" oninput="scheduleAutoSave()">
-    </div>
-
-    <div class="form-group">
-        <label>إدراج صورة/صور داخل المقال:</label>
-        <input type="file" id="imageInput" accept="image/*" multiple style="padding: 8px; margin-bottom: 6px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff;">
-        <button type="button" class="btn-purple" onclick="uploadAndInsertImages()">رفع وإدراج الصور مرئياً في موضع المؤشر 🖼️</button>
-    </div>
-
-    <div class="form-group">
-        <label>محتوى المقال (محرر مرئي مباشر):</label>
-        <div class="toolbar">
-            <button type="button" class="tool-btn" onclick="execCmd('bold')" title="عريض"><b>B</b></button>
-            <button type="button" class="tool-btn" onclick="execCmd('italic')" title="مائل"><i>I</i></button>
-            <button type="button" class="tool-btn" onclick="execCmd('underline')" title="خط تحت النص"><u>U</u></button>
+        <!-- نموذج إضافة / تعديل مقال -->
+        <div class="card">
+            <h2 id="formTitle" style="font-size: 16px; color: #38bdf8; margin-bottom: 15px;">✍️ إضافة مقال جديد</h2>
+            <input type="hidden" id="editIndex" value="-1">
             
-            <!-- القائمة المنسدلة المخصصة لحجم الخط -->
-            <div class="custom-dropdown">
-                <button type="button" class="tool-btn" onclick="toggleFontMenu(event)" title="حجم الخط">🔤 ▼</button>
-                <div id="fontDropdown" class="dropdown-menu">
-                    <div class="dropdown-item" onclick="setFontSize('2')">صغير</div>
-                    <div class="dropdown-item" onclick="setFontSize('3')">عادي</div>
-                    <div class="dropdown-item" onclick="setFontSize('5')">كبير</div>
-                    <div class="dropdown-item" onclick="setFontSize('6')">كبير جداً</div>
-                </div>
-            </div>
+            <label>عنوان المقال:</label>
+            <input type="text" id="artTitle" placeholder="أدخل عنوان المقال..." oninput="autoSaveDraft()">
 
-            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h2>')" title="عنوان رئيسي">H2</button>
-            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h3>')" title="عنوان فرعي">H3</button>
-            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<blockquote>')" title="اقتباس">❞</button>
-            <button type="button" class="tool-btn" onclick="execCmd('insertHorizontalRule')" title="خط فاصل">―</button>
-            
-            <button type="button" class="tool-btn" onclick="execCmd('undo')" title="تراجع">↩️</button>
-            <button type="button" class="tool-btn" onclick="execCmd('redo')" title="إعادة">↪️</button>
+            <label>وصف مختصر (مقدمة الكارت):</label>
+            <textarea style="height: 80px;" id="artDesc" placeholder="أدخل وصفاً مختصراً..." oninput="autoSaveDraft()"></textarea>
+
+            <label>محتوى المقال (يدعم HTML مثل &lt;p&gt;, &lt;img&gt;, &lt;blockquote&gt;):</label>
+            <textarea id="artBody" placeholder="أدخل محتوى المقال كاملاً..." oninput="autoSaveDraft()"></textarea>
+
+            <button class="btn btn-success" onclick="saveArticle()">نشر / حفظ التغييرات على GitHub 🚀</button>
+            <p id="statusMsg" class="status-msg"></p>
         </div>
-        <div id="postBody" class="editor-box" contenteditable="true" placeholder="اكتب نص المقال هنا..." oninput="scheduleAutoSave()" onkeyup="scheduleAutoSave()" onblur="saveDraftToLocal()" onpaste="setTimeout(scheduleAutoSave, 200)"></div>
-        <div id="draftStatus" class="draft-status"></div>
+
+        <!-- قائمة المقالات الحالية وإعادة الترتيب -->
+        <div class="card">
+            <h2 style="font-size: 16px; color: #38bdf8; margin-bottom: 15px;">📚 المقالات المنشورة (ترتيب العرض)</h2>
+            <p style="font-size: 12px; color: #94a3b8; margin-bottom: 15px;">استخدم أزرار (⬆️ أسفل / ⬇️ أعلى) لتغيير الترتيب ثم اضغط حفظ الترتيب.</p>
+            <div id="articlesList">
+                <p style="text-align: center; color: #94a3b8;">جاري تحميل المقالات... ⏳</p>
+            </div>
+            <button class="btn" style="margin-top: 15px;" onclick="saveArticlesOrder()">💾 حفظ وترتيب المقالات في GitHub</button>
+        </div>
     </div>
-
-    <!-- أزرار المعاينة والنشر -->
-    <button type="button" class="btn-cyan" onclick="openPreviewModal()">معاينة المقال مباشر قبل النشر 👁️</button>
-    <button id="publishBtn" class="btn-green" onclick="saveArticle()">نشر المقال فوراً 🚀</button>
-    <button id="cancelEditBtn" class="btn-red" onclick="cancelEdit()" style="display:none; width:100%; margin-top:8px;">إلغاء التعديل</button>
-
-    <h2>📚 المقالات المنشورة حالياً</h2>
-    <button class="btn-blue" onclick="loadArticlesList()">تحديث جدول المقالات 🔄</button>
-    
-    <div id="articlesList">اضغط على زر التحديث لعرض الجدول.</div>
 
     <script>
-        // 🔑 كلمة المرور المعتمدة
-        const MASTER_PASS = "771005555#"; 
+        const REPO_OWNER = "mazen-alawdhali";
+        const REPO_NAME = "solartoolspro-blog"; // اسم مستودع المدونة على GitHub
+        const FILE_PATH = "articles.json";
 
-        // التحقق من حالة المصادقة عند التحميل
-        if (localStorage.getItem('admin_authenticated') === 'true') {
-            document.getElementById('authOverlay').style.display = 'none';
+        let token = localStorage.getItem('stp_github_token') || '';
+        let articles = [];
+        let fileSha = '';
+
+        if (token) {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            fetchArticlesFromGitHub();
         }
 
-        function checkMasterPassword() {
-            const inputPass = document.getElementById('sitePassword').value;
-            if (inputPass === MASTER_PASS) {
-                localStorage.setItem('admin_authenticated', 'true');
-                document.getElementById('authOverlay').style.display = 'none';
-                showToast('تم تسجيل الدخول بنجاح! 👋', 'success');
-                checkSavedDraft();
-            } else {
-                showToast('❌ كلمة المرور غير صحيحة!', 'error');
+        function login() {
+            const inputVal = document.getElementById('patInput').value.trim();
+            if (!inputVal) {
+                document.getElementById('loginError').innerText = 'الرجاء إدخال الرمز!';
+                return;
             }
+            token = inputVal;
+            localStorage.setItem('stp_github_token', token);
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            fetchArticlesFromGitHub();
         }
 
-        function lockAdminPanel() {
-            localStorage.removeItem('admin_authenticated');
-            document.getElementById('sitePassword').value = '';
-            document.getElementById('authOverlay').style.display = 'flex';
-            showToast('🔒 تم قفل لوحة التحكم بنجاح', 'success');
-        }
-
-        let articleToDeleteId = null;
-        let autoSaveTimer = null;
-
-        document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
-        }
-
-        // استعادة المسودة تلقائياً عند فتح اللوحة
-        window.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('admin_authenticated') === 'true') {
-                checkSavedDraft();
-            }
-        });
-
-        function scheduleAutoSave() {
-            document.getElementById('draftStatus').innerText = 'جاري الكتابة...';
-            clearTimeout(autoSaveTimer);
-            autoSaveTimer = setTimeout(saveDraftToLocal, 800);
-        }
-
-        function saveDraftToLocal() {
-            const title = document.getElementById('postTitle').value.trim();
-            const desc = document.getElementById('postDesc').value.trim();
-            const body = document.getElementById('postBody').innerHTML.trim();
-            const editId = document.getElementById('editArticleId').value;
-
-            const key = editId ? `article_draft_edit_${editId}` : 'article_draft_new';
-
-            if (title || desc || body) {
-                const draft = { title, desc, body, savedAt: new Date().toLocaleTimeString('ar-SA') };
-                localStorage.setItem(key, JSON.stringify(draft));
-                document.getElementById('draftStatus').innerText = `💾 تم حفظ المسودة تلقائياً (${draft.savedAt})`;
-            } else {
-                document.getElementById('draftStatus').innerText = '';
-            }
-        }
-
-        function checkSavedDraft() {
-            const editId = document.getElementById('editArticleId').value;
-            if (!editId) {
-                const draftRaw = localStorage.getItem('article_draft_new');
-                if (draftRaw) {
-                    try {
-                        const draft = JSON.parse(draftRaw);
-                        if (draft.title || draft.desc || draft.body) {
-                            document.getElementById('postTitle').value = draft.title || '';
-                            document.getElementById('postDesc').value = draft.desc || '';
-                            document.getElementById('postBody').innerHTML = draft.body || '';
-                            document.getElementById('draftStatus').innerText = `📄 تم استعادة مقال جديد غير منشور (${draft.savedAt})`;
-                            showToast('📄 تم استعادة المسودة بنجاح!', 'success');
-                        }
-                    } catch(e) {}
-                }
-            }
-        }
-
-        function clearDraft(editId = null) {
-            const key = editId ? `article_draft_edit_${editId}` : 'article_draft_new';
-            localStorage.removeItem(key);
-            document.getElementById('draftStatus').innerText = '';
-        }
-
-        // إغلاق قائمة الخطوط المنسدلة عند الضغط خارجها
-        document.addEventListener('click', function(e) {
-            const dropdown = document.getElementById('fontDropdown');
-            if (dropdown && !e.target.closest('.custom-dropdown')) {
-                dropdown.style.display = 'none';
-            }
-        });
-
-        function toggleFontMenu(e) {
-            e.stopPropagation();
-            const menu = document.getElementById('fontDropdown');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function setFontSize(size) {
-            document.execCommand('fontSize', false, size);
-            document.getElementById('fontDropdown').style.display = 'none';
-            document.getElementById('postBody').focus();
-        }
-
-        /* وظائف المعاينة المباشرة (Live Preview) */
-        function openPreviewModal() {
-            const title = document.getElementById('postTitle').value.trim() || 'عنوان المقال المعاين';
-            const desc = document.getElementById('postDesc').value.trim() || 'نبذة مختصرة عن المقال...';
-            const body = document.getElementById('postBody').innerHTML.trim() || '<p style="color:#64748b;">لا يوجد محتوى للمقال بعد...</p>';
-
-            document.getElementById('pvTitle').innerText = title;
-            document.getElementById('pvDesc').innerText = desc;
-            document.getElementById('pvBody').innerHTML = body;
-
-            document.getElementById('previewModal').style.display = 'block';
-        }
-
-        function closePreviewModal() {
-            document.getElementById('previewModal').style.display = 'none';
-        }
-
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.innerText = message;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        function showTopBanner(text) {
-            const b = document.getElementById('topBanner');
-            b.innerText = text;
-            b.style.display = 'block';
-        }
-        function hideTopBanner() {
-            document.getElementById('topBanner').style.display = 'none';
-        }
-
-        function execCmd(command, value = null) {
-            document.execCommand(command, false, value);
-            document.getElementById('postBody').focus();
-            scheduleAutoSave();
-        }
-
-        function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
-        function b64_to_utf8(str) { return decodeURIComponent(escape(window.atob(str.replace(/\s/g, '')))); }
-
-        const repoOwner = 'mazen-alawdhali'; 
-        const repoName = 'blog.solartoolspro.com'; 
-        const filePath = 'articles.json';
-        const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
-
-        async function fetchFileFromGithub(token) {
-            const res = await fetch(apiUrl, { headers: { 'Authorization': `token ${token}` } });
-            if (!res.ok) throw new Error('تعذر الاتصال بـ GitHub');
-            const data = await res.json();
-            const content = b64_to_utf8(data.content);
-            return { sha: data.sha, articles: JSON.parse(content) };
-        }
-
-        async function loadArticlesList() {
-            const token = document.getElementById('ghToken').value.trim();
-            const listDiv = document.getElementById('articlesList');
-            if (!token) return showToast('يرجى إدخال رمز الـ Token أولاً!', 'error');
-
-            showTopBanner('جاري جلب جدول المقالات...');
+        async function fetchArticlesFromGitHub() {
+            const status = document.getElementById('statusMsg');
+            status.innerText = 'جاري جلب المقالات من GitHub... ⏳';
             try {
-                const { articles } = await fetchFileFromGithub(token);
-                hideTopBanner();
-                if (articles.length === 0) {
-                    listDiv.innerText = 'لا توجد مقالات منشورة.';
-                    return;
-                }
-
-                let tableHtml = `
-                    <table class="articles-table">
-                        <thead>
-                            <tr>
-                                <th>عنوان المقال</th>
-                                <th style="width: 130px; text-align: center;">الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-
-                articles.forEach((art) => {
-                    tableHtml += `
-                        <tr>
-                            <td><b>${art.title}</b></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="btn-edit" onclick="prepareEdit(${art.id})">تعديل ✏️</button>
-                                    <button class="btn-red" onclick="openConfirmModal(${art.id})">حذف 🗑️</button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
+                const res = await window.fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+                    headers: { 'Authorization': `token ${token}` }
                 });
-
-                tableHtml += `</tbody></table>`;
-                listDiv.innerHTML = tableHtml;
+                if (!res.ok) throw new Error('فشل الاتصال بـ GitHub أو الرمز غير صحيح');
+                const data = await res.json();
+                fileSha = data.sha;
+                const jsonContent = decodeURIComponent(escape(window.atob(data.content)));
+                articles = JSON.parse(jsonContent);
+                renderAdminList();
+                status.innerText = '✅ تم تحميل المقالات بنجاح.';
             } catch (err) {
-                hideTopBanner();
-                listDiv.innerText = '❌ خطأ: ' + err.message;
-                showToast('خطأ في تحميل المقالات', 'error');
+                status.innerText = '❌ خطأ في الجلب: تأكد من الصلاحيات أو اسم المستودع.';
             }
         }
 
-        async function uploadAndInsertImages() {
-            const fileInput = document.getElementById('imageInput');
-            const token = document.getElementById('ghToken').value.trim();
-
-            if (!token) return showToast('يرجى إدخال رمز GitHub Token أولاً!', 'error');
-            if (fileInput.files.length === 0) return showToast('يرجى اختيار صور أولاً!', 'error');
-
-            const files = Array.from(fileInput.files);
-            showTopBanner(`جاري رفع ${files.length} صورة إلى السيرفر...`);
-
-            try {
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    showTopBanner(`جاري رفع الصورة ${i + 1} من ${files.length}...`);
-                    
-                    const base64Content = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.readAsDataURL(file);
-                        reader.onload = () => resolve(reader.result.split(',')[1]);
-                        reader.onerror = error => reject(error);
-                    });
-
-                    const fileName = `images/${Date.now()}_${i}_${file.name.replace(/\s+/g, '_')}`;
-                    const imgApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${fileName}`;
-
-                    const res = await fetch(imgApiUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: `رفع صورة: ${file.name}`,
-                            content: base64Content
-                        })
-                    });
-
-                    if (!res.ok) throw new Error(`فشل رفع الصورة ${file.name}`);
-
-                    const rawImageUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${fileName}`;
-                    
-                    document.getElementById('postBody').focus();
-                    document.execCommand('insertImage', false, rawImageUrl);
-                    scheduleAutoSave();
-                }
-
-                hideTopBanner();
-                showToast(`✅ تم رفع وإدراج ${files.length} صورة بنجاح!`, 'success');
-                fileInput.value = '';
-
-            } catch (err) {
-                hideTopBanner();
-                showToast('❌ خطأ أثناء رفع الصور: ' + err.message, 'error');
+        function renderAdminList() {
+            const container = document.getElementById('articlesList');
+            if (articles.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: #94a3b8;">لا توجد مقالات منشورة حالياً.</p>`;
+                return;
             }
+            let html = '';
+            articles.forEach((art, index) => {
+                html += `
+                    <div class="article-row">
+                        <div class="article-info">${index + 1}. ${art.title}</div>
+                        <div class="article-actions">
+                            <button class="btn btn-move" onclick="moveArticle(${index}, -1)">⬆️</button>
+                            <button class="btn btn-move" onclick="moveArticle(${index}, 1)">⬇️</button>
+                            <button class="btn btn-warning" onclick="editArticle(${index})">تعديل</button>
+                            <button class="btn btn-danger" onclick="deleteArticle(${index})">حذف</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function moveArticle(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= articles.length) return;
+            const temp = articles[index];
+            articles[index] = articles[newIndex];
+            articles[newIndex] = temp;
+            renderAdminList();
+        }
+
+        async function saveArticlesOrder() {
+            await commitToGitHub("إعادة ترتيب المقالات");
+        }
+
+        function autoSaveDraft() {
+            const draft = {
+                title: document.getElementById('artTitle').value,
+                description: document.getElementById('artDesc').value,
+                body: document.getElementById('artBody').value,
+                editIndex: document.getElementById('editIndex').value
+            };
+            localStorage.setItem('stp_article_draft', JSON.stringify(draft));
+        }
+
+        window.addEventListener('load', () => {
+            const savedDraft = localStorage.getItem('stp_article_draft');
+            if (savedDraft) {
+                const draft = JSON.parse(savedDraft);
+                document.getElementById('artTitle').value = draft.title || '';
+                document.getElementById('artDesc').value = draft.description || '';
+                document.getElementById('artBody').value = draft.body || '';
+                document.getElementById('editIndex').value = draft.editIndex || '-1';
+                if (draft.title) {
+                    document.getElementById('formTitle').innerText = '✍️ مسودة محفوظة (قيد التعديل/الإضافة)';
+                }
+            }
+        });
+
+        function editArticle(index) {
+            const art = articles[index];
+            document.getElementById('artTitle').value = art.title;
+            document.getElementById('artDesc').value = art.description;
+            document.getElementById('artBody').value = art.body;
+            document.getElementById('editIndex').value = index;
+            document.getElementById('formTitle').innerText = `📝 تعديل المقال: ${art.title}`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteArticle(index) {
+            if (!confirm('هل أنت متأكد من حذف هذا المقال نهائياً؟')) return;
+            articles.splice(index, 1);
+            commitToGitHub("حذف مقال").then(() => renderAdminList());
         }
 
         async function saveArticle() {
-            const token = document.getElementById('ghToken').value.trim();
-            const title = document.getElementById('postTitle').value.trim();
-            const desc = document.getElementById('postDesc').value.trim();
-            const bodyHtml = document.getElementById('postBody').innerHTML.trim();
-            const editId = document.getElementById('editArticleId').value;
-            const btn = document.getElementById('publishBtn');
+            const title = document.getElementById('artTitle').value.trim();
+            const description = document.getElementById('artDesc').value.trim();
+            const body = document.getElementById('artBody').value.trim();
+            const editIndex = parseInt(document.getElementById('editIndex').value);
 
-            if (!token || !title || !desc || !bodyHtml) {
-                return showToast('يرجى تعبئة كافة الحقول المطلوبة!', 'error');
+            if (!title || !description || !body) {
+                alert('الرجاء تعبئة جميع الحقول المطلوبة!');
+                return;
             }
 
-            localStorage.setItem('gh_token', token);
-            btn.disabled = true;
-            showTopBanner('جاري تحديث ونشر المقال على GitHub...');
+            const newArt = {
+                id: editIndex >= 0 && articles[editIndex] ? articles[editIndex].id : Date.now(),
+                title,
+                description,
+                body
+            };
 
+            if (editIndex >= 0) {
+                articles[editIndex] = newArt;
+            } else {
+                articles.unshift(newArt); // إضافة المقال الجديد في البداية
+            }
+
+            await commitToGitHub(editIndex >= 0 ? `تعديل المقال: ${title}` : `إضافة مقال جديد: ${title}`);
+            
+            // تنظيف المسودة بعد النجاح
+            localStorage.removeItem('stp_article_draft');
+            document.getElementById('artTitle').value = '';
+            document.getElementById('artDesc').value = '';
+            document.getElementById('artBody').value = '';
+            document.getElementById('editIndex').value = '-1';
+            document.getElementById('formTitle').innerText = '✍️ إضافة مقال جديد';
+        }
+
+        async function commitToGitHub(commitMessage) {
+            const status = document.getElementById('statusMsg');
+            status.innerText = 'جاري الحفظ والرفع إلى GitHub... ⏳';
             try {
-                const { sha, articles } = await fetchFileFromGithub(token);
+                const jsonString = JSON.stringify(articles, null, 2);
+                const contentEncoded = window.btoa(unescape(encodeURIComponent(jsonString)));
 
-                if (editId) {
-                    const index = articles.findIndex(a => a.id == editId);
-                    if (index !== -1) {
-                        articles[index].title = title;
-                        articles[index].description = desc;
-                        articles[index].body = bodyHtml;
-                    }
-                } else {
-                    articles.push({ id: Date.now(), title, description: desc, body: bodyHtml });
-                }
-
-                const updatedContent = utf8_to_b64(JSON.stringify(articles, null, 2));
-
-                const putRes = await fetch(apiUrl, {
+                const res = await window.fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
                     method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({
-                        message: editId ? `تعديل مقال: ${title}` : `إضافة مقال جديد: ${title}`,
-                        content: updatedContent,
-                        sha: sha
+                        message: commitMessage,
+                        content: contentEncoded,
+                        sha: fileSha
                     })
                 });
 
-                hideTopBanner();
-                btn.disabled = false;
-
-                if (putRes.ok) {
-                    showToast(editId ? '✅ تم تعديل المقال بنجاح!' : '🚀 تم نشر المقال الجديد بنجاح!', 'success');
-                    clearDraft(editId);
-                    cancelEdit();
-                    loadArticlesList();
-                } else {
-                    throw new Error('فشل حفظ التغييرات على السيرفر.');
-                }
+                if (!res.ok) throw new Error('فشل حفظ الملف على GitHub');
+                const data = await res.json();
+                fileSha = data.content.sha;
+                status.innerText = '✅ تم الحفظ والتحديث بنجاح تام!';
+                renderAdminList();
             } catch (err) {
-                hideTopBanner();
-                btn.disabled = false;
-                showToast('❌ خطأ: ' + err.message, 'error');
-            }
-        }
-
-        async function prepareEdit(id) {
-            const token = document.getElementById('ghToken').value.trim();
-            showTopBanner('جاري تحميل بيانات المقال...');
-            try {
-                const { articles } = await fetchFileFromGithub(token);
-                hideTopBanner();
-                const art = articles.find(a => a.id == id);
-                if (art) {
-                    document.getElementById('editArticleId').value = art.id;
-                    
-                    // البحث عن مسودة تعديل سابقة غير محفوظة لهذا المقال
-                    const savedEditDraftRaw = localStorage.getItem(`article_draft_edit_${id}`);
-                    if (savedEditDraftRaw) {
-                        try {
-                            const draft = JSON.parse(savedEditDraftRaw);
-                            document.getElementById('restoreDraftText').innerText = `وجدنا تعديلاً سابقاً غير محفوظ لهذا المقال (${draft.savedAt}). هل ترغب باستعادته؟`;
-                            
-                            const modal = document.getElementById('restoreDraftModal');
-                            modal.style.display = 'flex';
-
-                            document.getElementById('confirmRestoreBtn').onclick = function() {
-                                document.getElementById('postTitle').value = draft.title;
-                                document.getElementById('postDesc').value = draft.desc;
-                                document.getElementById('postBody').innerHTML = draft.body;
-                                document.getElementById('draftStatus').innerText = `📄 تم استعادة المسودة المعدلة غير المحفوظة (${draft.savedAt})`;
-                                modal.style.display = 'none';
-                            };
-
-                            document.getElementById('ignoreRestoreBtn').onclick = function() {
-                                document.getElementById('postTitle').value = art.title;
-                                document.getElementById('postDesc').value = art.description;
-                                document.getElementById('postBody').innerHTML = art.body;
-                                clearDraft(id);
-                                modal.style.display = 'none';
-                            };
-
-                        } catch(e) {
-                            document.getElementById('postTitle').value = art.title;
-                            document.getElementById('postDesc').value = art.description;
-                            document.getElementById('postBody').innerHTML = art.body;
-                        }
-                    } else {
-                        document.getElementById('postTitle').value = art.title;
-                        document.getElementById('postDesc').value = art.description;
-                        document.getElementById('postBody').innerHTML = art.body;
-                    }
-                    
-                    document.getElementById('formTitle').innerText = '✏️ تعديل المقال';
-                    document.getElementById('publishBtn').innerText = 'حفظ التعديلات 💾';
-                    document.getElementById('cancelEditBtn').style.display = 'block';
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-            } catch (err) {
-                hideTopBanner();
-                showToast(err.message, 'error');
-            }
-        }
-
-        function cancelEdit() {
-            const editId = document.getElementById('editArticleId').value;
-            document.getElementById('editArticleId').value = '';
-            document.getElementById('postTitle').value = '';
-            document.getElementById('postDesc').value = '';
-            document.getElementById('postBody').innerHTML = '';
-            document.getElementById('formTitle').innerText = '🚀 لوحة تحكم المدونة (PWA)';
-            document.getElementById('publishBtn').innerText = 'نشر المقال فوراً 🚀';
-            document.getElementById('cancelEditBtn').style.display = 'none';
-            document.getElementById('draftStatus').innerText = '';
-        }
-
-        function openConfirmModal(id) {
-            articleToDeleteId = id;
-            document.getElementById('confirmModal').style.display = 'flex';
-        }
-
-        function closeConfirmModal() {
-            articleToDeleteId = null;
-            document.getElementById('confirmModal').style.display = 'none';
-        }
-
-        document.getElementById('confirmDeleteBtn').onclick = function() {
-            if (articleToDeleteId) {
-                deleteArticle(articleToDeleteId);
-                closeConfirmModal();
-            }
-        };
-
-        async function deleteArticle(id) {
-            const token = document.getElementById('ghToken').value.trim();
-            showTopBanner('جاري حذف المقال وصوره من السيرفر...');
-
-            try {
-                const { sha, articles } = await fetchFileFromGithub(token);
-                const targetArticle = articles.find(a => a.id == id);
-                
-                if (targetArticle && targetArticle.body) {
-                    const imgRegex = /https:\/\/raw\.githubusercontent\.com\/[^\/]+\/[^\/]+\/[^\/]+\/(images\/[^"'\s>]+)/g;
-                    let match;
-                    while ((match = imgRegex.exec(targetArticle.body)) !== null) {
-                        const imgPath = match[1];
-                        try {
-                            const imgInfoRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${imgPath}`, {
-                                headers: { 'Authorization': `token ${token}` }
-                            });
-                            if (imgInfoRes.ok) {
-                                const imgData = await imgInfoRes.json();
-                                await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${imgPath}`, {
-                                    method: 'DELETE',
-                                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ message: `حذف صورة تلقائي للمقال: ${imgPath}`, sha: imgData.sha })
-                                });
-                            }
-                        } catch(e) {}
-                    }
-                }
-
-                const filteredArticles = articles.filter(a => a.id != id);
-                const updatedContent = utf8_to_b64(JSON.stringify(filteredArticles, null, 2));
-
-                const putRes = await fetch(apiUrl, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: `حذف مقال`,
-                        content: updatedContent,
-                        sha: sha
-                    })
-                });
-
-                hideTopBanner();
-                if (putRes.ok) {
-                    clearDraft(id);
-                    showToast('🗑️ تم حذف المقال وصوره المرفقة بنجاح!', 'success');
-                    loadArticlesList();
-                } else {
-                    throw new Error('فشل الحذف.');
-                }
-            } catch (err) {
-                hideTopBanner();
-                showToast('❌ خطأ: ' + err.message, 'error');
+                status.innerText = '❌ حدث خطأ أثناء الحفظ: ' + err.message;
             }
         }
     </script>
