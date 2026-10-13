@@ -2,73 +2,94 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0f172a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="مدونة الطاقة الشمسية">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدونة أدوات الطاقة الشمسية الاحترافية | SolarToolsPro</title>
     
-    <!-- ربط ملف الـ Manifest الرسمي للتثبيت كـ PWA -->
+    <!-- الوسوم المعتمدة لأيقونة الموقع (Favicon) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="https://blog.solartoolspro.com/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://blog.solartoolspro.com/favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://blog.solartoolspro.com/favicon.png">
     <link rel="manifest" href="manifest.json">
-    
-    <title>مدونة أدوات الطاقة الشمسية الاحترافية - SolarToolsPro</title>
+    <meta name="theme-color" content="#0f172a">
+
+    <!-- تحسينات محركات البحث ووسوم المشاركة -->
+    <meta name="description" content="أحدث المقالات والأدلة التقنية لأجهزة ومنظومات الطاقة الشمسية والبطاريات والإنفرترات">
+    <meta property="og:title" content="مدونة أدوات الطاقة الشمسية الاحترافية">
+    <meta property="og:description" content="أحدث المقالات والأدلة التقنية لأجهزة ومنظومات الطاقة الشمسية والبطاريات">
+    <meta property="og:type" content="website">
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #0f172a;
-            color: #ffffff;
-            padding: 16px;
-            max-width: 700px;
-            margin: 0 auto;
-            padding-bottom: 50px;
-            line-height: 1.7;
+            color: #f8fafc;
+            line-height: 1.6;
+            padding-bottom: 40px;
         }
-        
-        /* الهيدر مع صورة البنر والتدرج الجذاب */
-        header {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(30, 41, 59, 0.85)), url('images/header_balanced_sky_600w.webp') center/cover no-repeat;
-            border-bottom: 1px solid #334155;
-            border-radius: 16px;
-            padding: 35px 20px;
-            text-align: center;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        h1 { font-size: 22px; color: #38bdf8; margin-bottom: 6px; font-weight: 800; text-shadow: 0 2px 6px rgba(0,0,0,0.8); }
-        p.subtitle { font-size: 13px; color: #34d399; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
-        /* شريط البحث والتصنيفات */
-        .search-box {
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* الهيدر والبنر الرئيسي - بدون أي ضبابية (Blur Removed) */
+        header {
+            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('https://blog.solartoolspro.com/images/banner.jpg') center/cover no-repeat;
+            text-align: center;
+            padding: 45px 20px 35px;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 25px;
+            border-radius: 0 0 20px 20px;
+        }
+        header h1 {
+            font-size: 24px;
+            color: #38bdf8;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+        header p {
+            font-size: 14px;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* أدوات البحث والتصفية */
+        .controls-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 25px;
+        }
+        .search-input {
             width: 100%;
             padding: 12px 16px;
-            background-color: #1e293b;
+            background-color: #0f172a;
             border: 1px solid #334155;
             border-radius: 10px;
             color: #fff;
             font-size: 14px;
-            margin-bottom: 12px;
             outline: none;
+            margin-bottom: 12px;
         }
-        .search-box:focus { border-color: #38bdf8; }
+        .search-input:focus { border-color: #38bdf8; }
 
-        .categories-bar {
+        .categories {
             display: flex;
             gap: 8px;
             overflow-x: auto;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            scrollbar-width: none;
+            padding-bottom: 4px;
         }
-        .categories-bar::-webkit-scrollbar { display: none; }
         .cat-btn {
-            background-color: #1e293b;
-            color: #94a3b8;
+            background-color: #0f172a;
             border: 1px solid #334155;
-            padding: 6px 14px;
+            color: #cbd5e1;
+            padding: 7px 16px;
             border-radius: 20px;
             font-size: 13px;
-            font-weight: bold;
             cursor: pointer;
             white-space: nowrap;
             transition: 0.2s;
@@ -79,309 +100,284 @@
             border-color: #0284c7;
         }
 
-        /* كروت المقالات */
+        /* شبكة المقالات (Cards) */
+        .articles-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
         .article-card {
             background-color: #1e293b;
             border: 1px solid #334155;
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 20px;
-            margin-bottom: 18px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            scroll-margin-top: 30px;
+            transition: transform 0.2s, border-color 0.2s;
         }
-        .article-card h2 { font-size: 18px; color: #f8fafc; margin-bottom: 8px; line-height: 1.4; }
+        .article-card:target {
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+        }
         .article-meta {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 12px;
             font-size: 12px;
             color: #38bdf8;
             margin-bottom: 10px;
         }
-        .article-card p { font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 15px; }
-        
+        .article-title {
+            font-size: 18px;
+            color: #f8fafc;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .article-desc {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
         .article-body {
+            display: none;
             font-size: 15px;
             line-height: 1.8;
             color: #e2e8f0;
             border-top: 1px solid #334155;
             padding-top: 15px;
-            margin-top: 15px;
-            display: none;
+            margin-bottom: 15px;
         }
         .article-body img {
             max-width: 100% !important;
             height: auto !important;
             border-radius: 10px;
             margin: 12px 0;
-            display: block;
             border: 1px solid #334155;
         }
-        .article-body blockquote {
-            border-right: 3px solid #38bdf8;
-            padding-right: 12px;
-            color: #cbd5e1;
-            margin: 12px 0;
-            font-style: italic;
-        }
 
-        .toggle-btn {
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-read {
+            flex: 1;
             background-color: #0284c7;
             color: #fff;
             border: none;
             padding: 10px 16px;
             border-radius: 10px;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            width: 100%;
-            transition: 0.2s;
-            margin-top: 15px;
+            text-align: center;
         }
-        .toggle-btn:hover { background-color: #0369a1; }
-
-        /* أزرار المشاركة */
-        .share-section {
-            border-top: 1px solid #334155;
-            padding-top: 15px;
-            margin-top: 20px;
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-        }
-        .share-btn {
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: bold;
+        .btn-share {
+            background-color: #16a34a;
             color: #fff;
             border: none;
-            cursor: pointer;
-        }
-        .btn-whatsapp { background-color: #22c55e; }
-        .btn-telegram { background-color: #0ea5e9; }
-        .btn-copy { background-color: #475569; }
-
-        /* الفوتر المطابق تماماً للدومين الأساسي[span_0](start_span)[span_0](end_span)[span_1](start_span)[span_1](end_span) */
-        footer {
-            background-color: #0f172a;
-            border-top: 1px solid #334155;
-            text-align: center;
-            padding: 35px 20px;
+            padding: 10px 16px;
+            border-radius: 10px;
             font-size: 14px;
-            color: #ffffff;
-            margin-top: 40px;
-        }
-
-        .footer-nav {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 18px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #1e293b;
-        }
-
-        .footer-nav a {
-            color: #38bdf8;
-            text-decoration: none;
-            font-weight: 700;
-            transition: color 0.2s;
-        }
-
-        .footer-nav a:hover {
-            color: #34d399;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 14px;
-        }
-
-        .footer-links a {
-            color: #cbd5e1;
-            text-decoration: none;
-            transition: color 0.2s;
+            font-weight: bold;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .footer-links a:hover {
-            color: #10b981;
+        /* نظام التنبيهات المنبثقة العصري (Toasts) */
+        #toastContainer {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 90%;
+            max-width: 400px;
+            pointer-events: none;
         }
+        .toast {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            animation: slideDown 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+            text-align: center;
+        }
+        .toast-success { background: rgba(16, 185, 129, 0.95); border: 1px solid #34d399; }
+        .toast-error { background: rgba(239, 68, 68, 0.95); border: 1px solid #f87171; }
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 
-        .loading, .error-msg { text-align: center; padding: 30px; color: #94a3b8; font-size: 14px; }
+        /* الفوتر */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            font-size: 13px;
+        }
+        footer a { color: #38bdf8; text-decoration: none; }
     </style>
 </head>
 <body>
 
+    <div id="toastContainer"></div>
+
     <header>
-        <h1>مدونة أدوات الطاقة الشمسية الاحترافية - SolarToolsPro</h1>
-        <p class="subtitle">أحدث المقالات والأدلة التقنية لأنظمة الطاقة الشمسية والبطاريات</p>
+        <h1>مدونة أدوات الطاقة الشمسية الاحترافية</h1>
+        <p>SolarToolsPro - دليلكم التقني الشامل لمنظومات الطاقة الشمسية والبطاريات والإنفرترات</p>
     </header>
 
-    <!-- شريط البحث السريع -->
-    <input type="text" id="searchInput" class="search-box" placeholder="🔍 ابحث في المقالات التقنية..." oninput="filterArticles()">
+    <div class="container">
+        <!-- شريط البحث والتصنيفات -->
+        <div class="controls-card">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 ابحث في المقالات التقنية..." oninput="filterArticles()">
+            <div class="categories">
+                <button class="cat-btn active" onclick="filterCategory('all', this)">الكل</button>
+                <button class="cat-btn" onclick="filterCategory('بطاريات', this)">البطاريات</button>
+                <button class="cat-btn" onclick="filterCategory('ألواح', this)">الألواح الشمسية</button>
+                <button class="cat-btn" onclick="filterCategory('إنفرترات', this)">الإنفرترات</button>
+            </div>
+        </div>
 
-    <!-- شريط التصنيفات والفلترة -->
-    <div class="categories-bar">
-        <button class="cat-btn active" onclick="filterByCategory('all', this)">الكل</button>
-        <button class="cat-btn" onclick="filterByCategory('بطاريات', this)">البطاريات</button>
-        <button class="cat-btn" onclick="filterByCategory('ألواح', this)">الألواح الشمسية</button>
-        <button class="cat-btn" onclick="filterByCategory('إنفرترات', this)">الإنفرترات</button>
-        <button class="cat-btn" onclick="filterByCategory('حماية', this)">الحماية والأحمال</button>
+        <!-- خلاصة المقالات -->
+        <div id="articlesFeed" class="articles-feed">
+            <div style="text-align: center; color: #94a3b8; padding: 30px;">جاري تحميل المقالات... ⏳</div>
+        </div>
+
+        <footer>
+            تصميم وتطوير <b>م. مازن العوذلي</b> © 2026 جميع الحقوق محفوظة | <a href="https://solartoolspro.com" target="_blank">حاسبة الطاقة الرئيسية</a>
+        </footer>
     </div>
-
-    <main id="articlesContainer">
-        <div class="loading">جاري تحميل المقالات... ⏳</div>
-    </main>
-
-    <!-- الفوتر المطابق تماماً للدومين الأساسي[span_2](start_span)[span_2](end_span)[span_3](start_span)[span_3](end_span) -->
-    <footer>
-        <div class="footer-nav">
-            <a href="privacy.html">سياسة الخصوصية</a> |
-            <a href="about.html">نبذة عنا</a> |
-            <a href="contact.html">اتصل بنا</a>
-        </div>
-        <p>تصميم وتطوير <strong style="color:#10b981;">مازن العوذلي</strong> &copy; 2026 جميع الحقوق محفوظة</p>
-        <div class="footer-links">
-            <a onclick="openApp('https://calc.solartoolspro.com')">الحاسبة الذكية</a> |
-            <a onclick="openApp('https://panels.solartoolspro.com')">حاسبة الألواح</a> |
-            <a onclick="openApp('https://battery.solartoolspro.com')">حاسبة البطارية</a>
-        </div>
-    </footer>
 
     <script>
         let allArticles = [];
+        let currentCategory = 'all';
 
+        // إشعار عصري منبثق
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // جلب المقالات المباشر مع منع التخزين المؤقت (Cache-Busting)
+        async function fetchArticles() {
+            try {
+                const res = await fetch(`https://raw.githubusercontent.com/mazen-alawdhali/blog.solartoolspro.com/main/articles.json?t=${Date.now()}`);
+                if (!res.ok) throw new Error('فشل جلب البيانات');
+                allArticles = await res.json();
+                renderArticles(allArticles);
+                
+                // التوجيه المباشر للمقال المحدد في حالة النقر على رابط الواتساب
+                if (window.location.hash) {
+                    const targetId = window.location.hash.replace('#article-', '');
+                    setTimeout(() => {
+                        toggleArticle(targetId, true);
+                        const el = document.getElementById(`article-${targetId}`);
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }, 300);
+                }
+            } catch (err) {
+                document.getElementById('articlesFeed').innerHTML = `<div style="text-align: center; color: #f87171;">❌ متعذر تحميل المقالات حالياً.</div>`;
+            }
+        }
+
+        // عرض المقالات
+        function renderArticles(articles) {
+            const feed = document.getElementById('articlesFeed');
+            if (!articles || articles.length === 0) {
+                feed.innerHTML = `<div style="text-align: center; color: #94a3b8; padding: 20px;">لا توجد مقالات مطابقة للبحث.</div>`;
+                return;
+            }
+
+            feed.innerHTML = articles.map(art => `
+                <div class="article-card" id="article-${art.id}">
+                    <div class="article-meta">
+                        <span>📖 مقال تقني</span>
+                        <span>⏱️ 3 دقائق قراءة</span>
+                    </div>
+                    <h2 class="article-title">${art.title}</h2>
+                    <p class="article-desc">${art.description}</p>
+                    
+                    <div class="article-body" id="body-${art.id}">
+                        ${art.body}
+                    </div>
+
+                    <div class="card-actions">
+                        <button class="btn-read" id="btn-read-${art.id}" onclick="toggleArticle(${art.id})">قراءة المقال كاملاً 📖</button>
+                        <button class="btn-share" onclick="shareToWhatsApp(${art.id}, '${escapeQuotes(art.title)}')">واتساب 📲</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeQuotes(str) {
+            return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        // إظهار/إخفاء المقال
+        function toggleArticle(id, forceOpen = false) {
+            const bodyEl = document.getElementById(`body-${id}`);
+            const btnEl = document.getElementById(`btn-read-${id}`);
+            
+            if (!bodyEl) return;
+
+            const isOpen = bodyEl.style.display === 'block';
+            if (!isOpen || forceOpen) {
+                bodyEl.style.display = 'block';
+                if (btnEl) btnEl.innerText = 'إغلاق المقال ✖';
+            } else {
+                bodyEl.style.display = 'none';
+                if (btnEl) btnEl.innerText = 'قراءة المقال كاملاً 📖';
+            }
+        }
+
+        // 📲 مشاركة المقال المحدّد بالضبط عبر واتساب
+        function shareToWhatsApp(id, title) {
+            const targetArticleUrl = `https://blog.solartoolspro.com/#article-${id}`;
+            const message = `📌 *${title}*\n\nاقرأ المقال التقني كاملاً عبر الرابط التالي:\n${targetArticleUrl}`;
+            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            
+            window.open(waUrl, '_blank');
+            showToast('جاري فتح واتساب للمشاركة... 📲', 'success');
+        }
+
+        // تصفية وحث المقالات
+        function filterArticles() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filtered = allArticles.filter(art => {
+                const matchesQuery = art.title.toLowerCase().includes(query) || art.description.toLowerCase().includes(query);
+                const matchesCat = currentCategory === 'all' || art.title.includes(currentCategory) || art.description.includes(currentCategory);
+                return matchesQuery && matchesCat;
+            });
+            renderArticles(filtered);
+        }
+
+        function filterCategory(cat, btn) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentCategory = cat;
+            filterArticles();
+        }
+
+        // تسجيل الـ Service Worker للمدونة PWA
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
 
-        async function fetchArticles() {
-            try {
-                const res = await fetch('articles.json?t=' + Date.now());
-                if (!res.ok) throw new Error('تعذر تحميل المقالات');
-                allArticles = await res.json();
-                displayArticles(allArticles);
-            } catch (err) {
-                document.getElementById('articlesContainer').innerHTML = `<div class="error-msg">❌ لا توجد مقالات منشورة حالياً أو تعذر الاتصال بالسيرفر.</div>`;
-            }
-        }
-
-        function calculateReadingTime(text) {
-            const words = text.replace(/<[^>]*>/g, '').split(/\s+/).length;
-            const minutes = Math.ceil(words / 150);
-            return minutes < 1 ? 1 : minutes;
-        }
-
-        function displayArticles(articles) {
-            const container = document.getElementById('articlesContainer');
-            if (articles.length === 0) {
-                container.innerHTML = `<div class="error-msg">📭 لا توجد مقالات مطابقة لبحثك.</div>`;
-                return;
-            }
-
-            let html = '';
-            articles.forEach(art => {
-                const readTime = calculateReadingTime(art.body || '');
-                html += `
-                    <div class="article-card" id="card-${art.id}">
-                        <div class="article-meta">
-                            <span>⏱️ ${readTime} دقائق قراءة</span>
-                        </div>
-                        <h2>${art.title}</h2>
-                        <p>${art.description}</p>
-                        
-                        <div class="article-body" id="body-${art.id}">
-                            ${art.body}
-                            
-                            <div class="share-section">
-                                <button class="share-btn btn-whatsapp" onclick="shareToWhatsApp(${art.id})">واتساب 💚</button>
-                                <button class="share-btn btn-telegram" onclick="shareToTelegram(${art.id})">تلجرام 💙</button>
-                                <button class="share-btn btn-copy" onclick="copyArticleLink(${art.id})">نسخ الرابط 🔗</button>
-                            </div>
-                        </div>
-
-                        <button class="toggle-btn" id="btn-${art.id}" onclick="toggleArticle(${art.id})">قراءة المقال كاملاً 📖</button>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function toggleArticle(id) {
-            const bodyDiv = document.getElementById(`body-${id}`);
-            const btn = document.getElementById(`btn-${id}`);
-
-            if (bodyDiv.style.display === 'block') {
-                bodyDiv.style.display = 'none';
-                btn.innerText = 'قراءة المقال كاملاً 📖';
-                document.getElementById(`card-${id}`).scrollIntoView({ behavior: 'smooth' });
-            } else {
-                bodyDiv.style.display = 'block';
-                btn.innerText = 'إخفاء المقال ✖';
-            }
-        }
-
-        function filterArticles() {
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            const filtered = allArticles.filter(art => 
-                art.title.toLowerCase().includes(query) || 
-                art.description.toLowerCase().includes(query) ||
-                art.body.toLowerCase().includes(query)
-            );
-            displayArticles(filtered);
-        }
-
-        function filterByCategory(category, btnElement) {
-            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
-
-            if (category === 'all') {
-                displayArticles(allArticles);
-            } else {
-                const filtered = allArticles.filter(art => 
-                    art.title.toLowerCase().includes(category) || 
-                    art.description.toLowerCase().includes(category) ||
-                    art.body.toLowerCase().includes(category)
-                );
-                displayArticles(filtered);
-            }
-        }
-
-        function shareToWhatsApp(id) {
-            const art = allArticles.find(a => a.id == id);
-            if (!art) return;
-            const url = window.location.href.split('#')[0] + '#' + art.id;
-            const text = `📌 ${art.title}\n\n${art.description}\n\nاقرأ المقال كاملاً:\n${url}`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        }
-
-        function shareToTelegram(id) {
-            const art = allArticles.find(a => a.id == id);
-            if (!art) return;
-            const url = window.location.href.split('#')[0] + '#' + art.id;
-            const text = `📌 ${art.title}\n\n${art.description}`;
-            window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
-        }
-
-        function copyArticleLink(id) {
-            const art = allArticles.find(a => a.id == id);
-            if (!art) return;
-            const url = window.location.href.split('#')[0] + '#' + art.id;
-            navigator.clipboard.writeText(url).then(() => {
-                alert('📋 تم نسخ رابط المقال بنجاح!');
-            });
-        }
-
-        function openApp(baseUrl) {
-            window.open(baseUrl, '_blank');
-        }
-
-        fetchArticles();
+        window.addEventListener('DOMContentLoaded', fetchArticles);
     </script>
 </body>
 </html>
