@@ -83,7 +83,7 @@
             gap: 8px;
             overflow-x: auto;
             padding-bottom: 10px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             scrollbar-width: none;
         }
         .categories-bar::-webkit-scrollbar { display: none; }
@@ -105,7 +105,7 @@
             border-color: #0284c7;
         }
 
-        /* صندوق الوصف التوضيحي كمقدمة تحت البحث والتصنيفات */
+        /* صندوق الوصف التوضيحي كمقدمة */
         .header-description {
             background-color: #1e293b;
             border: 1px solid #334155;
@@ -231,6 +231,32 @@
         .btn-telegram { background-color: #0ea5e9; }
         .btn-copy { background-color: #475569; }
 
+        /* 🌐 كارت الشفافية الشفاف أسفل المقالات للانتقال للمنصة - بلون النص الأخضر الجذاب */
+        .platform-glass-card {
+            display: block;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            border-radius: 14px;
+            padding: 16px 20px;
+            text-align: center;
+            color: #34d399;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+        .platform-glass-card:hover {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: #34d399;
+            color: #ffffff;
+            box-shadow: 0 6px 20px rgba(52, 211, 153, 0.3);
+        }
+
         /* نظام التنبيهات المنبثقة العصري (Toasts) */
         #toastContainer {
             position: fixed;
@@ -260,7 +286,7 @@
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 
-        /* الفوتر المطابق تماماً للدومين الأساسي */
+        /* الفوتر */
         footer {
             background-color: #0f172a;
             border-top: 1px solid #334155;
@@ -268,7 +294,7 @@
             padding: 35px 20px;
             font-size: 14px;
             color: #ffffff;
-            margin-top: 40px;
+            margin-top: 30px;
         }
 
         .footer-nav {
@@ -324,7 +350,7 @@
     <!-- شريط البحث السريع -->
     <input type="text" id="searchInput" class="search-box" placeholder="🔍 ابحث في المقالات والأخبار التقنية..." oninput="filterArticles()">
 
-    <!-- شريط التصنيفات والفلترة المحدث -->
+    <!-- شريط التصنيفات والفلترة -->
     <div class="categories-bar">
         <button class="cat-btn active" onclick="filterByCategory('all', this)">الكل</button>
         <button class="cat-btn" onclick="filterByCategory('طاقة', this)">☀️ الطاقة الشمسية</button>
@@ -333,7 +359,7 @@
         <button class="cat-btn" onclick="filterByCategory('بطاريات', this)">🔋 البطاريات</button>
     </div>
 
-    <!-- صندوق الوصف التوضيحي المحدث -->
+    <!-- صندوق الوصف التوضيحي -->
     <div class="header-description">
         مرجعك الشامل لأخبار ومقالات منظومات الطاقة الشمسية وبطاريات الليثيوم، التكنولوجيا، الهواتف، والحواسيب.
     </div>
@@ -342,7 +368,12 @@
         <div class="loading">جاري تحميل المقالات... ⏳</div>
     </main>
 
-    <!-- الفوتر المطابق تماماً للدومين الأساسي -->
+    <!-- 🌐 الإطار الزجاجي الشفاف بالنص الأخضر المشرق للانتقال للمنصة -->
+    <a href="https://solartoolspro.com" target="_blank" class="platform-glass-card">
+        منصة أدوات الطاقة الشمسية الإحترافية
+    </a>
+
+    <!-- الفوتر -->
     <footer>
         <div class="footer-nav">
             <a href="privacy.html">سياسة الخصوصية</a> |
