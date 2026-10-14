@@ -171,6 +171,26 @@
             font-weight: 800;
             line-height: 1.4;
         }
+        /* احترام خيارات المحاذاة المحددة من المحرر المرئي */
+        .article-body [style*="text-align: center"],
+        .article-body [align="center"],
+        .article-body div[style*="text-align: center"],
+        .article-body p[style*="text-align: center"],
+        .article-body h1[style*="text-align: center"],
+        .article-body h2[style*="text-align: center"],
+        .article-body h3[style*="text-align: center"],
+        .article-body h4[style*="text-align: center"] {
+            text-align: center !important;
+        }
+        .article-body [style*="text-align: left"],
+        .article-body [align="left"] {
+            text-align: left !important;
+        }
+        .article-body [style*="text-align: right"],
+        .article-body [align="right"] {
+            text-align: right !important;
+        }
+
         .article-body img {
             max-width: 100% !important;
             height: auto !important;
