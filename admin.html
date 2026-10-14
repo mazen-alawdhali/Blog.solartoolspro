@@ -10,6 +10,10 @@
     
     <!-- ربط ملف الـ Manifest الرسمي للتثبيت -->
     <link rel="manifest" href="manifest.json">
+
+    <!-- مكتبات Firebase السحابية للحفظ الاحتياطي الثانوي -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
     <title>لوحة إدارة المدونة | SolarToolsPro</title>
     <style>
@@ -46,7 +50,7 @@
             transition: 0.2s;
         }
         .btn-green { background-color: #10b981; color: #fff; width: 100%; font-size: 16px; padding: 12px; }
-        .btn-blue { background-color: #0284c7; color: #fff; width: 100%; margin-bottom: 10px; }
+        .btn-blue { background-color: #0284c7; color: #fff; width: 100%; }
         .btn-purple { background-color: #6366f1; color: #fff; width: 100%; margin-bottom: 8px; }
         .btn-cyan { background-color: #06b6d4; color: #fff; width: 100%; margin-bottom: 8px; font-size: 15px; padding: 11px; }
         .btn-red { background-color: #ef4444; color: #fff; }
@@ -404,11 +408,95 @@
     <button id="cancelEditBtn" class="btn-red" onclick="cancelEdit()" style="display:none; width:100%; margin-top:8px;">إلغاء التعديل</button>
 
     <h2>📚 المقالات المنشورة حالياً</h2>
-    <button class="btn-blue" onclick="loadArticlesList()">تحديث قائمة المقالات 🔄</button>
+    <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+        <button class="btn-blue" onclick="loadArticlesList()" style="flex: 1; margin-bottom: 0;">تحديث قائمة المقالات 🔄</button>
+        <button class="btn-cyan" onclick="restoreArticlesFromCloud()" style="flex: 1; margin-bottom: 0; font-size: 14px;">📥 استعادة من السحابة</button>
+    </div>
     
     <div id="articlesList">اضغط على زر التحديث لعرض المقالات.</div>
 
     <script>
+        // إعدادات Firebase السحابية الاحتياطية (مطابقة لمساعد النشر)
+        const firebaseConfig = {
+          apiKey: "AIzaSyA89DKwcT9Kke59BdpFR5MgE-iQFYF7k6Q",
+          authDomain: "posthelperpro.firebaseapp.com",
+          projectId: "posthelperpro",
+          storageBucket: "posthelperpro.firebasestorage.app",
+          messagingSenderId: "867686946998",
+          appId: "1:867686946998:web:4660f6531f9b089ad0ae17",
+          measurementId: "G-Y6BHWKVJJL"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // دالة الحفظ السحابي الثانوي التلقائي للمقالات
+        function backupArticlesToCloud(articlesArray) {
+            db.collection("blogData").doc("articlesBackup").set({
+                articles: articlesArray,
+                lastUpdated: new Date().toISOString()
+            }).then(() => {
+                console.log("🛡️ تم تحديث النسخة الاحتياطية السحابية للمقالات بنجاح!");
+            }).catch((error) => {
+                console.error("❌ خطأ في الحفظ السحابي للمقالات:", error);
+            });
+        }
+
+        // دالة استرجاع المقالات من السحابة في حال حذف ملف articles.json بالخطأ
+        async function restoreArticlesFromCloud() {
+            const token = document.getElementById('ghToken').value.trim();
+            if (!token) return showToast('يرجى إدخال رمز GitHub Token أولاً لاستعادة المقالات على GitHub!', 'error');
+
+            showTopBanner('جاري جلب النسخة الاحتياطية من السحابة...');
+            try {
+                const doc = await db.collection("blogData").doc("articlesBackup").get();
+                hideTopBanner();
+                if (doc.exists && doc.data().articles) {
+                    const cloudArticles = doc.data().articles;
+                    if (confirm(`تم العثور على ${cloudArticles.length} مقال في النسخة الاحتياطية السحابية. هل تريد استعادتها ونشرها فوراً على GitHub؟`)) {
+                        showTopBanner('جاري استعادة ونشر المقالات على GitHub...');
+                        
+                        let currentSha = '';
+                        try {
+                            const currentFile = await fetchFileFromGithub(token);
+                            currentSha = currentFile.sha;
+                        } catch(e) {
+                            // إذا كان الملف محذوفاً تماماً من المستودع
+                            currentSha = undefined; 
+                        }
+
+                        const updatedContent = utf8_to_b64(JSON.stringify(cloudArticles, null, 2));
+                        const putBody = {
+                            message: 'استعادة المقالات من النسخة الاحتياطية السحابية',
+                            content: updatedContent
+                        };
+                        if (currentSha) putBody.sha = currentSha;
+
+                        const putRes = await fetch(apiUrl, {
+                            method: 'PUT',
+                            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify(putBody)
+                        });
+
+                        hideTopBanner();
+                        if (putRes.ok) {
+                            showToast('✅ تم استعادة المقالات بنجاح على GitHub!', 'success');
+                            loadArticlesList();
+                        } else {
+                            throw new Error('فشل حفظ المقالات المسترجعة على السيرفر.');
+                        }
+                    }
+                } else {
+                    showToast('⚠️ لا توجد نسخة احتياطية سحابية متاحة حالياً.', 'error');
+                }
+            } catch (err) {
+                hideTopBanner();
+                showToast('❌ خطأ أثناء الاسترجاع: ' + err.message, 'error');
+            }
+        }
+
         // 🔑 كلمة المرور المعتمدة
         const MASTER_PASS = "771005555#"; 
 
@@ -595,6 +683,9 @@
                     return;
                 }
 
+                // تحديث نسخة سحابية احتياطية تطبيقيًا عند كل تحميل ناجح
+                backupArticlesToCloud(loadedArticles);
+
                 renderArticlesCards();
             } catch (err) {
                 hideTopBanner();
@@ -714,6 +805,9 @@
                     articles.push({ id: Date.now(), title, description: desc, body: bodyHtml });
                 }
 
+                // تحديث النسخة الاحتياطية السحابية فوراً
+                backupArticlesToCloud(articles);
+
                 const updatedContent = utf8_to_b64(JSON.stringify(articles, null, 2));
 
                 const putRes = await fetch(apiUrl, {
@@ -829,6 +923,9 @@
 
             showTopBanner('جاري حفظ الترتيب الجديد على GitHub...');
             try {
+                // تحديث النسخة الاحتياطية السحابية فوراً
+                backupArticlesToCloud(loadedArticles);
+
                 const updatedContent = utf8_to_b64(JSON.stringify(loadedArticles, null, 2));
                 const putRes = await fetch(apiUrl, {
                     method: 'PUT',
@@ -902,6 +999,10 @@
                 }
 
                 const filteredArticles = articles.filter(a => a.id != id);
+                
+                // تحديث النسخة الاحتياطية السحابية فوراً بعد الحذف
+                backupArticlesToCloud(filteredArticles);
+
                 const updatedContent = utf8_to_b64(JSON.stringify(filteredArticles, null, 2));
 
                 const putRes = await fetch(apiUrl, {
