@@ -23,7 +23,8 @@
     "id": 1791848529049,
     "title": "الموازنة بين سعة بطاريات الليثيوم ونسبة التفريغ الآمنة (DoD)",
     "description": "الموازنة بين سعة بطاريات الليثيوم ونسبة التفريغ الآمنة",
-    "body": "<h3><span style=\"font-weight: normal;\">تتميز بطاريات الليثيوم (LiFePO4) بكفاءة تفريغ عالية وعمر افتراضي طويل مقارنة ببطاريات الجل والرصاص. للحفاظ على عمر البطارية وتجنب التدهور السريع، يُوصى بضبط عمق التفريغ الآمن (Depth of Discharge - DoD) عند 80%. حساب السعة الفعلية بالأمبير-ساعة (Ah) أو الكيلوواط-ساعة (kWh) يضمن استمرارية التغذية الكهربائية خلال فترات غياب الشمس والليل.</span></h3><div><span style=\"font-weight: normal;\"><br></span></div><div><img src=\"https://raw.githubusercontent.com/mazen-alawdhali/blog.solartoolspro.com/main/images/1791860575068_0_1791860529262.jpg\"></div>"
+    "body": "<h3><span style=\"font-weight: normal;\">تتميز بطاريات الليثيوم (LiFePO4) بكفاءة تفريغ عالية وعمر افتراضي طويل مقارنة ببطاريات الجل والرصاص. للحفاظ على عمر البطارية وتجنب التدهور السريع، يُوصى بضبط عمق التفريغ الآمن (Depth of Discharge - DoD) عند 80%. حساب السعة الفعلية بالأمبير-ساعة (Ah) أو الكيلوواط-ساعة (kWh) يضمن استمرارية التغذية الكهربائية خلال فترات غياب الشمس والليل.</span></h3><div><span style=\"font-weight: normal;\"><br></span></div><div><img src=\"https://raw.githubusercontent.com/mazen-alawdhali/blog.solartoolspro.com/main/images/1791860575068_0_1791860529262.jpg\"></div>",
+    "category": "🔋 البطاريات"
   },
   {
     "id": 3,
