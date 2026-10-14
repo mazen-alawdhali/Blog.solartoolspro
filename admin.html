@@ -555,6 +555,7 @@
         }
 
         function setTextColor(color) {
+            document.execCommand('styleWithCSS', false, true);
             document.execCommand('foreColor', false, color);
             document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
             document.getElementById('postBody').focus();
