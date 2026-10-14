@@ -404,7 +404,7 @@
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<blockquote>')" title="اقتباس">❞</button>
             <button type="button" class="tool-btn" onclick="execCmd('insertHorizontalRule')" title="خط فاصل">―</button>
 
-            <!-- زر حذف الصورة المحددة الجديد -->
+            <!-- زر حذف الصور المحددة -->
             <button type="button" class="tool-btn" onclick="deleteSelectedImage()" title="حذف الصور المحددة" style="background-color: #ef4444; color: #fff; min-width: 42px;">🗑️</button>
 
             <!-- أزرار المحاذاة الجديدة -->
@@ -495,11 +495,16 @@
             document.getElementById('deleteImgModal').style.display = 'none';
         }
 
-        // تنفيذ الحذف الفعلي لكافة الصور المحددة
+        // تنفيذ الحذف الفعلي لكافة الصور المحددة بشكل آمن ومضمون
         document.getElementById('confirmDeleteImgBtn').onclick = function() {
             if (selectedImageElements.length > 0) {
-                const count = selectedImageElements.length;
-                selectedImageElements.forEach(img => img.remove());
+                const imagesToDelete = [...selectedImageElements];
+                const count = imagesToDelete.length;
+                imagesToDelete.forEach(img => {
+                    if (img && img.parentNode) {
+                        img.remove();
+                    }
+                });
                 selectedImageElements = [];
                 closeDeleteImgModal();
                 showToast(`🗑️ تم حذف ${count} صورة من المقال بنجاح!`, 'success');
