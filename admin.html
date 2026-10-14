@@ -31,7 +31,7 @@
         h2 { font-size: 16px; margin-top: 30px; border-top: 1px solid #334155; padding-top: 20px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px; }
-        input {
+        input, select {
             width: 100%;
             padding: 12px;
             background-color: #1e293b;
@@ -39,7 +39,9 @@
             border-radius: 8px;
             color: #fff;
             font-size: 14px;
+            outline: none;
         }
+        input:focus, select:focus { border-color: #38bdf8; }
         button {
             padding: 10px 14px;
             border: none;
@@ -342,6 +344,17 @@
     <input type="hidden" id="editArticleId" value="">
     <input type="hidden" id="draftEditIndex" value="">
 
+    <!-- قائمة اختيار تصنيف المقال -->
+    <div class="form-group">
+        <label>تصنيف المقال:</label>
+        <select id="postCategory" onchange="scheduleAutoSave()">
+            <option value="☀️ الطاقة الشمسية">☀️ الطاقة الشمسية</option>
+            <option value="📱 الهواتف الذكية">📱 الهواتف الذكية</option>
+            <option value="💻 الحواسيب والتقنية">💻 الحواسيب والتقنية</option>
+            <option value="🔋 البطاريات">🔋 البطاريات</option>
+        </select>
+    </div>
+
     <div class="form-group">
         <label>عنوان المقال:</label>
         <input type="text" id="postTitle" placeholder="عنوان المقال" oninput="scheduleAutoSave()">
@@ -376,7 +389,7 @@
                 </div>
             </div>
 
-            <!-- القائمة المنسدلة المخصصة لألوان النص (10 ألوان متنوعة) -->
+            <!-- القائمة المنسدلة المخصصة لألوان النص -->
             <div class="custom-dropdown">
                 <button type="button" class="tool-btn" onclick="toggleMenu('colorDropdown', event)" title="لون النص">🎨 ▼</button>
                 <div id="colorDropdown" class="dropdown-menu" style="min-width: 160px; padding: 8px;">
@@ -403,7 +416,7 @@
             <!-- زر حذف الصور المحددة -->
             <button type="button" class="tool-btn" onclick="deleteSelectedImage()" title="حذف الصور المحددة" style="background-color: #ef4444; color: #fff; min-width: 42px;">🗑️</button>
 
-            <!-- أزرار المحاذاة الجديدة -->
+            <!-- أزرار المحاذاة -->
             <button type="button" class="tool-btn" onclick="execCmd('justifyRight')" title="محاذاة لليمين">➡️</button>
             <button type="button" class="tool-btn" onclick="execCmd('justifyCenter')" title="توسيط النص">⏺</button>
             <button type="button" class="tool-btn" onclick="execCmd('justifyLeft')" title="محاذاة لليسار">⬅️</button>
@@ -429,14 +442,14 @@
 
     <h2>📚 المقالات المنشورة حالياً</h2>
 
-    <!-- شريط أزرار الطوارئ والنسخ الاحتياطي المحلي بألوان مميزة -->
+    <!-- شريط أزرار الطوارئ والنسخ الاحتياطي المحلي -->
     <div style="display: flex; gap: 10px; margin-bottom: 8px;">
         <button class="btn-purple" onclick="exportArticlesLocal()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px;">💾 تصدير المقالات</button>
         <button class="btn-orange" onclick="triggerImportArticles()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px;">📂 استيراد المقالات</button>
         <input type="file" id="importArticlesFile" style="display:none" accept=".json,application/json" onchange="importArticlesLocal(event)">
     </div>
 
-    <!-- شريط أزرار التحديث والسحابة بألوان مميزة -->
+    <!-- شريط أزرار التحديث والسحابة -->
     <div style="display: flex; gap: 10px; margin-bottom: 12px;">
         <button class="btn-blue" onclick="loadArticlesList()" style="flex: 1; margin-bottom: 0;">تحديث قائمة المقالات 🔄</button>
         <button class="btn-cyan" onclick="restoreArticlesFromCloud()" style="flex: 1; margin-bottom: 0; font-size: 14px;">📥 استعادة من السحابة</button>
@@ -445,7 +458,7 @@
     <div id="articlesList">اضغط على زر التحديث لعرض المقالات.</div>
 
     <script>
-        // إعدادات Firebase السحابية الاحتياطية (مطابقة لمساعد النشر)
+        // إعدادات Firebase السحابية الاحتياطية
         const firebaseConfig = {
           apiKey: "AIzaSyA89DKwcT9Kke59BdpFR5MgE-iQFYF7k6Q",
           authDomain: "posthelperpro.firebaseapp.com",
@@ -461,7 +474,6 @@
         }
         const db = firebase.firestore();
 
-        // نظام حفظ واستعادة التحديد بذكاء لتفادي فقدان التظليل
         let savedRange = null;
 
         document.addEventListener('selectionchange', () => {
@@ -483,10 +495,8 @@
             }
         }
 
-        // مصفوفة لتخزين مراجع كافة الصور المحددة
         let selectedImageElements = [];
 
-        // تفعيل التحديد المتعدد وإلغاء التحديد عند النقر على الصور داخل المحرر
         document.getElementById('postBody').addEventListener('click', function(e) {
             if (e.target.tagName === 'IMG') {
                 const img = e.target;
@@ -506,7 +516,6 @@
             }
         });
 
-        // دالة فتح نافذة حذف الصور المحددة المنبثقة
         function deleteSelectedImage() {
             if (selectedImageElements.length === 0) {
                 return showToast('⚠️ يرجى النقر على صورة واحدة أو أكثر داخل المقال لتحديدها!', 'error');
@@ -543,7 +552,6 @@
             closeConfirmModal();
         };
 
-        // إدارة فتح وإغلاق القوائم المنسدلة في شريط الأدوات
         function toggleMenu(menuId, e) {
             e.stopPropagation();
             const menus = document.querySelectorAll('.dropdown-menu');
@@ -611,7 +619,7 @@
             scheduleAutoSave();
         }
 
-        // --- نظام إدارة المسودات والحفظ التلقائي الفوري ---
+        // --- نظام إدارة المسودات ومنع التكرار ---
         function getSavedDrafts() {
             try {
                 const drafts = localStorage.getItem('blog_all_drafts');
@@ -632,22 +640,37 @@
                 const title = document.getElementById('postTitle').value.trim();
                 const desc = document.getElementById('postDesc').value.trim();
                 const body = document.getElementById('postBody').innerHTML.trim();
+                const category = document.getElementById('postCategory').value;
                 const editId = document.getElementById('editArticleId').value;
+                const draftEditIndex = document.getElementById('draftEditIndex').value;
 
                 if (!editId && (title || desc || body)) {
                     let drafts = getSavedDrafts();
+                    const draftTitle = title || 'مسودة سريعة بدون عنوان';
+                    
                     const draftData = {
-                        title: title || 'مسودة سريعة بدون عنوان',
+                        title: draftTitle,
                         desc,
                         body,
-                        updatedAt: new Date().toLocaleString('ar-SA')
+                        category,
+                        updatedAt: new Date().toLocaleString('ar-SA'),
+                        isAutoSave: true
                     };
 
-                    // تحديث أول مسودة تلقائية أو إنشاؤها إذا لم تكن موجودة
-                    if (drafts.length > 0 && drafts[0].isAutoSave) {
-                        drafts[0] = { ...draftData, isAutoSave: true };
+                    // التحقق مما إذا كانت المسودة قيد التعديل حالياً أو موجودة بنفس العنوان لتحديثها بدلاً من تكرارها
+                    let targetIndex = -1;
+                    if (draftEditIndex !== '' && drafts[draftEditIndex]) {
+                        targetIndex = parseInt(draftEditIndex);
                     } else {
-                        drafts.unshift({ ...draftData, isAutoSave: true });
+                        targetIndex = drafts.findIndex(d => d.title === draftTitle);
+                    }
+
+                    if (targetIndex > -1) {
+                        drafts[targetIndex] = draftData;
+                        document.getElementById('draftEditIndex').value = targetIndex;
+                    } else {
+                        drafts.unshift(draftData);
+                        document.getElementById('draftEditIndex').value = 0;
                     }
 
                     localStorage.setItem('blog_all_drafts', JSON.stringify(drafts));
@@ -660,9 +683,10 @@
         }
 
         function saveAsDraftManual() {
-            const title = document.getElementById('postTitle').value.trim();
+            const title = document.getElementById('postTitle').value.trim() || 'مسودة بدون عنوان';
             const desc = document.getElementById('postDesc').value.trim();
             const body = document.getElementById('postBody').innerHTML.trim();
+            const category = document.getElementById('postCategory').value;
             const draftEditIndex = document.getElementById('draftEditIndex').value;
 
             if (!title && !desc && !body) {
@@ -671,23 +695,32 @@
 
             let drafts = getSavedDrafts();
             const draftData = {
-                title: title || 'مسودة بدون عنوان',
+                title,
                 desc,
                 body,
+                category,
                 updatedAt: new Date().toLocaleString('ar-SA'),
                 isAutoSave: false
             };
 
+            let targetIndex = -1;
             if (draftEditIndex !== '' && drafts[draftEditIndex]) {
-                drafts[draftEditIndex] = draftData;
-                showToast('✅ تم تحديث المسودة بنجاح!', 'success');
+                targetIndex = parseInt(draftEditIndex);
+            } else {
+                targetIndex = drafts.findIndex(d => d.title === title);
+            }
+
+            if (targetIndex > -1) {
+                drafts[targetIndex] = draftData;
+                document.getElementById('draftEditIndex').value = targetIndex;
+                showToast('✅ تم تحديث المسودة بنجاح دون تكرار!', 'success');
             } else {
                 drafts.unshift(draftData);
-                showToast('📁 تمت إضافة المسودة بقائمة المسودات!', 'success');
+                document.getElementById('draftEditIndex').value = 0;
+                showToast('📁 تمت إضافة المسودة لقائمة المسودات!', 'success');
             }
 
             saveDraftsToStorage(drafts);
-            clearEditorForm();
         }
 
         function renderDraftsList() {
@@ -703,10 +736,11 @@
             let html = `<div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">`;
             drafts.forEach((draft, index) => {
                 const badge = draft.isAutoSave ? ' <span style="background:#0284c7; font-size:10px; padding:2px 6px; border-radius:4px;">حفظ تلقائي</span>' : '';
+                const catBadge = draft.category ? ` <span style="background:#334155; color:#34d399; font-size:10px; padding:2px 6px; border-radius:4px;">${draft.category}</span>` : '';
                 html += `
                     <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
                         <div style="font-size: 15px; font-weight: bold; color: #38bdf8; margin-bottom: 6px; word-break: break-word;">
-                            📄 ${draft.title} ${badge}
+                            📄 ${draft.title} ${badge} ${catBadge}
                         </div>
                         <div style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">آخر تعديل: ${draft.updatedAt}</div>
                         <div style="display: flex; gap: 6px; flex-wrap: wrap;">
@@ -728,6 +762,9 @@
                 document.getElementById('postTitle').value = draft.title;
                 document.getElementById('postDesc').value = draft.desc;
                 document.getElementById('postBody').innerHTML = draft.body;
+                if (draft.category) {
+                    document.getElementById('postCategory').value = draft.category;
+                }
                 document.getElementById('draftEditIndex').value = index;
                 showToast('📂 تم تحميل المسودة في المحرر بنجاح!', 'success');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -759,6 +796,9 @@
             document.getElementById('postTitle').value = draft.title;
             document.getElementById('postDesc').value = draft.desc;
             document.getElementById('postBody').innerHTML = draft.body;
+            if (draft.category) {
+                document.getElementById('postCategory').value = draft.category;
+            }
             document.getElementById('draftEditIndex').value = index;
 
             await saveArticle();
@@ -774,7 +814,7 @@
             selectedImageElements = [];
         }
 
-        // دالة تصدير المقالات مع نافذة اختيار مكان الحفظ (File System Access API) مع بديل تلقائي
+        // دالة تصدير المقالات النسخ الاحتياطي
         async function exportArticlesLocal() {
             if (!loadedArticles || loadedArticles.length === 0) {
                 return showToast('⚠️ يرجى جلب المقالات أولاً للتصدير!', 'error');
@@ -1057,10 +1097,11 @@
             let cardsHtml = `<div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">`;
 
             loadedArticles.forEach((art, index) => {
+                const categoryTag = art.category ? `[${art.category}]` : '';
                 cardsHtml += `
                     <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
                         <div style="font-size: 15px; font-weight: bold; color: #f8fafc; margin-bottom: 12px; line-height: 1.5; word-break: break-word;">
-                            ${index + 1}. ${art.title}
+                            ${index + 1}. ${art.title} <span style="font-size: 11px; color: #34d399;">${categoryTag}</span>
                         </div>
                         <div style="display: flex; gap: 6px; justify-content: flex-start; align-items: center; flex-wrap: wrap;">
                             <button class="btn-gray" onclick="moveArticle(${index}, -1)" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">⬆️ أعلى</button>
@@ -1138,6 +1179,7 @@
             const title = document.getElementById('postTitle').value.trim();
             const desc = document.getElementById('postDesc').value.trim();
             const bodyHtml = document.getElementById('postBody').innerHTML.trim();
+            const category = document.getElementById('postCategory').value;
             const editId = document.getElementById('editArticleId').value;
             const draftEditIndex = document.getElementById('draftEditIndex').value;
             const btn = document.getElementById('publishBtn');
@@ -1159,9 +1201,10 @@
                         articles[index].title = title;
                         articles[index].description = desc;
                         articles[index].body = bodyHtml;
+                        articles[index].category = category;
                     }
                 } else {
-                    articles.push({ id: Date.now(), title, description: desc, body: bodyHtml });
+                    articles.push({ id: Date.now(), title, description: desc, body: bodyHtml, category });
                 }
 
                 backupArticlesToCloud(articles);
@@ -1182,16 +1225,16 @@
                 btn.disabled = false;
 
                 if (putRes.ok) {
-                    // حذف المسودة تلقائياً بعد النشر الناجح
+                    // حذف المسودة بعد النشر الناجح
                     if (draftEditIndex !== '') {
                         let drafts = getSavedDrafts();
                         drafts.splice(draftEditIndex, 1);
                         saveDraftsToStorage(drafts);
                     } else {
-                        // إذا كانت مسودة تلقائية، احذف المسودة الأولى التلقائية
                         let drafts = getSavedDrafts();
-                        if (drafts.length > 0 && drafts[0].isAutoSave) {
-                            drafts.shift();
+                        const dIndex = drafts.findIndex(d => d.title === title);
+                        if (dIndex > -1) {
+                            drafts.splice(dIndex, 1);
                             saveDraftsToStorage(drafts);
                         }
                     }
@@ -1222,6 +1265,9 @@
                     document.getElementById('postTitle').value = art.title;
                     document.getElementById('postDesc').value = art.description;
                     document.getElementById('postBody').innerHTML = art.body;
+                    if (art.category) {
+                        document.getElementById('postCategory').value = art.category;
+                    }
                     
                     document.getElementById('formTitle').innerText = '✏️ تعديل المقال المنشور';
                     document.getElementById('publishBtn').innerText = 'حفظ التعديلات 💾';
