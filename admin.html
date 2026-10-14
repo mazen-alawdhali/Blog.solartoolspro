@@ -611,7 +611,7 @@
             scheduleAutoSave();
         }
 
-        // --- نظام إدارة المسودات المتكامل (Drafts Management) ---
+        // --- نظام إدارة المسودات والحفظ التلقائي الفوري ---
         function getSavedDrafts() {
             try {
                 const drafts = localStorage.getItem('blog_all_drafts');
@@ -624,6 +624,7 @@
             renderDraftsList();
         }
 
+        let autoSaveTimer = null;
         function scheduleAutoSave() {
             document.getElementById('draftStatus').innerText = 'جاري الكتابة...';
             clearTimeout(autoSaveTimer);
@@ -631,12 +632,31 @@
                 const title = document.getElementById('postTitle').value.trim();
                 const desc = document.getElementById('postDesc').value.trim();
                 const body = document.getElementById('postBody').innerHTML.trim();
-                if (title || desc || body) {
-                    document.getElementById('draftStatus').innerText = `💾 تم الحفظ المؤقت (${new Date().toLocaleTimeString('ar-SA')})`;
-                } else {
+                const editId = document.getElementById('editArticleId').value;
+
+                if (!editId && (title || desc || body)) {
+                    let drafts = getSavedDrafts();
+                    const draftData = {
+                        title: title || 'مسودة سريعة بدون عنوان',
+                        desc,
+                        body,
+                        updatedAt: new Date().toLocaleString('ar-SA')
+                    };
+
+                    // تحديث أول مسودة تلقائية أو إنشاؤها إذا لم تكن موجودة
+                    if (drafts.length > 0 && drafts[0].isAutoSave) {
+                        drafts[0] = { ...draftData, isAutoSave: true };
+                    } else {
+                        drafts.unshift({ ...draftData, isAutoSave: true });
+                    }
+
+                    localStorage.setItem('blog_all_drafts', JSON.stringify(drafts));
+                    renderDraftsList();
+                    document.getElementById('draftStatus').innerText = `💾 تم الحفظ التلقائي (${new Date().toLocaleTimeString('ar-SA')})`;
+                } else if (!title && !desc && !body) {
                     document.getElementById('draftStatus').innerText = '';
                 }
-            }, 800);
+            }, 1000);
         }
 
         function saveAsDraftManual() {
@@ -654,7 +674,8 @@
                 title: title || 'مسودة بدون عنوان',
                 desc,
                 body,
-                updatedAt: new Date().toLocaleString('ar-SA')
+                updatedAt: new Date().toLocaleString('ar-SA'),
+                isAutoSave: false
             };
 
             if (draftEditIndex !== '' && drafts[draftEditIndex]) {
@@ -662,7 +683,7 @@
                 showToast('✅ تم تحديث المسودة بنجاح!', 'success');
             } else {
                 drafts.unshift(draftData);
-                showToast('📁 تمت إضافة المسودة لقائمة المسودات!', 'success');
+                showToast('📁 تمت إضافة المسودة بقائمة المسودات!', 'success');
             }
 
             saveDraftsToStorage(drafts);
@@ -681,10 +702,11 @@
 
             let html = `<div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">`;
             drafts.forEach((draft, index) => {
+                const badge = draft.isAutoSave ? ' <span style="background:#0284c7; font-size:10px; padding:2px 6px; border-radius:4px;">حفظ تلقائي</span>' : '';
                 html += `
                     <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
                         <div style="font-size: 15px; font-weight: bold; color: #38bdf8; margin-bottom: 6px; word-break: break-word;">
-                            📄 ${draft.title}
+                            📄 ${draft.title} ${badge}
                         </div>
                         <div style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">آخر تعديل: ${draft.updatedAt}</div>
                         <div style="display: flex; gap: 6px; flex-wrap: wrap;">
@@ -942,7 +964,6 @@
         let articleToDeleteId = null;
         let loadedArticles = [];
         let currentFileSha = '';
-        let autoSaveTimer = null;
 
         document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
 
@@ -1161,11 +1182,18 @@
                 btn.disabled = false;
 
                 if (putRes.ok) {
-                    // إذا كان المقال قادماً من المسودات، يتم حذفه من المسودات تلقائياً بعد النشر الناجح
+                    // حذف المسودة تلقائياً بعد النشر الناجح
                     if (draftEditIndex !== '') {
                         let drafts = getSavedDrafts();
                         drafts.splice(draftEditIndex, 1);
                         saveDraftsToStorage(drafts);
+                    } else {
+                        // إذا كانت مسودة تلقائية، احذف المسودة الأولى التلقائية
+                        let drafts = getSavedDrafts();
+                        if (drafts.length > 0 && drafts[0].isAutoSave) {
+                            drafts.shift();
+                            saveDraftsToStorage(drafts);
+                        }
                     }
 
                     showToast('🚀 تم نشر المقال بنجاح!', 'success');
