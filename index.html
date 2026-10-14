@@ -333,9 +333,9 @@
         <button class="cat-btn" onclick="filterByCategory('بطاريات', this)">🔋 البطاريات</button>
     </div>
 
-    <!-- صندوق الوصف التوضيحي كمقدمة تحت البحث والتصنيفات وقبل المقالات -->
+    <!-- صندوق الوصف التوضيحي المحدث -->
     <div class="header-description">
-         مرجعك الشامل لأخبار ومقالات منظومات الطاقة الشمسية وبطاريات الليثيوم، التكنولوجيا، الهواتف، والحواسيب.
+        مرجعك الشامل لأخبار ومقالات منظومات الطاقة الشمسية وبطاريات الليثيوم، التكنولوجيا، الهواتف، والحواسيب.
     </div>
 
     <main id="articlesContainer">
@@ -429,6 +429,16 @@
                         
                         <div class="article-body" id="body-${art.id}">
                             ${art.body}
+                            
+                            <!-- 🌟 التوقيع الدائم التلقائي أسفل كل مقال -->
+                            <div style="margin-top: 22px; padding-top: 15px; border-top: 1px dashed #334155; text-align: center; line-height: 1.6;">
+                                <div style="color: #facc15; font-size: 14px; font-weight: bold; margin-bottom: 6px;">
+                                    💛 فضلاً .. شارك المنشور ليستفيد غيرك.
+                                </div>
+                                <div style="color: #94a3b8; font-size: 13px;">
+                                    للمزيد من المقالات التقنية حول عالم الطاقة والتقنية تابعنا دائماً على منصة أدوات الطاقة الشمسية الاحترافية.
+                                </div>
+                            </div>
                             
                             <div class="share-section">
                                 <button class="share-btn btn-whatsapp" onclick="shareToWhatsApp(${art.id})">واتساب 💚</button>
