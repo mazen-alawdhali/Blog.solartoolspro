@@ -312,13 +312,13 @@
         </div>
     </div>
 
-    <!-- نافذة تأكيد حذف الصورة المنبثقة المخصصة والعصرية -->
+    <!-- نافذة تأكيد حذف الصور المنبثقة المخصصة والعصرية -->
     <div id="deleteImgModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(15, 23, 42, 0.8); backdrop-filter:blur(6px); z-index:10001; justify-content:center; align-items:center; padding:20px;">
         <div class="confirm-card">
-            <h3>🖼️ حذف الصورة</h3>
-            <p>هل تريد حقاً حذف هذه الصورة المحددة من المقال؟</p>
+            <h3>🖼️ حذف الصور المحددة</h3>
+            <p id="deleteImgModalText">هل تريد حقاً حذف الصور المحددة من المقال؟</p>
             <div class="confirm-btns">
-                <button class="btn-red" id="confirmDeleteImgBtn">حذف الصورة 🗑️</button>
+                <button class="btn-red" id="confirmDeleteImgBtn">حذف المحدد 🗑️</button>
                 <button class="btn-gray" onclick="closeDeleteImgModal()">إلغاء ❌</button>
             </div>
         </div>
@@ -382,7 +382,7 @@
     </div>
 
     <div class="form-group">
-        <label>محتوى المقال (محرر مرئي مباشر): <span style="font-size:11px; color:#38bdf8;">(انقر على أي صورة لتحديدها ثم اضغط زر 🗑️ أدناه لحذفها)</span></label>
+        <label>محتوى المقال (محرر مرئي مباشر): <span style="font-size:11px; color:#38bdf8;">(انقر على الصور لتحديدها ثم اضغط 🗑️ للحذف)</span></label>
         <div class="toolbar">
             <button type="button" class="tool-btn" onclick="execCmd('bold')" title="عريض"><b>B</b></button>
             <button type="button" class="tool-btn" onclick="execCmd('italic')" title="مائل"><i>I</i></button>
@@ -405,7 +405,7 @@
             <button type="button" class="tool-btn" onclick="execCmd('insertHorizontalRule')" title="خط فاصل">―</button>
 
             <!-- زر حذف الصورة المحددة الجديد -->
-            <button type="button" class="tool-btn" onclick="deleteSelectedImage()" title="حذف الصورة المحددة" style="background-color: #ef4444; color: #fff; min-width: 42px;">🗑️</button>
+            <button type="button" class="tool-btn" onclick="deleteSelectedImage()" title="حذف الصور المحددة" style="background-color: #ef4444; color: #fff; min-width: 42px;">🗑️</button>
 
             <!-- أزرار المحاذاة الجديدة -->
             <button type="button" class="tool-btn" onclick="execCmd('justifyRight')" title="محاذاة لليمين">➡️</button>
@@ -458,30 +458,36 @@
         }
         const db = firebase.firestore();
 
-        // متغير لتخزين مرجع الصورة المحددة حالياً داخل المحرر
-        let selectedImageElement = null;
+        // مصفوفة لتخزين مراجع كافة الصور المحددة
+        let selectedImageElements = [];
 
-        // تفعيل تحديد الصورة عند النقر عليها داخل المحرر
+        // تفعيل التحديد المتعدد وإلغاء التحديد عند النقر على الصور داخل المحرر
         document.getElementById('postBody').addEventListener('click', function(e) {
             if (e.target.tagName === 'IMG') {
-                const allImages = this.querySelectorAll('img');
-                allImages.forEach(img => {
+                const img = e.target;
+                const index = selectedImageElements.indexOf(img);
+
+                if (index > -1) {
+                    selectedImageElements.splice(index, 1);
                     img.style.border = '1px solid #334155';
                     img.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
-                });
-                
-                selectedImageElement = e.target;
-                selectedImageElement.style.border = '3px solid #ef4444';
-                selectedImageElement.style.boxShadow = '0 0 15px rgba(239, 68, 68, 0.8)';
-                showToast('🎯 تم تحديد الصورة بنجاح. اضغط على زر الحذف 🗑️ في شريط الأدوات', 'success');
+                    showToast(`إلغاء تحديد الصورة (${selectedImageElements.length} محددة)`, 'success');
+                } else {
+                    selectedImageElements.push(img);
+                    img.style.border = '3px solid #ef4444';
+                    img.style.boxShadow = '0 0 15px rgba(239, 68, 68, 0.8)';
+                    showToast(`🎯 تم تحديد الصورة (${selectedImageElements.length} صور محددة)`, 'success');
+                }
             }
         });
 
-        // دالة فتح نافذة حذف الصورة المنبثقة المخصصة
+        // دالة فتح نافذة حذف الصور المحددة المنبثقة
         function deleteSelectedImage() {
-            if (!selectedImageElement) {
-                return showToast('⚠️ يرجى النقر أولاً على الصورة داخل المقال لتحديدها!', 'error');
+            if (selectedImageElements.length === 0) {
+                return showToast('⚠️ يرجى النقر على صورة واحدة أو أكثر داخل المقال لتحديدها!', 'error');
             }
+            const countText = selectedImageElements.length === 1 ? 'هذه الصورة المحددة' : `الـ (${selectedImageElements.length}) صور المحددة`;
+            document.getElementById('deleteImgModalText').innerText = `هل تريد حقاً حذف ${countText} من المقال؟`;
             document.getElementById('deleteImgModal').style.display = 'flex';
         }
 
@@ -489,13 +495,14 @@
             document.getElementById('deleteImgModal').style.display = 'none';
         }
 
-        // تنفيذ الحذف الفعلي للصورة عند التأكيد داخل المودال
+        // تنفيذ الحذف الفعلي لكافة الصور المحددة
         document.getElementById('confirmDeleteImgBtn').onclick = function() {
-            if (selectedImageElement) {
-                selectedImageElement.remove();
-                selectedImageElement = null;
+            if (selectedImageElements.length > 0) {
+                const count = selectedImageElements.length;
+                selectedImageElements.forEach(img => img.remove());
+                selectedImageElements = [];
                 closeDeleteImgModal();
-                showToast('🗑️ تم حذف الصورة من المقال بنجاح!', 'success');
+                showToast(`🗑️ تم حذف ${count} صورة من المقال بنجاح!`, 'success');
                 scheduleAutoSave();
             }
         };
@@ -1094,6 +1101,7 @@
             document.getElementById('publishBtn').innerText = 'نشر المقال فوراً 🚀';
             document.getElementById('cancelEditBtn').style.display = 'none';
             document.getElementById('draftStatus').innerText = '';
+            selectedImageElements = [];
         }
 
         function moveArticle(index, direction) {
