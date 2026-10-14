@@ -50,10 +50,10 @@
             transition: 0.2s;
         }
         .btn-green { background-color: #10b981; color: #fff; width: 100%; font-size: 16px; padding: 12px; }
-        .btn-blue { background-color: #2563eb; color: #fff; width: 100%; } /* أزرق ملكي */
-        .btn-purple { background-color: #8b5cf6; color: #fff; width: 100%; margin-bottom: 8px; } /* بنفسجي للتصدير */
-        .btn-orange { background-color: #d97706; color: #fff; width: 100%; margin-bottom: 8px; } /* برتقالي للاستيراد */
-        .btn-cyan { background-color: #06b6d4; color: #fff; width: 100%; margin-bottom: 8px; font-size: 15px; padding: 11px; } /* تركواز للسحابة */
+        .btn-blue { background-color: #2563eb; color: #fff; width: 100%; } 
+        .btn-purple { background-color: #8b5cf6; color: #fff; width: 100%; margin-bottom: 8px; } 
+        .btn-orange { background-color: #d97706; color: #fff; width: 100%; margin-bottom: 8px; } 
+        .btn-cyan { background-color: #06b6d4; color: #fff; width: 100%; margin-bottom: 8px; font-size: 15px; padding: 11px; } 
         .btn-red { background-color: #ef4444; color: #fff; }
         .btn-gray { background-color: #475569; color: #fff; }
         .btn-edit { background-color: #f59e0b; color: #fff; }
@@ -266,6 +266,7 @@
             display: block;
             border: 1px solid #334155;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
         }
         .editor-box blockquote {
             border-right: 3px solid #38bdf8;
@@ -369,7 +370,7 @@
     </div>
 
     <div class="form-group">
-        <label>محتوى المقال (محرر مرئي مباشر): <span style="font-size:11px; color:#38bdf8;">(لحذف أي صورة: انقر عليها واضغط Backspace)</span></label>
+        <label>محتوى المقال (محرر مرئي مباشر): <span style="font-size:11px; color:#38bdf8;">(انقر على أي صورة لتحديدها ثم اضغط زر 🗑️ أدناه لحذفها)</span></label>
         <div class="toolbar">
             <button type="button" class="tool-btn" onclick="execCmd('bold')" title="عريض"><b>B</b></button>
             <button type="button" class="tool-btn" onclick="execCmd('italic')" title="مائل"><i>I</i></button>
@@ -390,6 +391,9 @@
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h3>')" title="عنوان فرعي">H3</button>
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<blockquote>')" title="اقتباس">❞</button>
             <button type="button" class="tool-btn" onclick="execCmd('insertHorizontalRule')" title="خط فاصل">―</button>
+
+            <!-- زر حذف الصورة المحددة الجديد -->
+            <button type="button" class="tool-btn" onclick="deleteSelectedImage()" title="حذف الصورة المحددة" style="background-color: #ef4444; color: #fff; min-width: 42px;">🗑️</button>
 
             <!-- أزرار المحاذاة الجديدة -->
             <button type="button" class="tool-btn" onclick="execCmd('justifyRight')" title="محاذاة لليمين">➡️</button>
@@ -441,6 +445,40 @@
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.firestore();
+
+        // متغير لتخزين مرجع الصورة المحددة حالياً داخل المحرر
+        let selectedImageElement = null;
+
+        // تفعيل تحديد الصورة عند النقر عليها داخل المحرر
+        document.getElementById('postBody').addEventListener('click', function(e) {
+            if (e.target.tagName === 'IMG') {
+                // إزالة التحديد عن أي صورة أخرى
+                const allImages = this.querySelectorAll('img');
+                allImages.forEach(img => {
+                    img.style.border = '1px solid #334155';
+                    img.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
+                });
+                
+                // تحديد الصورة الحالية بحدود حمراء بارزة
+                selectedImageElement = e.target;
+                selectedImageElement.style.border = '3px solid #ef4444';
+                selectedImageElement.style.boxShadow = '0 0 15px rgba(239, 68, 68, 0.8)';
+                showToast('🎯 تم تحديد الصورة بنجاح. اضغط على زر الحذف 🗑️ في شريط الأدوات', 'success');
+            }
+        });
+
+        // دالة حذف الصورة المحددة عبر زر شريط الأدوات الجديد
+        function deleteSelectedImage() {
+            if (!selectedImageElement) {
+                return showToast('⚠️ يرجى النقر أولاً على الصورة داخل المقال لتحديدها!', 'error');
+            }
+            if (confirm('هل تريد حقاً حذف الصورة المحددة من المقال؟')) {
+                selectedImageElement.remove();
+                selectedImageElement = null;
+                showToast('🗑️ تم حذف الصورة بنجاح!', 'success');
+                scheduleAutoSave();
+            }
+        }
 
         // دالة تصدير المقالات مع نافذة اختيار مكان الحفظ (File System Access API) مع بديل تلقائي
         async function exportArticlesLocal() {
