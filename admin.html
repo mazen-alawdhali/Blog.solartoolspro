@@ -1204,7 +1204,7 @@
                         articles[index].category = category;
                     }
                 } else {
-                    articles.push({ id: Date.now(), title, description: desc, body: bodyHtml, category });
+                    articles.unshift({ id: Date.now(), title, description: desc, body: bodyHtml, category });
                 }
 
                 backupArticlesToCloud(articles);
