@@ -369,7 +369,7 @@
     </div>
 
     <div class="form-group">
-        <label>محتوى المقال (محرر مرئي مباشر):</label>
+        <label>محتوى المقال (محرر مرئي مباشر): <span style="font-size:11px; color:#38bdf8;">(لحذف أي صورة: انقر عليها واضغط Backspace)</span></label>
         <div class="toolbar">
             <button type="button" class="tool-btn" onclick="execCmd('bold')" title="عريض"><b>B</b></button>
             <button type="button" class="tool-btn" onclick="execCmd('italic')" title="مائل"><i>I</i></button>
@@ -449,7 +449,6 @@
             }
             const dataStr = JSON.stringify(loadedArticles, null, 2);
             
-            // محاولة استخدام نافذة اختيار مجلد ومكان الحفظ الحديثة (Save As)
             if ('showSaveFilePicker' in window) {
                 try {
                     const opts = {
@@ -466,14 +465,10 @@
                     showToast('💾 تم حفظ النسخة الاحتياطية في المكان المحدد بنجاح!', 'success');
                     return;
                 } catch (err) {
-                    if (err.name === 'AbortError') {
-                        return; // المستخدم ألغى النافذة
-                    }
-                    console.log('لم يدعم المتصفح نافذة الاختيار، سيتم التصدير بالطريقة العادية...', err);
+                    if (err.name === 'AbortError') return;
                 }
             }
 
-            // الطريقة البديلة (التقليدية للتنزيلات)
             const blob = new Blob([dataStr], { type: "application/json" });
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", URL.createObjectURL(blob));
@@ -488,7 +483,6 @@
             document.getElementById('importArticlesFile').click();
         }
 
-        // دالة استيراد وتدميج/استبدال المقالات من ملف محلي ونشرها على GitHub والسحابة
         function importArticlesLocal(event) {
             const file = event.target.files[0];
             const token = document.getElementById('ghToken').value.trim();
@@ -547,7 +541,6 @@
             reader.readAsText(file);
         }
 
-        // دالة الحفظ السحابي الثانوي التلقائي للمقالات
         function backupArticlesToCloud(articlesArray) {
             db.collection("blogData").doc("articlesBackup").set({
                 articles: articlesArray,
@@ -559,7 +552,6 @@
             });
         }
 
-        // دالة استرجاع المقالات من السحابة في حال حذف ملف articles.json بالخطأ
         async function restoreArticlesFromCloud() {
             const token = document.getElementById('ghToken').value.trim();
             if (!token) return showToast('يرجى إدخال رمز GitHub Token أولاً لاستعادة المقالات على GitHub!', 'error');
@@ -614,7 +606,6 @@
         // 🔑 كلمة المرور المعتمدة
         const MASTER_PASS = "771005555#"; 
 
-        // التحقق من حالة المصادقة عند التحميل
         if (localStorage.getItem('admin_authenticated') === 'true') {
             document.getElementById('authOverlay').style.display = 'none';
         }
@@ -649,7 +640,6 @@
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
 
-        // استعادة المسودة تلقائياً عند فتح اللوحة
         window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('admin_authenticated') === 'true') {
                 checkSavedDraft();
@@ -704,7 +694,6 @@
             document.getElementById('draftStatus').innerText = '';
         }
 
-        // إغلاق قائمة الخطوط المنسدلة عند الضغط خارجها
         document.addEventListener('click', function(e) {
             const dropdown = document.getElementById('fontDropdown');
             if (dropdown && !e.target.closest('.custom-dropdown')) {
@@ -724,7 +713,6 @@
             document.getElementById('postBody').focus();
         }
 
-        /* وظائف المعاينة المباشرة (Live Preview) */
         function openPreviewModal() {
             const title = document.getElementById('postTitle').value.trim() || 'عنوان المقال المعاين';
             const desc = document.getElementById('postDesc').value.trim() || 'نبذة مختصرة عن المقال...';
@@ -797,9 +785,7 @@
                     return;
                 }
 
-                // تحديث نسخة سحابية احتياطية تطبيقيًا عند كل تحميل ناجح
                 backupArticlesToCloud(loadedArticles);
-
                 renderArticlesCards();
             } catch (err) {
                 hideTopBanner();
@@ -911,6 +897,39 @@
                 if (editId) {
                     const index = articles.findIndex(a => a.id == editId);
                     if (index !== -1) {
+                        // تنظيف وحذف الصور التي تم إزالتها من المقال أثناء التعديل
+                        const oldBody = articles[index].body || "";
+                        const imgRegex = /https:\/\/raw\.githubusercontent\.com\/[^\/]+\/[^\/]+\/[^\/]+\/(images\/[^"'\s>]+)/g;
+                        
+                        let oldImages = [];
+                        let match;
+                        while ((match = imgRegex.exec(oldBody)) !== null) {
+                            oldImages.push(match[1]);
+                        }
+                        
+                        let newImages = [];
+                        while ((match = imgRegex.exec(bodyHtml)) !== null) {
+                            newImages.push(match[1]);
+                        }
+                        
+                        for (const imgPath of oldImages) {
+                            if (!newImages.includes(imgPath)) {
+                                try {
+                                    const imgInfoRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${imgPath}`, {
+                                        headers: { 'Authorization': `token ${token}` }
+                                    });
+                                    if (imgInfoRes.ok) {
+                                        const imgData = await imgInfoRes.json();
+                                        await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${imgPath}`, {
+                                            method: 'DELETE',
+                                            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ message: `حذف صورة تم إزالتها من المقال: ${imgPath}`, sha: imgData.sha })
+                                        });
+                                    }
+                                } catch(e) {}
+                            }
+                        }
+
                         articles[index].title = title;
                         articles[index].description = desc;
                         articles[index].body = bodyHtml;
@@ -919,7 +938,6 @@
                     articles.push({ id: Date.now(), title, description: desc, body: bodyHtml });
                 }
 
-                // تحديث النسخة الاحتياطية السحابية فوراً
                 backupArticlesToCloud(articles);
 
                 const updatedContent = utf8_to_b64(JSON.stringify(articles, null, 2));
@@ -1037,7 +1055,6 @@
 
             showTopBanner('جاري حفظ الترتيب الجديد على GitHub...');
             try {
-                // تحديث النسخة الاحتياطية السحابية فوراً
                 backupArticlesToCloud(loadedArticles);
 
                 const updatedContent = utf8_to_b64(JSON.stringify(loadedArticles, null, 2));
@@ -1113,8 +1130,6 @@
                 }
 
                 const filteredArticles = articles.filter(a => a.id != id);
-                
-                // تحديث النسخة الاحتياطية السحابية فوراً بعد الحذف
                 backupArticlesToCloud(filteredArticles);
 
                 const updatedContent = utf8_to_b64(JSON.stringify(filteredArticles, null, 2));
