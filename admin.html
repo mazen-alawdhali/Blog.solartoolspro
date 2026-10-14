@@ -50,9 +50,10 @@
             transition: 0.2s;
         }
         .btn-green { background-color: #10b981; color: #fff; width: 100%; font-size: 16px; padding: 12px; }
-        .btn-blue { background-color: #0284c7; color: #fff; width: 100%; }
-        .btn-purple { background-color: #6366f1; color: #fff; width: 100%; margin-bottom: 8px; }
-        .btn-cyan { background-color: #06b6d4; color: #fff; width: 100%; margin-bottom: 8px; font-size: 15px; padding: 11px; }
+        .btn-blue { background-color: #2563eb; color: #fff; width: 100%; } /* أزرق ملكي */
+        .btn-purple { background-color: #8b5cf6; color: #fff; width: 100%; margin-bottom: 8px; } /* بنفسجي للتصدير */
+        .btn-orange { background-color: #d97706; color: #fff; width: 100%; margin-bottom: 8px; } /* برتقالي للاستيراد */
+        .btn-cyan { background-color: #06b6d4; color: #fff; width: 100%; margin-bottom: 8px; font-size: 15px; padding: 11px; } /* تركواز للسحابة */
         .btn-red { background-color: #ef4444; color: #fff; }
         .btn-gray { background-color: #475569; color: #fff; }
         .btn-edit { background-color: #f59e0b; color: #fff; }
@@ -409,14 +410,14 @@
 
     <h2>📚 المقالات المنشورة حالياً</h2>
 
-    <!-- شريط أزرار الطوارئ والنسخ الاحتياطي المحلي -->
+    <!-- شريط أزرار الطوارئ والنسخ الاحتياطي المحلي بألوان مميزة -->
     <div style="display: flex; gap: 10px; margin-bottom: 8px;">
         <button class="btn-purple" onclick="exportArticlesLocal()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px;">💾 تصدير المقالات</button>
-        <button class="btn-purple" onclick="triggerImportArticles()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px; background-color: #4f46e5;">📂 استيراد المقالات</button>
+        <button class="btn-orange" onclick="triggerImportArticles()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px;">📂 استيراد المقالات</button>
         <input type="file" id="importArticlesFile" style="display:none" accept=".json,application/json" onchange="importArticlesLocal(event)">
     </div>
 
-    <!-- شريط أزرار التحديث والسحابة -->
+    <!-- شريط أزرار التحديث والسحابة بألوان مميزة -->
     <div style="display: flex; gap: 10px; margin-bottom: 12px;">
         <button class="btn-blue" onclick="loadArticlesList()" style="flex: 1; margin-bottom: 0;">تحديث قائمة المقالات 🔄</button>
         <button class="btn-cyan" onclick="restoreArticlesFromCloud()" style="flex: 1; margin-bottom: 0; font-size: 14px;">📥 استعادة من السحابة</button>
@@ -441,19 +442,46 @@
         }
         const db = firebase.firestore();
 
-        // دالة تصدير المقالات كملف JSON محلي للجوال/الحاسوب
-        function exportArticlesLocal() {
+        // دالة تصدير المقالات مع نافذة اختيار مكان الحفظ (File System Access API) مع بديل تلقائي
+        async function exportArticlesLocal() {
             if (!loadedArticles || loadedArticles.length === 0) {
                 return showToast('⚠️ يرجى جلب المقالات أولاً للتصدير!', 'error');
             }
-            const blob = new Blob([JSON.stringify(loadedArticles, null, 2)], { type: "application/json" });
+            const dataStr = JSON.stringify(loadedArticles, null, 2);
+            
+            // محاولة استخدام نافذة اختيار مجلد ومكان الحفظ الحديثة (Save As)
+            if ('showSaveFilePicker' in window) {
+                try {
+                    const opts = {
+                        suggestedName: `articles_backup_${Date.now()}.json`,
+                        types: [{
+                            description: 'JSON Files',
+                            accept: { 'application/json': ['.json'] },
+                        }],
+                    };
+                    const handle = await window.showSaveFilePicker(opts);
+                    const writable = await handle.createWritable();
+                    await writable.write(dataStr);
+                    await writable.close();
+                    showToast('💾 تم حفظ النسخة الاحتياطية في المكان المحدد بنجاح!', 'success');
+                    return;
+                } catch (err) {
+                    if (err.name === 'AbortError') {
+                        return; // المستخدم ألغى النافذة
+                    }
+                    console.log('لم يدعم المتصفح نافذة الاختيار، سيتم التصدير بالطريقة العادية...', err);
+                }
+            }
+
+            // الطريقة البديلة (التقليدية للتنزيلات)
+            const blob = new Blob([dataStr], { type: "application/json" });
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", URL.createObjectURL(blob));
             downloadAnchor.setAttribute("download", `articles_backup_${Date.now()}.json`);
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
-            showToast('💾 تم تصدير نسخة احتياطية من المقالات بنجاح!', 'success');
+            showToast('💾 تم تصدير النسخة الاحتياطية بنجاح!', 'success');
         }
 
         function triggerImportArticles() {
