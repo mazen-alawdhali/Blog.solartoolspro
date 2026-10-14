@@ -270,26 +270,6 @@
             font-style: italic;
         }
 
-        .articles-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            background-color: #1e293b;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #334155;
-        }
-        .articles-table th, .articles-table td {
-            padding: 12px;
-            text-align: right;
-            border-bottom: 1px solid #334155;
-            font-size: 13px;
-        }
-        .articles-table th { background-color: #0f172a; color: #38bdf8; font-size: 14px; }
-        .articles-table tr:last-child td { border-bottom: none; }
-        .action-btns { display: flex; gap: 6px; justify-content: flex-end; }
-        .action-btns button { padding: 5px 10px; font-size: 12px; }
-
         .draft-status {
             font-size: 12px;
             color: #10b981;
@@ -424,9 +404,9 @@
     <button id="cancelEditBtn" class="btn-red" onclick="cancelEdit()" style="display:none; width:100%; margin-top:8px;">إلغاء التعديل</button>
 
     <h2>📚 المقالات المنشورة حالياً</h2>
-    <button class="btn-blue" onclick="loadArticlesList()">تحديث جدول المقالات 🔄</button>
+    <button class="btn-blue" onclick="loadArticlesList()">تحديث قائمة المقالات 🔄</button>
     
-    <div id="articlesList">اضغط على زر التحديث لعرض الجدول.</div>
+    <div id="articlesList">اضغط على زر التحديث لعرض المقالات.</div>
 
     <script>
         // 🔑 كلمة المرور المعتمدة
@@ -604,7 +584,7 @@
             const listDiv = document.getElementById('articlesList');
             if (!token) return showToast('يرجى إدخال رمز الـ Token أولاً!', 'error');
 
-            showTopBanner('جاري جلب جدول المقالات...');
+            showTopBanner('جاري جلب المقالات...');
             try {
                 const result = await fetchFileFromGithub(token);
                 loadedArticles = result.articles;
@@ -615,41 +595,37 @@
                     return;
                 }
 
-                let tableHtml = `
-                    <table class="articles-table" style="table-layout: fixed; width: 100%;">
-                        <thead>
-                            <tr>
-                                <th style="width: 65%;">عنوان المقال</th>
-                                <th style="width: 35%; text-align: center;">الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-
-                loadedArticles.forEach((art, index) => {
-                    tableHtml += `
-                        <tr>
-                            <td style="word-break: break-word; vertical-align: middle;"><b>${index + 1}. ${art.title}</b></td>
-                            <td style="text-align: center; vertical-align: middle; padding: 6px 2px;">
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; max-width: 100px; margin: 0 auto;">
-                                    <button class="btn-gray" onclick="moveArticle(${index}, -1)" title="أعلى" style="padding: 4px; font-size: 11px;">⬆️</button>
-                                    <button class="btn-gray" onclick="moveArticle(${index}, 1)" title="أسفل" style="padding: 4px; font-size: 11px;">⬇️</button>
-                                    <button class="btn-edit" onclick="prepareEdit(${art.id})" style="padding: 4px; font-size: 11px;">تعديل</button>
-                                    <button class="btn-red" onclick="openConfirmModal(${art.id})" style="padding: 4px; font-size: 11px;">حذف</button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                });
-
-                tableHtml += `</tbody></table>`;
-                tableHtml += `<button class="btn-green" style="margin-top: 12px; font-size: 14px; padding: 10px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`;
-                listDiv.innerHTML = tableHtml;
+                renderArticlesCards();
             } catch (err) {
                 hideTopBanner();
                 listDiv.innerText = '❌ خطأ: ' + err.message;
                 showToast('خطأ في تحميل المقالات', 'error');
             }
+        }
+
+        function renderArticlesCards() {
+            const listDiv = document.getElementById('articlesList');
+            let cardsHtml = `<div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">`;
+
+            loadedArticles.forEach((art, index) => {
+                cardsHtml += `
+                    <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        <div style="font-size: 15px; font-weight: bold; color: #f8fafc; margin-bottom: 12px; line-height: 1.5; word-break: break-word;">
+                            ${index + 1}. ${art.title}
+                        </div>
+                        <div style="display: flex; gap: 6px; justify-content: flex-start; align-items: center; flex-wrap: wrap;">
+                            <button class="btn-gray" onclick="moveArticle(${index}, -1)" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">⬆️ أعلى</button>
+                            <button class="btn-gray" onclick="moveArticle(${index}, 1)" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">⬇️ أسفل</button>
+                            <button class="btn-edit" onclick="prepareEdit(${art.id})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">✏️ تعديل</button>
+                            <button class="btn-red" onclick="openConfirmModal(${art.id})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">🗑️ حذف</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            cardsHtml += `</div>`;
+            cardsHtml += `<button class="btn-green" style="margin-top: 15px; font-size: 14px; padding: 12px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`;
+            listDiv.innerHTML = cardsHtml;
         }
 
         async function uploadAndInsertImages() {
@@ -844,36 +820,7 @@
             loadedArticles[index] = loadedArticles[newIndex];
             loadedArticles[newIndex] = temp;
 
-            let tableHtml = `
-                <table class="articles-table" style="table-layout: fixed; width: 100%;">
-                    <thead>
-                        <tr>
-                            <th style="width: 65%;">عنوان المقال</th>
-                            <th style="width: 35%; text-align: center;">الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            loadedArticles.forEach((art, idx) => {
-                tableHtml += `
-                    <tr>
-                        <td style="word-break: break-word; vertical-align: middle;"><b>${idx + 1}. ${art.title}</b></td>
-                        <td style="text-align: center; vertical-align: middle; padding: 6px 2px;">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; max-width: 100px; margin: 0 auto;">
-                                <button class="btn-gray" onclick="moveArticle(${idx}, -1)" title="أعلى" style="padding: 4px; font-size: 11px;">⬆️</button>
-                                <button class="btn-gray" onclick="moveArticle(${idx}, 1)" title="أسفل" style="padding: 4px; font-size: 11px;">⬇️</button>
-                                <button class="btn-edit" onclick="prepareEdit(${art.id})" style="padding: 4px; font-size: 11px;">تعديل</button>
-                                <button class="btn-red" onclick="openConfirmModal(${art.id})" style="padding: 4px; font-size: 11px;">حذف</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            tableHtml += `</tbody></table>`;
-            tableHtml += `<button class="btn-green" style="margin-top: 12px; font-size: 14px; padding: 10px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`;
-            document.getElementById('articlesList').innerHTML = tableHtml;
+            renderArticlesCards();
         }
 
         async function saveArticlesOrder() {
