@@ -49,16 +49,16 @@
             line-height: 1.7;
         }
         
-        /* الهيدر بخلفية الصورة النقية */
+        /* الهيدر بخلفية الصورة النقية ومحجم بشكل مدمج */
         header {
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.25), rgba(30, 41, 59, 0.35)), url('images/header_balanced_sky_600w.webp') center/cover no-repeat;
             border-bottom: 1px solid #334155;
             border-radius: 16px;
-            padding: 25px 15px;
+            padding: 16px 12px;
             text-align: center;
             position: relative;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            margin-bottom: 25px;
+            margin-bottom: 16px;
         }
         
         /* بانر الإطار الزجاجي الشفاف الأنيق للعنوان الرئيسي والفرعي */
@@ -66,30 +66,15 @@
             background: rgba(15, 23, 42, 0.65);
             border: 1px solid rgba(56, 189, 248, 0.3);
             border-radius: 16px;
-            padding: 20px 16px;
+            padding: 16px 14px;
             text-align: center;
             margin: 0 auto;
             max-width: 600px;
             backdrop-filter: blur(6px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
         }
-        h1 { font-size: 20px; color: #38bdf8; margin-bottom: 6px; font-weight: 800; text-shadow: 0 2px 6px rgba(0,0,0,0.8); }
+        h1 { font-size: 19px; color: #38bdf8; margin-bottom: 6px; font-weight: 800; text-shadow: 0 2px 6px rgba(0,0,0,0.8); }
         p.subtitle { font-size: 13px; color: #34d399; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-
-        /* صندوق الوصف التوضيحي المنفصل بوضوح تام */
-        .header-description {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 14px 18px;
-            text-align: center;
-            font-size: 13px;
-            color: #ffffff;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            line-height: 1.6;
-            margin-top: 15px;
-        }
 
         /* شريط البحث والتصنيفات */
         .search-box {
@@ -110,7 +95,7 @@
             gap: 8px;
             overflow-x: auto;
             padding-bottom: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             scrollbar-width: none;
         }
         .categories-bar::-webkit-scrollbar { display: none; }
@@ -130,6 +115,21 @@
             background-color: #0284c7;
             color: #fff;
             border-color: #0284c7;
+        }
+
+        /* صندوق الوصف التوضيحي كمقدمة تحت البحث والتصنيفات */
+        .header-description {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 14px 18px;
+            text-align: center;
+            font-size: 13px;
+            color: #ffffff;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            line-height: 1.6;
+            margin-bottom: 20px;
         }
 
         /* كروت المقالات */
@@ -346,9 +346,6 @@
             <h1>مدونة أدوات الطاقة الشمسية الاحترافية - SolarToolsPro</h1>
             <p class="subtitle">أحدث المقالات والأدلة التقنية لأنظمة الطاقة الشمسية والبطاريات</p>
         </div>
-        <div class="header-description">
-            دليل شامل ومقالات تقنية هندسية حول تصميم منظومات الطاقة الشمسية، حساب سعة بطاريات الليثيوم LiFePO4، واختيار الألواح والإنفرترات بكفاءة عالية.
-        </div>
         <div style="display:none;" aria-hidden="true">
             <h2>دليل حاسبات الطاقة الشمسية وبطاريات الليثيوم</h2>
             <p>مرحباً بكم في مدونة أدوات الطاقة الشمسية الاحترافية (SolarToolsPro). نقدم أدلة تقنية متخصصة وشروحات هندسية لإعداد وتصميم منظومات الطاقة الشمسية، ضبط إنفرترات النموذجين Growatt و Deye، حساب سعة بطاريات الليثيوم LiFePO4 وتوصيلها على التوازي، بالإضافة إلى اختيار الألواح الشمسية المناسبة وحساب الأحمال الكهربائية بدقة عالية لضمان أفضل كفاءة واستقرار للمنظومات المنزلية والتجارية.</p>
@@ -366,6 +363,11 @@
         <button class="cat-btn" onclick="filterByCategory('ألواح', this)">الألواح الشمسية</button>
         <button class="cat-btn" onclick="filterByCategory('إنفرترات', this)">الإنفرترات</button>
         <button class="cat-btn" onclick="filterByCategory('حماية', this)">الحماية والأحمال</button>
+    </div>
+
+    <!-- صندوق الوصف التوضيحي كمقدمة تحت البحث والتصنيفات وقبل المقالات -->
+    <div class="header-description">
+        دليل شامل ومقالات تقنية هندسية حول تصميم منظومات الطاقة الشمسية، حساب سعة بطاريات الليثيوم LiFePO4، واختيار الألواح والإنفرترات بكفاءة عالية.
     </div>
 
     <main id="articlesContainer">
