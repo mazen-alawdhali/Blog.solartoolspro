@@ -408,6 +408,15 @@
     <button id="cancelEditBtn" class="btn-red" onclick="cancelEdit()" style="display:none; width:100%; margin-top:8px;">إلغاء التعديل</button>
 
     <h2>📚 المقالات المنشورة حالياً</h2>
+
+    <!-- شريط أزرار الطوارئ والنسخ الاحتياطي المحلي -->
+    <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+        <button class="btn-purple" onclick="exportArticlesLocal()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px;">💾 تصدير المقالات</button>
+        <button class="btn-purple" onclick="triggerImportArticles()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px; background-color: #4f46e5;">📂 استيراد المقالات</button>
+        <input type="file" id="importArticlesFile" style="display:none" accept=".json,application/json" onchange="importArticlesLocal(event)">
+    </div>
+
+    <!-- شريط أزرار التحديث والسحابة -->
     <div style="display: flex; gap: 10px; margin-bottom: 12px;">
         <button class="btn-blue" onclick="loadArticlesList()" style="flex: 1; margin-bottom: 0;">تحديث قائمة المقالات 🔄</button>
         <button class="btn-cyan" onclick="restoreArticlesFromCloud()" style="flex: 1; margin-bottom: 0; font-size: 14px;">📥 استعادة من السحابة</button>
@@ -431,6 +440,84 @@
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.firestore();
+
+        // دالة تصدير المقالات كملف JSON محلي للجوال/الحاسوب
+        function exportArticlesLocal() {
+            if (!loadedArticles || loadedArticles.length === 0) {
+                return showToast('⚠️ يرجى جلب المقالات أولاً للتصدير!', 'error');
+            }
+            const blob = new Blob([JSON.stringify(loadedArticles, null, 2)], { type: "application/json" });
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", URL.createObjectURL(blob));
+            downloadAnchor.setAttribute("download", `articles_backup_${Date.now()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast('💾 تم تصدير نسخة احتياطية من المقالات بنجاح!', 'success');
+        }
+
+        function triggerImportArticles() {
+            document.getElementById('importArticlesFile').click();
+        }
+
+        // دالة استيراد وتدميج/استبدال المقالات من ملف محلي ونشرها على GitHub والسحابة
+        function importArticlesLocal(event) {
+            const file = event.target.files[0];
+            const token = document.getElementById('ghToken').value.trim();
+            if (!file) return;
+            if (!token) {
+                document.getElementById('importArticlesFile').value = '';
+                return showToast('يرجى إدخال رمز GitHub Token أولاً قبل الاستيراد!', 'error');
+            }
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    let fileContent = (e.target.result || '').trim();
+                    if (!fileContent) return showToast('⚠️ الملف فارغ!', 'error');
+                    
+                    const imported = JSON.parse(fileContent);
+                    if (Array.isArray(imported) && imported.length > 0) {
+                        if (confirm(`تم العثور على ${imported.length} مقال في الملف المحلي.\nهل تريد استبدال المقالات الحالية ونشرها على GitHub والسحابة؟`)) {
+                            showTopBanner('جاري حفظ ونشر المقالات المستوردة...');
+                            
+                            let currentSha = '';
+                            try {
+                                const currentFile = await fetchFileFromGithub(token);
+                                currentSha = currentFile.sha;
+                            } catch(err) {}
+
+                            backupArticlesToCloud(imported);
+
+                            const updatedContent = utf8_to_b64(JSON.stringify(imported, null, 2));
+                            const putBody = { message: 'استيراد مقالات من ملف محلي', content: updatedContent };
+                            if (currentSha) putBody.sha = currentSha;
+
+                            const putRes = await fetch(apiUrl, {
+                                method: 'PUT',
+                                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                                body: JSON.stringify(putBody)
+                            });
+
+                            hideTopBanner();
+                            if (putRes.ok) {
+                                showToast('✅ تم استيراد ونشر المقالات بنجاح!', 'success');
+                                loadArticlesList();
+                            } else {
+                                throw new Error('فشل حفظ المقالات على GitHub.');
+                            }
+                        }
+                    } else {
+                        showToast('⚠️ لا توجد مقالات صالحة داخل الملف!', 'error');
+                    }
+                } catch (err) {
+                    hideTopBanner();
+                    showToast('❌ خطأ في قراءة ملف JSON: ' + err.message, 'error');
+                }
+            };
+            reader.onloadend = function() { document.getElementById('importArticlesFile').value = ''; };
+            reader.readAsText(file);
+        }
 
         // دالة الحفظ السحابي الثانوي التلقائي للمقالات
         function backupArticlesToCloud(articlesArray) {
@@ -463,7 +550,6 @@
                             const currentFile = await fetchFileFromGithub(token);
                             currentSha = currentFile.sha;
                         } catch(e) {
-                            // إذا كان الملف محذوفاً تماماً من المستودع
                             currentSha = undefined; 
                         }
 
