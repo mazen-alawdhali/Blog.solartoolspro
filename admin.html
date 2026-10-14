@@ -212,7 +212,7 @@
         }
         .tool-btn:hover { background-color: #475569; }
         
-        /* القائمة المنسدلة المخصصة لحجم الخط */
+        /* القائمة المنسدلة المخصصة */
         .custom-dropdown { position: relative; display: inline-block; }
         .dropdown-menu {
             display: none;
@@ -382,7 +382,7 @@
     </div>
 
     <div class="form-group">
-        <label>محتوى المقال (محرر مرئي مباشر): <span style="font-size:11px; color:#38bdf8;">(انقر على الصور لتحديدها ثم اضغط 🗑️ للحذف)</span></label>
+        <label>محتوى المقال (محرر مرئي مباشر): <span style="font-size:11px; color:#38bdf8;">(تنسيق وتلوين النصوص مباشرة)</span></label>
         <div class="toolbar">
             <button type="button" class="tool-btn" onclick="execCmd('bold')" title="عريض"><b>B</b></button>
             <button type="button" class="tool-btn" onclick="execCmd('italic')" title="مائل"><i>I</i></button>
@@ -390,12 +390,27 @@
             
             <!-- القائمة المنسدلة المخصصة لحجم الخط -->
             <div class="custom-dropdown">
-                <button type="button" class="tool-btn" onclick="toggleFontMenu(event)" title="حجم الخط">🔤 ▼</button>
+                <button type="button" class="tool-btn" onclick="toggleMenu('fontDropdown', event)" title="حجم الخط">🔤 ▼</button>
                 <div id="fontDropdown" class="dropdown-menu">
                     <div class="dropdown-item" onclick="setFontSize('2')">صغير</div>
                     <div class="dropdown-item" onclick="setFontSize('3')">عادي</div>
                     <div class="dropdown-item" onclick="setFontSize('5')">كبير</div>
                     <div class="dropdown-item" onclick="setFontSize('6')">كبير جداً</div>
+                </div>
+            </div>
+
+            <!-- القائمة المنسدلة المخصصة لألوان النص -->
+            <div class="custom-dropdown">
+                <button type="button" class="tool-btn" onclick="toggleMenu('colorDropdown', event)" title="لون النص">🎨 ▼</button>
+                <div id="colorDropdown" class="dropdown-menu" style="min-width: 130px; padding: 6px;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 4px;">
+                        <div onclick="setTextColor('#ffffff')" style="background:#ffffff; height:24px; border-radius:4px; cursor:pointer;" title="أبيض"></div>
+                        <div onclick="setTextColor('#38bdf8')" style="background:#38bdf8; height:24px; border-radius:4px; cursor:pointer;" title="أزرق ساطع"></div>
+                        <div onclick="setTextColor('#10b981')" style="background:#10b981; height:24px; border-radius:4px; cursor:pointer;" title="أخضر"></div>
+                        <div onclick="setTextColor('#f59e0b')" style="background:#f59e0b; height:24px; border-radius:4px; cursor:pointer;" title="برتقالي"></div>
+                        <div onclick="setTextColor('#ef4444')" style="background:#ef4444; height:24px; border-radius:4px; cursor:pointer;" title="أحمر"></div>
+                        <div onclick="setTextColor('#94a3b8')" style="background:#94a3b8; height:24px; border-radius:4px; cursor:pointer;" title="رمادي"></div>
+                    </div>
                 </div>
             </div>
 
@@ -511,6 +526,36 @@
                 scheduleAutoSave();
             }
         };
+
+        // إدارة فتح وإغلاق القوائم المنسدلة في شريط الأدوات
+        function toggleMenu(menuId, e) {
+            e.stopPropagation();
+            const menus = document.querySelectorAll('.dropdown-menu');
+            menus.forEach(m => {
+                if (m.id !== menuId) m.style.display = 'none';
+            });
+            const menu = document.getElementById(menuId);
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.custom-dropdown')) {
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+            }
+        });
+
+        function setFontSize(size) {
+            document.execCommand('fontSize', false, size);
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+            document.getElementById('postBody').focus();
+        }
+
+        function setTextColor(color) {
+            document.execCommand('foreColor', false, color);
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+            document.getElementById('postBody').focus();
+            scheduleAutoSave();
+        }
 
         // دالة تصدير المقالات مع نافذة اختيار مكان الحفظ (File System Access API) مع بديل تلقائي
         async function exportArticlesLocal() {
@@ -762,25 +807,6 @@
             const key = editId ? `article_draft_edit_${editId}` : 'article_draft_new';
             localStorage.removeItem(key);
             document.getElementById('draftStatus').innerText = '';
-        }
-
-        document.addEventListener('click', function(e) {
-            const dropdown = document.getElementById('fontDropdown');
-            if (dropdown && !e.target.closest('.custom-dropdown')) {
-                dropdown.style.display = 'none';
-            }
-        });
-
-        function toggleFontMenu(e) {
-            e.stopPropagation();
-            const menu = document.getElementById('fontDropdown');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function setFontSize(size) {
-            document.execCommand('fontSize', false, size);
-            document.getElementById('fontDropdown').style.display = 'none';
-            document.getElementById('postBody').focus();
         }
 
         function openPreviewModal() {
