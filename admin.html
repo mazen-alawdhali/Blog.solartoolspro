@@ -391,7 +391,7 @@
             <!-- القائمة المنسدلة المخصصة لحجم الخط -->
             <div class="custom-dropdown">
                 <button type="button" class="tool-btn" onclick="toggleMenu('fontDropdown', event)" title="حجم الخط">🔤 ▼</button>
-                <div id="fontDropdown" class="dropdown-menu">
+                <div id="fontDropdown" class="dropdown-menu" onmousedown="event.preventDefault()">
                     <div class="dropdown-item" onclick="setFontSize('2')">صغير</div>
                     <div class="dropdown-item" onclick="setFontSize('3')">عادي</div>
                     <div class="dropdown-item" onclick="setFontSize('5')">كبير</div>
@@ -402,7 +402,7 @@
             <!-- القائمة المنسدلة المخصصة لألوان النص (10 ألوان متنوعة) -->
             <div class="custom-dropdown">
                 <button type="button" class="tool-btn" onclick="toggleMenu('colorDropdown', event)" title="لون النص">🎨 ▼</button>
-                <div id="colorDropdown" class="dropdown-menu" style="min-width: 160px; padding: 8px;">
+                <div id="colorDropdown" class="dropdown-menu" onmousedown="event.preventDefault()" style="min-width: 160px; padding: 8px;">
                     <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 4px;">
                         <div onclick="setTextColor('#ffffff')" style="background:#ffffff; height:26px; border-radius:5px; cursor:pointer; border:1px solid #475569;" title="أبيض"></div>
                         <div onclick="setTextColor('#1e40af')" style="background:#1e40af; height:26px; border-radius:5px; cursor:pointer; border:1px solid #3b82f6;" title="أزرق داكن"></div>
@@ -434,7 +434,7 @@
             <button type="button" class="tool-btn" onclick="execCmd('undo')" title="تراجع">↩️</button>
             <button type="button" class="tool-btn" onclick="execCmd('redo')" title="إعادة">↪️</button>
         </div>
-        <div id="postBody" class="editor-box" contenteditable="true" placeholder="اكتب نص المقال هنا..." oninput="scheduleAutoSave()" onkeyup="scheduleAutoSave()" onblur="saveDraftToLocal()" onpaste="setTimeout(scheduleAutoSave, 200)"></div>
+        <div id="postBody" class="editor-box" contenteditable="true" placeholder="اكتب نص المقال هنا..." oninput="scheduleAutoSave(); saveSelection();" onmouseup="saveSelection()" onkeyup="saveSelection()" onblur="saveDraftToLocal()" onpaste="setTimeout(scheduleAutoSave, 200)"></div>
         <div id="draftStatus" class="draft-status"></div>
     </div>
 
@@ -476,6 +476,27 @@
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.firestore();
+
+        // متغيرات لحفظ واستعادة التحديد (Selection Range) بدقة تامة لتفادي قفزة المؤشر
+        let savedRange = null;
+
+        function saveSelection() {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0) {
+                const range = sel.getRangeAt(0);
+                if (document.getElementById('postBody').contains(range.commonAncestorContainer)) {
+                    savedRange = range;
+                }
+            }
+        }
+
+        function restoreSelection() {
+            if (savedRange) {
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(savedRange);
+            }
+        }
 
         // مصفوفة لتخزين مراجع كافة الصور المحددة
         let selectedImageElements = [];
@@ -549,16 +570,22 @@
         });
 
         function setFontSize(size) {
+            const editor = document.getElementById('postBody');
+            editor.focus();
+            restoreSelection();
+            document.execCommand('styleWithCSS', false, true);
             document.execCommand('fontSize', false, size);
             document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
-            document.getElementById('postBody').focus();
+            scheduleAutoSave();
         }
 
         function setTextColor(color) {
+            const editor = document.getElementById('postBody');
+            editor.focus();
+            restoreSelection();
             document.execCommand('styleWithCSS', false, true);
             document.execCommand('foreColor', false, color);
             document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
-            document.getElementById('postBody').focus();
             scheduleAutoSave();
         }
 
@@ -849,6 +876,8 @@
         }
 
         function execCmd(command, value = null) {
+            document.getElementById('postBody').focus();
+            restoreSelection();
             document.execCommand(command, false, value);
             document.getElementById('postBody').focus();
             scheduleAutoSave();
