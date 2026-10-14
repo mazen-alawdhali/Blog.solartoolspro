@@ -49,22 +49,31 @@
             line-height: 1.7;
         }
         
-        /* الهيدر العام */
+        /* الهيدر بخلفية الصورة النقية */
         header {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.25), rgba(30, 41, 59, 0.35)), url('images/header_balanced_sky_600w.webp') center/cover no-repeat;
+            border-bottom: 1px solid #334155;
+            border-radius: 16px;
+            padding: 25px 15px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             margin-bottom: 25px;
         }
         
-        /* بانر العنوان الرئيسي والفرعي مع الصورة والخلفية */
+        /* بانر الإطار الزجاجي الشفاف الأنيق للعنوان الرئيسي والفرعي */
         .hero-banner {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.55)), url('images/header_balanced_sky_600w.webp') center/cover no-repeat;
-            border: 1px solid #334155;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(56, 189, 248, 0.3);
             border-radius: 16px;
-            padding: 35px 20px;
+            padding: 20px 16px;
             text-align: center;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            margin: 0 auto;
+            max-width: 600px;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
         }
-        h1 { font-size: 22px; color: #38bdf8; margin-bottom: 6px; font-weight: 800; text-shadow: 0 2px 6px rgba(0,0,0,0.8); }
+        h1 { font-size: 20px; color: #38bdf8; margin-bottom: 6px; font-weight: 800; text-shadow: 0 2px 6px rgba(0,0,0,0.8); }
         p.subtitle { font-size: 13px; color: #34d399; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
         /* صندوق الوصف التوضيحي المنفصل بوضوح تام */
@@ -79,6 +88,7 @@
             font-weight: 600;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             line-height: 1.6;
+            margin-top: 15px;
         }
 
         /* شريط البحث والتصنيفات */
