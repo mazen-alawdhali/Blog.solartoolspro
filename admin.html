@@ -657,7 +657,6 @@
                         isAutoSave: true
                     };
 
-                    // التحقق مما إذا كانت المسودة قيد التعديل حالياً أو موجودة بنفس العنوان لتحديثها بدلاً من تكرارها
                     let targetIndex = -1;
                     if (draftEditIndex !== '' && drafts[draftEditIndex]) {
                         targetIndex = parseInt(draftEditIndex);
@@ -814,7 +813,6 @@
             selectedImageElements = [];
         }
 
-        // دالة تصدير المقالات النسخ الاحتياطي
         async function exportArticlesLocal() {
             if (!loadedArticles || loadedArticles.length === 0) {
                 return showToast('⚠️ يرجى جلب المقالات أولاً للتصدير!', 'error');
@@ -1195,6 +1193,8 @@
             try {
                 const { sha, articles } = await fetchFileFromGithub(token);
 
+                let articleId = editId ? editId : Date.now();
+
                 if (editId) {
                     const index = articles.findIndex(a => a.id == editId);
                     if (index !== -1) {
@@ -1204,7 +1204,7 @@
                         articles[index].category = category;
                     }
                 } else {
-                    articles.unshift({ id: Date.now(), title, description: desc, body: bodyHtml, category });
+                    articles.unshift({ id: articleId, title, description: desc, body: bodyHtml, category });
                 }
 
                 backupArticlesToCloud(articles);
@@ -1240,6 +1240,28 @@
                     }
 
                     showToast('🚀 تم نشر المقال بنجاح!', 'success');
+
+                    // إرسال البيانات فوراً إلى Zapier Webhook الخاص بك
+                    try {
+                        const articleUrl = `https://blog.solartoolspro.com/#${articleId}`;
+                        const webhookUrl = 'https://hooks.zapier.com/hooks/catch/29142059/415x3bi/';
+                        
+                        if (webhookUrl && webhookUrl.startsWith('http')) {
+                            await fetch(webhookUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    title: title,
+                                    description: desc,
+                                    url: articleUrl,
+                                    category: category
+                                })
+                            });
+                        }
+                    } catch (webhookErr) {
+                        console.error('Webhook error:', webhookErr);
+                    }
+
                     clearEditorForm();
                     cancelEdit();
                     loadArticlesList();
