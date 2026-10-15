@@ -225,6 +225,7 @@
             flex-wrap: nowrap;
         }
         .share-btn {
+            position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -248,6 +249,42 @@
         .btn-twitter { background-color: #000000; border: 1px solid #334155; }
         .btn-copy { background-color: #334155; color: #38bdf8; border: 1px solid #475569; }
         .btn-copy:hover { background-color: #0284c7; color: #fff; }
+
+        /* 💬 فقاعة التنبيه الجذابة باللون الأزرق الفاتح من زر النسخ */
+        .copy-tooltip {
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%) translateY(5px);
+            background: #38bdf8;
+            color: #0f172a;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            z-index: 100;
+        }
+        .copy-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #38bdf8 transparent transparent transparent;
+        }
+        .copy-tooltip.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
 
         /* 🌐 كارت الشفافية الشفاف أسفل المقالات للانتقال للمنصة - بلون النص الأخضر الجذاب */
         .platform-glass-card {
@@ -274,35 +311,6 @@
             color: #ffffff;
             box-shadow: 0 6px 20px rgba(52, 211, 153, 0.3);
         }
-
-        /* نظام التنبيهات المنبثقة العصري (Toasts) */
-        #toastContainer {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100000;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: 90%;
-            max-width: 400px;
-            pointer-events: none;
-        }
-        .toast {
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #fff;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            animation: slideDown 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
-            text-align: center;
-        }
-        .toast-success { background: rgba(16, 185, 129, 0.95); border: 1px solid #34d399; }
-        .toast-error { background: rgba(239, 68, 68, 0.95); border: 1px solid #f87171; }
-        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 
         /* الفوتر */
         footer {
@@ -355,8 +363,6 @@
     </style>
 </head>
 <body>
-
-    <div id="toastContainer"></div>
 
     <header>
         <div class="hero-banner">
@@ -411,15 +417,6 @@
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
-        }
-
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.innerText = message;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
         }
 
         async function fetchArticles() {
@@ -537,9 +534,10 @@
                                     <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                                     تويتر / X
                                 </button>
-                                <button class="share-btn btn-copy" onclick="copyArticleLink(${art.id})" title="نسخ الرابط">
+                                <button class="share-btn btn-copy" id="copyBtn-${art.id}" onclick="copyArticleLink(${art.id}, this)" title="نسخ الرابط">
                                     <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                                     نسخ
+                                    <span class="copy-tooltip" id="tooltip-${art.id}">تم النسخ ✓</span>
                                 </button>
                             </div>
                         </div>
@@ -617,12 +615,19 @@
             window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
         }
 
-        function copyArticleLink(id) {
+        function copyArticleLink(id, btnElement) {
             const art = allArticles.find(a => a.id == id);
             if (!art) return;
             const url = `https://blog.solartoolspro.com/?id=${art.id}`;
+            
             navigator.clipboard.writeText(url).then(() => {
-                showToast('📋 تم نسخ رابط المقال بنجاح!', 'success');
+                const tooltip = document.getElementById(`tooltip-${id}`);
+                if (tooltip) {
+                    tooltip.classList.add('show');
+                    setTimeout(() => {
+                        tooltip.classList.remove('show');
+                    }, 2000);
+                }
             });
         }
 
