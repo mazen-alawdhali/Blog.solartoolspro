@@ -6,6 +6,13 @@
     <description>أحدث المقالات التقنية في الطاقة الشمسية والتقنية الحديثة</description>
     <language>ar</language>
     <item>
+        <title>كيف يعمل الحاسوب؟</title>
+        <link>https://blog.solartoolspro.com/?id=1792099995933</link>
+        <description>تعرّف على كيفية عمل الحاسوب وآلية تفاعل المكونات الأساسية مثل المعالج المركزي CPU، الذاكرة العشوائية RAM، ونظام التشغيل في معالجة البيانات وتنفيذ الأوامر.</description>
+        <guid>https://blog.solartoolspro.com/?id=1792099995933</guid>
+        <enclosure url="https://raw.githubusercontent.com/mazen-alawdhali/blog.solartoolspro.com/main/images/1792099941459_0_IMG_20261016_002821.jpg" type="image/jpeg" />
+    </item>
+    <item>
         <title>دليل الأمان السيبراني: ما هو التصيد الاحتيالي (Phishing) وكيف تحمي بياناتك منه؟</title>
         <link>https://blog.solartoolspro.com/?id=1792099621579</link>
         <description>تعرّف على مفهوم التصيد الاحتيالي (Phishing)، وكيف يستغل المحتالون الوسائل الرقمية لخداع الضحايا. استكشف أبرز الأدوات والمنصات المستخدمة في فحص الروابط وحماية البريد الإلكتروني.</description>
