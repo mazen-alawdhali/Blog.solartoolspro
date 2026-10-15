@@ -15,14 +15,16 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=3" />
     <link rel="manifest" href="site.webmanifest" />
     
-    <title>مدونة أدوات الطاقة الشمسية والتقنية - SolarToolsPro</title>
-    <meta name="description" content="مدونة أدوات الطاقة الشمسية والتقنية - أدلة تقنية، شروحات بطاريات الليثيوم، وأحدث أخبار الهواتف والحواسيب.">
+    <title id="metaTitle">مدونة أدوات الطاقة الشمسية والتقنية - SolarToolsPro</title>
+    <meta name="description" id="metaDesc" content="مدونة أدوات الطاقة الشمسية والتقنية - أدلة تقنية، شروحات بطاريات الليثيوم، وأحدث أخبار الهواتف والحواسيب.">
     <link rel="canonical" href="https://blog.solartoolspro.com/">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://blog.solartoolspro.com/">
-    <meta property="og:title" content="مدونة أدوات الطاقة الشمسية والتقنية - SolarToolsPro">
-    <meta property="og:description" content="أحدث المقالات والأدلة التقنية لأنظمة الطاقة، الهواتف الذكية، والحواسيب.">
-    <meta property="og:image" content="https://blog.solartoolspro.com/images/header_balanced_sky_600w.webp">
+    
+    <!-- وسوم الـ OpenGraph المحدثة ديناميكياً لفيسبوك -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" id="ogUrl" content="https://blog.solartoolspro.com/">
+    <meta property="og:title" id="ogTitle" content="مدونة أدوات الطاقة الشمسية والتقنية - SolarToolsPro">
+    <meta property="og:description" id="ogDesc" content="أحدث المقالات والأدلة التقنية لأنظمة الطاقة، الهواتف الذكية، والحواسيب.">
+    <meta property="og:image" id="ogImage" content="https://blog.solartoolspro.com/images/header_balanced_sky_600w.webp">
     
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -409,6 +411,31 @@
                 const res = await fetch('articles.json?t=' + Date.now());
                 if (!res.ok) throw new Error('تعذر تحميل المقالات');
                 allArticles = await res.json();
+                
+                // 🌟 دالة مطابقة وسوم Open Graph ديناميكياً حسب المقال المحدد بالرابط (#id)
+                if (window.location.hash) {
+                    const targetId = window.location.hash.replace('#', '');
+                    const currentArt = allArticles.find(a => a.id == targetId);
+                    if (currentArt) {
+                        document.getElementById('metaTitle').innerText = currentArt.title + ' - SolarToolsPro';
+                        document.getElementById('ogTitle').setAttribute('content', currentArt.title);
+                        document.getElementById('ogUrl').setAttribute('content', window.location.href);
+                        
+                        if (currentArt.description) {
+                            document.getElementById('metaDesc').setAttribute('content', currentArt.description);
+                            document.getElementById('ogDesc').setAttribute('content', currentArt.description);
+                        }
+
+                        // استخراج أول صورة من محتوى المقال ووضعها كوسم رئيسي لفيسبوك
+                        if (currentArt.body) {
+                            const imgMatch = currentArt.body.match(/<img[^>]+src=["']([^"']+)["']/i);
+                            if (imgMatch && imgMatch[1]) {
+                                document.getElementById('ogImage').setAttribute('content', imgMatch[1]);
+                            }
+                        }
+                    }
+                }
+
                 displayArticles(allArticles);
 
                 if (window.location.hash) {
@@ -450,6 +477,7 @@
                 const readTime = calculateReadingTime(art.body || '');
                 const categoryTag = art.category ? art.category : 'عام';
                 html += `
+                    ` + `
                     <div class="article-card" id="card-${art.id}">
                         <div class="article-meta">
                             <span>⏱️ ${readTime} دقائق قراءة</span>
