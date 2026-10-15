@@ -413,6 +413,9 @@
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<blockquote>')" title="اقتباس">❞</button>
             <button type="button" class="tool-btn" onclick="execCmd('insertHorizontalRule')" title="خط فاصل">―</button>
 
+            <!-- زر إدراج فيديو يوتيوب -->
+            <button type="button" class="tool-btn" onclick="insertYoutubeVideo()" title="إدراج فيديو يوتيوب" style="background-color: #8b5cf6; color: #fff;">🎬</button>
+
             <!-- زر حذف الصور المحددة -->
             <button type="button" class="tool-btn" onclick="deleteSelectedImage()" title="حذف الصور المحددة" style="background-color: #ef4444; color: #fff; min-width: 42px;">🗑️</button>
 
@@ -515,6 +518,39 @@
                 }
             }
         });
+
+        function insertYoutubeVideo() {
+            const input = prompt('أدخل رابط فيديو يوتيوب (YouTube URL) أو كود التضمين:');
+            if (!input || !input.trim()) return;
+
+            let videoId = '';
+            const raw = input.trim();
+
+            if (raw.includes('iframe')) {
+                const match = raw.match(/src=["']([^"']+)["']/i);
+                if (match && match[1]) {
+                    const src = match[1];
+                    const idMatch = src.match(/(?:embed\/|v=|\/vi\/|youtu\.be\/|\/shorts\/)([a-zA-Z0-9_-]{11})/);
+                    if (idMatch && idMatch[1]) videoId = idMatch[1];
+                }
+            } else {
+                const match = raw.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
+                if (match && match[1]) videoId = match[1];
+            }
+
+            if (!videoId) {
+                return showToast('⚠️ رابط يوتيوب غير صالح! يرجى التأكد من الرابط.', 'error');
+            }
+
+            const embedHtml = `<div class="video-container" style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; margin: 15px 0; border: 1px solid #334155; box-shadow: 0 4px 12px rgba(0,0,0,0.4);"><iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/${videoId}" title="فيديو المقال" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p><br></p>`;
+
+            const editor = document.getElementById('postBody');
+            editor.focus();
+            restoreSelection();
+            document.execCommand('insertHTML', false, embedHtml);
+            scheduleAutoSave();
+            showToast('🎬 تم إدراج فيديو يوتيوب بنجاح!', 'success');
+        }
 
         function deleteSelectedImage() {
             if (selectedImageElements.length === 0) {
