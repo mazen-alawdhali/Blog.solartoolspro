@@ -1056,6 +1056,7 @@
         const repoName = 'blog.solartoolspro.com'; 
         const filePath = 'articles.json';
         const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
+        const rssApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/rss.xml`;
 
         async function fetchFileFromGithub(token) {
             const res = await fetch(apiUrl, { headers: { 'Authorization': `token ${token}` } });
@@ -1063,6 +1064,62 @@
             const data = await res.json();
             const content = b64_to_utf8(data.content);
             return { sha: data.sha, articles: JSON.parse(content) };
+        }
+
+        // دالة مساعدة لتوليد ملف RSS وتحديثه تلقائياً على GitHub
+        async function updateRssFeedOnGithub(token, articles) {
+            try {
+                let rssSha = '';
+                try {
+                    const rssRes = await fetch(rssApiUrl, { headers: { 'Authorization': `token ${token}` } });
+                    if (rssRes.ok) {
+                        const rssData = await rssRes.json();
+                        rssSha = rssData.sha;
+                    }
+                } catch(e) {}
+
+                // بناء ملف الـ RSS 2.0
+                let rssXml = `<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+    <title>مدونة أدوات الطاقة الشمسية الاحترافية</title>
+    <link>https://blog.solartoolspro.com</link>
+    <description>أحدث المقالات التقنية في الطاقة الشمسية والتقنية الحديثة</description>
+    <language>ar</language>`;
+
+                articles.forEach(art => {
+                    const articleUrl = `https://blog.solartoolspro.com/#${art.id}`;
+                    // تنظيف النصوص البسيطة لملف الـ XML
+                    const safeTitle = (art.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safeDesc = (art.description || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                    rssXml += `
+    <item>
+        <title>${safeTitle}</title>
+        <link>${articleUrl}</link>
+        <description>${safeDesc}</description>
+        <guid>${articleUrl}</guid>
+    </item>`;
+                });
+
+                rssXml += `
+</channel>
+</rss>`;
+
+                const putBody = {
+                    message: 'تحديث تغذية RSS تلقائياً',
+                    content: utf8_to_b64(rssXml)
+                };
+                if (rssSha) putBody.sha = rssSha;
+
+                await fetch(rssApiUrl, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(putBody)
+                });
+            } catch (rssErr) {
+                console.error("RSS update error:", rssErr);
+            }
         }
 
         async function loadArticlesList() {
@@ -1188,7 +1245,7 @@
 
             localStorage.setItem('gh_token', token);
             btn.disabled = true;
-            showTopBanner('جاري تحديث ونشر المقال على GitHub...');
+            showTopBanner('جاري تحديث ونشر المقال وتوليد ملف RSS...');
 
             try {
                 const { sha, articles } = await fetchFileFromGithub(token);
@@ -1221,10 +1278,13 @@
                     })
                 });
 
-                hideTopBanner();
-                btn.disabled = false;
-
                 if (putRes.ok) {
+                    // تحديث ملف الـ RSS تلقائياً في الخلفية
+                    await updateRssFeedOnGithub(token, articles);
+
+                    hideTopBanner();
+                    btn.disabled = false;
+
                     // حذف المسودة بعد النشر الناجح
                     if (draftEditIndex !== '') {
                         let drafts = getSavedDrafts();
@@ -1239,30 +1299,7 @@
                         }
                     }
 
-                    showToast('🚀 تم نشر المقال بنجاح!', 'success');
-
-                    // إرسال البيانات إلى Zapier Webhook بحقل نصي مباشر (message)
-                    try {
-                        const articleUrl = `https://blog.solartoolspro.com/#${articleId}`;
-                        const webhookUrl = 'https://hooks.zapier.com/hooks/catch/29142059/415x3bi/';
-                        
-                        // تصميم رسالة نصية صريحة ونظيفة لفيسبوك لتجنب مشاكل Object.to_json
-                        const postMessage = `📢 ${title}\n\n📝 ${desc}\n\n🔗 اقرأ المقال كاملاً:\n${articleUrl}`;
-
-                        if (webhookUrl && webhookUrl.startsWith('http')) {
-                            await fetch(webhookUrl, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    message: postMessage,
-                                    url: articleUrl
-                                })
-                            });
-                        }
-                    } catch (webhookErr) {
-                        console.error('Webhook error:', webhookErr);
-                    }
-
+                    showToast('🚀 تم نشر المقال وتحديث الـ RSS بنجاح!', 'success');
                     clearEditorForm();
                     cancelEdit();
                     loadArticlesList();
@@ -1324,7 +1361,7 @@
             const token = document.getElementById('ghToken').value.trim();
             if (!token) return showToast('يرجى إدخال رمز الـ Token أولاً!', 'error');
 
-            showTopBanner('جاري حفظ الترتيب الجديد على GitHub...');
+            showTopBanner('جاري حفظ الترتيب وتحديث الـ RSS...');
             try {
                 backupArticlesToCloud(loadedArticles);
 
@@ -1339,11 +1376,14 @@
                     })
                 });
 
-                hideTopBanner();
                 if (putRes.ok) {
+                    // تحديث الـ RSS بناءً على الترتيب الجديد
+                    await updateRssFeedOnGithub(token, loadedArticles);
+
                     const data = await putRes.json();
                     currentFileSha = data.content.sha;
-                    showToast('✅ تم حفظ الترتيب الجديد بنجاح!', 'success');
+                    hideTopBanner();
+                    showToast('✅ تم حفظ الترتيب وتحديث RSS بنجاح!', 'success');
                     loadArticlesList();
                 } else {
                     throw new Error('فشل حفظ الترتيب على السيرفر.');
@@ -1363,7 +1403,7 @@
 
         async function deleteArticle(id) {
             const token = document.getElementById('ghToken').value.trim();
-            showTopBanner('جاري حذف المقال وصوره من السيرفر...');
+            showTopBanner('جاري حذف المقال وتحديث الـ RSS...');
 
             try {
                 const { sha, articles } = await fetchFileFromGithub(token);
@@ -1382,9 +1422,12 @@
                     })
                 });
 
-                hideTopBanner();
                 if (putRes.ok) {
-                    showToast('🗑️ تم حذف المقال بنجاح!', 'success');
+                    // تحديث الـ RSS بعد الحذف
+                    await updateRssFeedOnGithub(token, filteredArticles);
+
+                    hideTopBanner();
+                    showToast('🗑️ تم حذف المقال وتحديث RSS بنجاح!', 'success');
                     loadArticlesList();
                 } else {
                     throw new Error('فشل الحذف.');
