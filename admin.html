@@ -1066,7 +1066,7 @@
             return { sha: data.sha, articles: JSON.parse(content) };
         }
 
-        // دالة مساعدة لتوليد وتحديث ملف الـ RSS على GitHub (المحدثة)
+        // دالة مساعدة لتوليد وتحديث ملف الـ RSS على GitHub مع استخراج صورة المقال تلقائياً
         async function updateRssFeedOnGithub(token, articles) {
             try {
                 let rssSha = '';
@@ -1094,12 +1094,22 @@
                         const safeTitle = (art.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         const safeDesc = (art.description || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+                        // استخراج أول صورة من محتوى المقال وإضافتها كـ enclosure لـ dlvr.it و فيسبوك
+                        let imgTag = '';
+                        if (art.body) {
+                            const imgMatch = art.body.match(/<img[^>]+src=["']([^"']+)["']/i);
+                            if (imgMatch && imgMatch[1]) {
+                                const imgUrl = imgMatch[1].replace(/&/g, '&amp;');
+                                imgTag = `\n        <enclosure url="${imgUrl}" type="image/jpeg" />`;
+                            }
+                        }
+
                         rssXml += `
     <item>
         <title>${safeTitle}</title>
         <link>${articleUrl}</link>
         <description>${safeDesc}</description>
-        <guid>${articleUrl}</guid>
+        <guid>${articleUrl}</guid>${imgTag}
     </item>`;
                     });
                 }
@@ -1109,7 +1119,7 @@
 </rss>`;
 
                 const putBody = {
-                    message: 'تحديث تغذية RSS تلقائياً',
+                    message: 'تحديث تغذية RSS وتضمين الصور تلقائياً',
                     content: utf8_to_b64(rssXml)
                 };
                 if (rssSha) {
@@ -1130,7 +1140,7 @@
                     console.error("RSS PUT Error Response:", resJson);
                     showToast('⚠️ تحذير: لم يتم تحديث ملف RSS على GitHub (راجع الكونسول)', 'error');
                 } else {
-                    console.log("RSS updated successfully!");
+                    console.log("RSS updated successfully with images!");
                 }
             } catch (rssErr) {
                 console.error("RSS update catch error:", rssErr);
