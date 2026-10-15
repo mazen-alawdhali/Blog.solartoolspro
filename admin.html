@@ -1066,7 +1066,7 @@
             return { sha: data.sha, articles: JSON.parse(content) };
         }
 
-        // دالة مساعدة لتوليد ملف RSS وتحديثه تلقائياً على GitHub
+        // دالة مساعدة لتوليد ملف RSS وتحديثه تلقائياً على GitHub (محدثة لضمان تضمين المقالات بنجاح)
         async function updateRssFeedOnGithub(token, articles) {
             try {
                 let rssSha = '';
@@ -1078,7 +1078,7 @@
                     }
                 } catch(e) {}
 
-                // بناء ملف الـ RSS 2.0
+                // بناء ملف الـ RSS 2.0 مع التحقق التام من مصفوفة المقالات
                 let rssXml = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
 <channel>
@@ -1087,20 +1087,21 @@
     <description>أحدث المقالات التقنية في الطاقة الشمسية والتقنية الحديثة</description>
     <language>ar</language>`;
 
-                articles.forEach(art => {
-                    const articleUrl = `https://blog.solartoolspro.com/#${art.id}`;
-                    // تنظيف النصوص البسيطة لملف الـ XML
-                    const safeTitle = (art.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    const safeDesc = (art.description || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                if (Array.isArray(articles)) {
+                    articles.forEach(art => {
+                        const articleUrl = `https://blog.solartoolspro.com/#${art.id}`;
+                        const safeTitle = (art.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        const safeDesc = (art.description || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-                    rssXml += `
+                        rssXml += `
     <item>
         <title>${safeTitle}</title>
         <link>${articleUrl}</link>
         <description>${safeDesc}</description>
         <guid>${articleUrl}</guid>
     </item>`;
-                });
+                    });
+                }
 
                 rssXml += `
 </channel>
@@ -1112,11 +1113,15 @@
                 };
                 if (rssSha) putBody.sha = rssSha;
 
-                await fetch(rssApiUrl, {
+                const rssPutRes = await fetch(rssApiUrl, {
                     method: 'PUT',
                     headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify(putBody)
                 });
+
+                if (!rssPutRes.ok) {
+                    console.error("Failed to update rss.xml on GitHub");
+                }
             } catch (rssErr) {
                 console.error("RSS update error:", rssErr);
             }
