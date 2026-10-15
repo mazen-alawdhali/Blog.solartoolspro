@@ -213,7 +213,7 @@
         }
         .toggle-btn:hover { background-color: #0369a1; }
 
-        /* أزرار المشاركة */
+        /* أزرار المشاركة والمتابعة */
         .share-section {
             border-top: 1px solid #334155;
             padding-top: 15px;
@@ -221,6 +221,7 @@
             display: flex;
             gap: 8px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         .share-btn {
             padding: 8px 14px;
@@ -233,6 +234,7 @@
         }
         .btn-whatsapp { background-color: #22c55e; }
         .btn-telegram { background-color: #0ea5e9; }
+        .btn-facebook { background-color: #1877f2; }
         .btn-copy { background-color: #475569; }
 
         /* 🌐 كارت الشفافية الشفاف أسفل المقالات للانتقال للمنصة - بلون النص الأخضر الجذاب */
@@ -509,6 +511,7 @@
                             <div class="share-section">
                                 <button class="share-btn btn-whatsapp" onclick="shareToWhatsApp(${art.id})">واتساب 💚</button>
                                 <button class="share-btn btn-telegram" onclick="shareToTelegram(${art.id})">تلجرام 💙</button>
+                                <button class="share-btn btn-facebook" onclick="window.open('https://www.facebook.com/profile.php?id=61595054055544', '_blank')">فيسبوك 📘</button>
                                 <button class="share-btn btn-copy" onclick="copyArticleLink(${art.id})">نسخ الرابط 🔗</button>
                             </div>
                         </div>
