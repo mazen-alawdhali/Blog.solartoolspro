@@ -1066,7 +1066,7 @@
             return { sha: data.sha, articles: JSON.parse(content) };
         }
 
-        // دالة مساعدة لتوليد ملف RSS وتحديثه تلقائياً على GitHub (محدثة لضمان تضمين المقالات بنجاح)
+        // دالة مساعدة لتوليد وتحديث ملف الـ RSS على GitHub (المحدثة)
         async function updateRssFeedOnGithub(token, articles) {
             try {
                 let rssSha = '';
@@ -1076,9 +1076,10 @@
                         const rssData = await rssRes.json();
                         rssSha = rssData.sha;
                     }
-                } catch(e) {}
+                } catch(e) {
+                    console.log("rss.xml does not exist yet, will create new.");
+                }
 
-                // بناء ملف الـ RSS 2.0 مع التحقق التام من مصفوفة المقالات
                 let rssXml = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
 <channel>
@@ -1111,19 +1112,28 @@
                     message: 'تحديث تغذية RSS تلقائياً',
                     content: utf8_to_b64(rssXml)
                 };
-                if (rssSha) putBody.sha = rssSha;
+                if (rssSha) {
+                    putBody.sha = rssSha;
+                }
 
                 const rssPutRes = await fetch(rssApiUrl, {
                     method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Authorization': `token ${token}`, 
+                        'Content-Type': 'application/json' 
+                    },
                     body: JSON.stringify(putBody)
                 });
 
+                const resJson = await rssPutRes.json();
                 if (!rssPutRes.ok) {
-                    console.error("Failed to update rss.xml on GitHub");
+                    console.error("RSS PUT Error Response:", resJson);
+                    showToast('⚠️ تحذير: لم يتم تحديث ملف RSS على GitHub (راجع الكونسول)', 'error');
+                } else {
+                    console.log("RSS updated successfully!");
                 }
             } catch (rssErr) {
-                console.error("RSS update error:", rssErr);
+                console.error("RSS update catch error:", rssErr);
             }
         }
 
