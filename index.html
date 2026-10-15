@@ -213,7 +213,7 @@
         }
         .toggle-btn:hover { background-color: #0369a1; }
 
-        /* أزرار المشاركة والمتابعة */
+        /* أزرار المشاركة والمتابعة المطورة */
         .share-section {
             border-top: 1px solid #334155;
             padding-top: 15px;
@@ -224,18 +224,25 @@
             flex-wrap: wrap;
         }
         .share-btn {
-            padding: 8px 14px;
-            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px 16px;
+            border-radius: 10px;
             font-size: 13px;
             font-weight: bold;
             color: #fff;
             border: none;
             cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
         }
-        .btn-whatsapp { background-color: #22c55e; }
-        .btn-telegram { background-color: #0ea5e9; }
+        .share-btn:active { transform: scale(0.96); }
+        .share-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        .btn-whatsapp { background-color: #25d366; }
+        .btn-telegram { background-color: #229ed9; }
         .btn-facebook { background-color: #1877f2; }
-        .btn-copy { background-color: #475569; }
+        .btn-copy { background-color: #334155; border: 1px solid #475569; }
 
         /* 🌐 كارت الشفافية الشفاف أسفل المقالات للانتقال للمنصة - بلون النص الأخضر الجذاب */
         .platform-glass-card {
@@ -509,10 +516,22 @@
                             </div>
                             
                             <div class="share-section">
-                                <button class="share-btn btn-whatsapp" onclick="shareToWhatsApp(${art.id})">واتساب 💚</button>
-                                <button class="share-btn btn-telegram" onclick="shareToTelegram(${art.id})">تلجرام 💙</button>
-                                <button class="share-btn btn-facebook" onclick="window.open('https://www.facebook.com/profile.php?id=61595054055544', '_blank')">فيسبوك 📘</button>
-                                <button class="share-btn btn-copy" onclick="copyArticleLink(${art.id})">نسخ الرابط 🔗</button>
+                                <button class="share-btn btn-whatsapp" onclick="shareToWhatsApp(${art.id})">
+                                    <svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.764.459 3.487 1.332 5.006l-1.417 5.176 5.297-1.388c1.464.798 3.112 1.218 4.773 1.219h.005c5.507 0 9.99-4.478 9.99-9.985 0-2.667-1.038-5.174-2.925-7.062a9.92 9.92 0 0 0-7.059-2.952zm5.72 13.911c-.237.667-1.378 1.275-1.928 1.331-.502.053-1.156.076-3.342-.828-2.793-1.154-4.595-4.004-4.735-4.189-.138-.186-1.134-1.509-1.134-2.879 0-1.37.718-2.044.973-2.321.255-.278.556-.347.741-.347.185 0 .37.002.532.01.173.008.405-.066.635.486.237.568.81 1.972.88 2.112.07.139.116.301.023.486-.093.185-.139.301-.278.463-.139.162-.292.361-.417.486-.139.139-.283.295-.122.572.162.277.718 1.184 1.542 1.918 1.058.942 1.95 1.233 2.228 1.372.278.139.44.116.602-.07.162-.185.695-.81.88-1.088.185-.278.37-.231.625-.139.255.093 1.62.764 1.898.903.278.139.463.208.532.324.07.116.07.671-.167 1.338z"/></svg>
+                                    واتساب
+                                </button>
+                                <button class="share-btn btn-telegram" onclick="shareToTelegram(${art.id})">
+                                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+                                    تلجرام
+                                </button>
+                                <button class="share-btn btn-facebook" onclick="window.open('https://www.facebook.com/profile.php?id=61595054055544', '_blank')">
+                                    <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                    فيسبوك
+                                </button>
+                                <button class="share-btn btn-copy" onclick="copyArticleLink(${art.id})">
+                                    <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                                    نسخ الرابط
+                                </button>
                             </div>
                         </div>
 
