@@ -17,7 +17,9 @@
     
     <title id="metaTitle">مدونة أدوات الطاقة الشمسية والتقنية - SolarToolsPro</title>
     <meta name="description" id="metaDesc" content="مدونة أدوات الطاقة الشمسية والتقنية - أدلة تقنية، شروحات بطاريات الليثيوم، وأحدث أخبار الهواتف والحواسيب.">
-    <link rel="canonical" href="https://blog.solartoolspro.com/">
+    
+    <!-- 🌟 الـ Canonical المحدث ديناميكياً لتجنب توجيه فيسبوك للرئيسية -->
+    <link id="canonicalUrl" rel="canonical" href="https://blog.solartoolspro.com/">
     
     <!-- وسوم الـ OpenGraph المحدثة ديناميكياً لفيسبوك -->
     <meta property="og:type" content="article">
@@ -423,14 +425,15 @@
                 if (targetId) {
                     const currentArt = allArticles.find(a => a.id == targetId);
                     if (currentArt) {
+                        const currentUrl = window.location.href;
                         document.getElementById('metaTitle').innerText = currentArt.title + ' - SolarToolsPro';
-                        document.getElementById('ogTitle').setAttribute('content', currentArt.title);
-                        document.getElementById('ogUrl').setAttribute('content', window.location.href);
+                        document.getElementById('metaDesc').setAttribute('content', currentArt.description);
                         
-                        if (currentArt.description) {
-                            document.getElementById('metaDesc').setAttribute('content', currentArt.description);
-                            document.getElementById('ogDesc').setAttribute('content', currentArt.description);
-                        }
+                        // 🌟 تحديث الـ Canonical والـ OG لضمان مطابقة الرابط الدقيق وتجنب توجيه فيسبوك للرئيسية
+                        document.getElementById('canonicalUrl').setAttribute('href', currentUrl);
+                        document.getElementById('ogUrl').setAttribute('content', currentUrl);
+                        document.getElementById('ogTitle').setAttribute('content', currentArt.title);
+                        document.getElementById('ogDesc').setAttribute('content', currentArt.description);
 
                         // استخراج أول صورة من محتوى المقال ووضعها كوسم رئيسي لفيسبوك
                         if (currentArt.body) {
