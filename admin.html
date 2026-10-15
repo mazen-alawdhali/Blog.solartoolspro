@@ -873,31 +873,12 @@
                         if (confirm(`تم العثور على ${imported.length} مقال في الملف المحلي.\nهل تريد استبدال المقالات الحالية ونشرها على GitHub والسحابة؟`)) {
                             showTopBanner('جاري حفظ ونشر المقالات المستوردة...');
                             
-                            let currentSha = '';
-                            try {
-                                const currentFile = await fetchFileFromGithub(token);
-                                currentSha = currentFile.sha;
-                            } catch(err) {}
-
+                            await saveToGithubWithRetry(token, async () => imported, 'استيراد مقالات من ملف محلي');
                             backupArticlesToCloud(imported);
 
-                            const updatedContent = utf8_to_b64(JSON.stringify(imported, null, 2));
-                            const putBody = { message: 'استيراد مقالات من ملف محلي', content: updatedContent };
-                            if (currentSha) putBody.sha = currentSha;
-
-                            const putRes = await fetch(apiUrl, {
-                                method: 'PUT',
-                                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                                body: JSON.stringify(putBody)
-                            });
-
                             hideTopBanner();
-                            if (putRes.ok) {
-                                showToast('✅ تم استيراد ونشر المقالات بنجاح!', 'success');
-                                loadArticlesList();
-                            } else {
-                                throw new Error('فشل حفظ المقالات على GitHub.');
-                            }
+                            showToast('✅ تم استيراد ونشر المقالات بنجاح!', 'success');
+                            loadArticlesList();
                         }
                     } else {
                         showToast('⚠️ لا توجد مقالات صالحة داخل الملف!', 'error');
@@ -935,34 +916,11 @@
                     if (confirm(`تم العثور على ${cloudArticles.length} مقال في النسخة الاحتياطية السحابية. هل تريد استعادتها ونشرها فوراً على GitHub؟`)) {
                         showTopBanner('جاري استعادة ونشر المقالات على GitHub...');
                         
-                        let currentSha = '';
-                        try {
-                            const currentFile = await fetchFileFromGithub(token);
-                            currentSha = currentFile.sha;
-                        } catch(e) {
-                            currentSha = undefined; 
-                        }
-
-                        const updatedContent = utf8_to_b64(JSON.stringify(cloudArticles, null, 2));
-                        const putBody = {
-                            message: 'استعادة المقالات من النسخة الاحتياطية السحابية',
-                            content: updatedContent
-                        };
-                        if (currentSha) putBody.sha = currentSha;
-
-                        const putRes = await fetch(apiUrl, {
-                            method: 'PUT',
-                            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify(putBody)
-                        });
+                        await saveToGithubWithRetry(token, async () => cloudArticles, 'استعادة المقالات من النسخة الاحتياطية السحابية');
 
                         hideTopBanner();
-                        if (putRes.ok) {
-                            showToast('✅ تم استعادة المقالات بنجاح على GitHub!', 'success');
-                            loadArticlesList();
-                        } else {
-                            throw new Error('فشل حفظ المقالات المسترجعة على السيرفر.');
-                        }
+                        showToast('✅ تم استعادة المقالات بنجاح على GitHub!', 'success');
+                        loadArticlesList();
                     }
                 } else {
                     showToast('⚠️ لا توجد نسخة احتياطية سحابية متاحة حالياً.', 'error');
@@ -1066,6 +1024,42 @@
             return { sha: data.sha, articles: JSON.parse(content) };
         }
 
+        // 🛡️ دالة الحفظ الذكية مع إعادة المحاولة التلقائية (Auto-Retry) لمنع أخطاء تعارض الـ SHA نهائياً
+        async function saveToGithubWithRetry(token, updateCallback, commitMessage, maxRetries = 3) {
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                try {
+                    const { sha, articles } = await fetchFileFromGithub(token);
+                    const updatedArticles = await updateCallback(articles);
+                    const updatedContent = utf8_to_b64(JSON.stringify(updatedArticles, null, 2));
+
+                    const putRes = await fetch(apiUrl, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: commitMessage,
+                            content: updatedContent,
+                            sha: sha
+                        })
+                    });
+
+                    if (putRes.ok) {
+                        const data = await putRes.json();
+                        currentFileSha = data.content.sha;
+                        return updatedArticles;
+                    } else if (putRes.status === 409 && attempt < maxRetries - 1) {
+                        console.warn("SHA conflict detected, retrying...");
+                        continue;
+                    } else {
+                        const errJson = await putRes.json();
+                        throw new Error(errJson.message || 'فشل حفظ الملف على GitHub');
+                    }
+                } catch (err) {
+                    if (attempt === maxRetries - 1) throw err;
+                }
+            }
+            throw new Error('فشل الحفظ بعد عدة محاولات بسبب التعارض.');
+        }
+
         // دالة مساعدة لتوليد وتحديث ملف الـ RSS على GitHub مع استخراج صورة المقال تلقائياً
         async function updateRssFeedOnGithub(token, articles) {
             try {
@@ -1138,7 +1132,6 @@
                 const resJson = await rssPutRes.json();
                 if (!rssPutRes.ok) {
                     console.error("RSS PUT Error Response:", resJson);
-                    showToast('⚠️ تحذير: لم يتم تحديث ملف RSS على GitHub (راجع الكونسول)', 'error');
                 } else {
                     console.log("RSS updated successfully with images!");
                 }
@@ -1270,67 +1263,53 @@
 
             localStorage.setItem('gh_token', token);
             btn.disabled = true;
-            showTopBanner('جاري تحديث ونشر المقال وتوليد ملف RSS...');
+            showTopBanner('جاري نشر المقال وتحديث السيرفر...');
 
             try {
-                const { sha, articles } = await fetchFileFromGithub(token);
-
                 let articleId = editId ? editId : Date.now();
 
-                if (editId) {
-                    const index = articles.findIndex(a => a.id == editId);
-                    if (index !== -1) {
-                        articles[index].title = title;
-                        articles[index].description = desc;
-                        articles[index].body = bodyHtml;
-                        articles[index].category = category;
-                    }
-                } else {
-                    articles.unshift({ id: articleId, title, description: desc, body: bodyHtml, category });
-                }
-
-                backupArticlesToCloud(articles);
-
-                const updatedContent = utf8_to_b64(JSON.stringify(articles, null, 2));
-
-                const putRes = await fetch(apiUrl, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: editId ? `تعديل مقال: ${title}` : `إضافة مقال جديد: ${title}`,
-                        content: updatedContent,
-                        sha: sha
-                    })
-                });
-
-                if (putRes.ok) {
-                    // تحديث ملف الـ RSS تلقائياً في الخلفية
-                    await updateRssFeedOnGithub(token, articles);
-
-                    hideTopBanner();
-                    btn.disabled = false;
-
-                    // حذف المسودة بعد النشر الناجح
-                    if (draftEditIndex !== '') {
-                        let drafts = getSavedDrafts();
-                        drafts.splice(draftEditIndex, 1);
-                        saveDraftsToStorage(drafts);
-                    } else {
-                        let drafts = getSavedDrafts();
-                        const dIndex = drafts.findIndex(d => d.title === title);
-                        if (dIndex > -1) {
-                            drafts.splice(dIndex, 1);
-                            saveDraftsToStorage(drafts);
+                const updatedArticles = await saveToGithubWithRetry(token, async (articles) => {
+                    if (editId) {
+                        const index = articles.findIndex(a => a.id == editId);
+                        if (index !== -1) {
+                            articles[index].title = title;
+                            articles[index].description = desc;
+                            articles[index].body = bodyHtml;
+                            articles[index].category = category;
                         }
+                    } else {
+                        articles.unshift({ id: articleId, title, description: desc, body: bodyHtml, category });
                     }
+                    return articles;
+                }, editId ? `تعديل مقال: ${title}` : `إضافة مقال جديد: ${title}`);
 
-                    showToast('🚀 تم نشر المقال وتحديث الـ RSS بنجاح!', 'success');
-                    clearEditorForm();
-                    cancelEdit();
-                    loadArticlesList();
+                backupArticlesToCloud(updatedArticles);
+
+                // تحديث ملف الـ RSS تلقائياً في الخلفية
+                await updateRssFeedOnGithub(token, updatedArticles);
+
+                hideTopBanner();
+                btn.disabled = false;
+
+                // حذف المسودة بعد النشر الناجح
+                if (draftEditIndex !== '') {
+                    let drafts = getSavedDrafts();
+                    drafts.splice(draftEditIndex, 1);
+                    saveDraftsToStorage(drafts);
                 } else {
-                    throw new Error('فشل حفظ التغييرات على السيرفر.');
+                    let drafts = getSavedDrafts();
+                    const dIndex = drafts.findIndex(d => d.title === title);
+                    if (dIndex > -1) {
+                        drafts.splice(dIndex, 1);
+                        saveDraftsToStorage(drafts);
+                    }
                 }
+
+                showToast('🚀 تم نشر المقال وتحديث الـ RSS بنجاح!', 'success');
+                clearEditorForm();
+                cancelEdit();
+                loadArticlesList();
+
             } catch (err) {
                 hideTopBanner();
                 btn.disabled = false;
@@ -1388,31 +1367,13 @@
 
             showTopBanner('جاري حفظ الترتيب وتحديث الـ RSS...');
             try {
-                backupArticlesToCloud(loadedArticles);
+                const updatedArticles = await saveToGithubWithRetry(token, async () => loadedArticles, 'إعادة ترتيب المقالات');
+                backupArticlesToCloud(updatedArticles);
+                await updateRssFeedOnGithub(token, updatedArticles);
 
-                const updatedContent = utf8_to_b64(JSON.stringify(loadedArticles, null, 2));
-                const putRes = await fetch(apiUrl, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: 'إعادة ترتيب المقالات',
-                        content: updatedContent,
-                        sha: currentFileSha
-                    })
-                });
-
-                if (putRes.ok) {
-                    // تحديث الـ RSS بناءً على الترتيب الجديد
-                    await updateRssFeedOnGithub(token, loadedArticles);
-
-                    const data = await putRes.json();
-                    currentFileSha = data.content.sha;
-                    hideTopBanner();
-                    showToast('✅ تم حفظ الترتيب وتحديث RSS بنجاح!', 'success');
-                    loadArticlesList();
-                } else {
-                    throw new Error('فشل حفظ الترتيب على السيرفر.');
-                }
+                hideTopBanner();
+                showToast('✅ تم حفظ الترتيب وتحديث RSS بنجاح!', 'success');
+                loadArticlesList();
             } catch (err) {
                 hideTopBanner();
                 showToast('❌ خطأ: ' + err.message, 'error');
@@ -1431,32 +1392,16 @@
             showTopBanner('جاري حذف المقال وتحديث الـ RSS...');
 
             try {
-                const { sha, articles } = await fetchFileFromGithub(token);
-                const filteredArticles = articles.filter(a => a.id != id);
-                backupArticlesToCloud(filteredArticles);
+                const updatedArticles = await saveToGithubWithRetry(token, async (articles) => {
+                    return articles.filter(a => a.id != id);
+                }, 'حذف مقال');
 
-                const updatedContent = utf8_to_b64(JSON.stringify(filteredArticles, null, 2));
+                backupArticlesToCloud(updatedArticles);
+                await updateRssFeedOnGithub(token, updatedArticles);
 
-                const putRes = await fetch(apiUrl, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: `حذف مقال`,
-                        content: updatedContent,
-                        sha: sha
-                    })
-                });
-
-                if (putRes.ok) {
-                    // تحديث الـ RSS بعد الحذف
-                    await updateRssFeedOnGithub(token, filteredArticles);
-
-                    hideTopBanner();
-                    showToast('🗑️ تم حذف المقال وتحديث RSS بنجاح!', 'success');
-                    loadArticlesList();
-                } else {
-                    throw new Error('فشل الحذف.');
-                }
+                hideTopBanner();
+                showToast('🗑️ تم حذف المقال وتحديث RSS بنجاح!', 'success');
+                loadArticlesList();
             } catch (err) {
                 hideTopBanner();
                 showToast('❌ خطأ: ' + err.message, 'error');
