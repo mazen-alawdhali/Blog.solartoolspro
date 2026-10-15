@@ -412,9 +412,15 @@
                 if (!res.ok) throw new Error('تعذر تحميل المقالات');
                 allArticles = await res.json();
                 
-                // 🌟 دالة مطابقة وسوم Open Graph ديناميكياً حسب المقال المحدد بالرابط (#id)
-                if (window.location.hash) {
-                    const targetId = window.location.hash.replace('#', '');
+                // 🌟 التقاط المعرف سواء كان عبر ?id= (الأفضل لفيسبوك) أو عبر الـ Hash #
+                const urlParams = new URLSearchParams(window.location.search);
+                let targetId = urlParams.get('id');
+                
+                if (!targetId && window.location.hash) {
+                    targetId = window.location.hash.replace('#', '');
+                }
+
+                if (targetId) {
                     const currentArt = allArticles.find(a => a.id == targetId);
                     if (currentArt) {
                         document.getElementById('metaTitle').innerText = currentArt.title + ' - SolarToolsPro';
@@ -438,8 +444,7 @@
 
                 displayArticles(allArticles);
 
-                if (window.location.hash) {
-                    const targetId = window.location.hash.replace('#', '');
+                if (targetId) {
                     setTimeout(() => {
                         const bodyDiv = document.getElementById(`body-${targetId}`);
                         const btn = document.getElementById(`btn-${targetId}`);
@@ -477,7 +482,6 @@
                 const readTime = calculateReadingTime(art.body || '');
                 const categoryTag = art.category ? art.category : 'عام';
                 html += `
-                    ` + `
                     <div class="article-card" id="card-${art.id}">
                         <div class="article-meta">
                             <span>⏱️ ${readTime} دقائق قراءة</span>
@@ -558,7 +562,7 @@
         function shareToWhatsApp(id) {
             const art = allArticles.find(a => a.id == id);
             if (!art) return;
-            const url = window.location.href.split('#')[0] + '#' + art.id;
+            const url = `https://blog.solartoolspro.com/?id=${art.id}`;
             const text = `📌 ${art.title}\n\n${art.description}\n\nاقرأ المقال كاملاً:\n${url}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
@@ -566,7 +570,7 @@
         function shareToTelegram(id) {
             const art = allArticles.find(a => a.id == id);
             if (!art) return;
-            const url = window.location.href.split('#')[0] + '#' + art.id;
+            const url = `https://blog.solartoolspro.com/?id=${art.id}`;
             const text = `📌 ${art.title}\n\n${art.description}`;
             window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
         }
@@ -574,7 +578,7 @@
         function copyArticleLink(id) {
             const art = allArticles.find(a => a.id == id);
             if (!art) return;
-            const url = window.location.href.split('#')[0] + '#' + art.id;
+            const url = `https://blog.solartoolspro.com/?id=${art.id}`;
             navigator.clipboard.writeText(url).then(() => {
                 showToast('📋 تم نسخ رابط المقال بنجاح!', 'success');
             });
