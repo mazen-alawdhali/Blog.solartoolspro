@@ -875,9 +875,10 @@
                             
                             await saveToGithubWithRetry(token, async () => imported, 'استيراد مقالات من ملف محلي');
                             backupArticlesToCloud(imported);
+                            await updateRssFeedOnGithub(token, imported);
 
                             hideTopBanner();
-                            showToast('✅ تم استيراد ونشر المقالات بنجاح!', 'success');
+                            showToast('✅ تم استيراد ونشر المقالات وتحديث RSS بنجاح!', 'success');
                             loadArticlesList();
                         }
                     } else {
@@ -917,9 +918,10 @@
                         showTopBanner('جاري استعادة ونشر المقالات على GitHub...');
                         
                         await saveToGithubWithRetry(token, async () => cloudArticles, 'استعادة المقالات من النسخة الاحتياطية السحابية');
+                        await updateRssFeedOnGithub(token, cloudArticles);
 
                         hideTopBanner();
-                        showToast('✅ تم استعادة المقالات بنجاح على GitHub!', 'success');
+                        showToast('✅ تم استعادة المقالات وتحديث RSS بنجاح على GitHub!', 'success');
                         loadArticlesList();
                     }
                 } else {
@@ -1060,7 +1062,7 @@
             throw new Error('فشل الحفظ بعد عدة محاولات بسبب التعارض.');
         }
 
-        // دالة مساعدة لتوليد وتحديث ملف الـ RSS على GitHub مع استخراج صورة المقال تلقائياً
+        // 🌟 دالة مساعدة لتوليد وتحديث ملف الـ RSS على GitHub مع استخدام روابط ?id= المعتمدة فيسبوكياً
         async function updateRssFeedOnGithub(token, articles) {
             try {
                 let rssSha = '';
@@ -1084,7 +1086,8 @@
 
                 if (Array.isArray(articles)) {
                     articles.forEach(art => {
-                        const articleUrl = `https://blog.solartoolspro.com/#${art.id}`;
+                        // 🚀 تعديل حاسم: استخدام ?id= لتتوافق مع فيسبوك مع الحفاظ على الـ Hash للتوافق المزدوج
+                        const articleUrl = `https://blog.solartoolspro.com/?id=${art.id}`;
                         const safeTitle = (art.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         const safeDesc = (art.description || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -1113,7 +1116,7 @@
 </rss>`;
 
                 const putBody = {
-                    message: 'تحديث تغذية RSS وتضمين الصور تلقائياً',
+                    message: 'تحديث تغذية RSS وتضمين الصور وروابط ?id= المعتمدة',
                     content: utf8_to_b64(rssXml)
                 };
                 if (rssSha) {
@@ -1133,7 +1136,7 @@
                 if (!rssPutRes.ok) {
                     console.error("RSS PUT Error Response:", resJson);
                 } else {
-                    console.log("RSS updated successfully with images!");
+                    console.log("RSS updated successfully with images and query params!");
                 }
             } catch (rssErr) {
                 console.error("RSS update catch error:", rssErr);
@@ -1389,18 +1392,18 @@
 
         async function deleteArticle(id) {
             const token = document.getElementById('ghToken').value.trim();
-            showTopBanner('جاري حذف المقال وتحديث الـ RSS...');
+            showTopBanner('جاري حذف المقال وتحديث السيرفر والـ RSS...');
 
             try {
                 const updatedArticles = await saveToGithubWithRetry(token, async (articles) => {
                     return articles.filter(a => a.id != id);
-                }, 'حذف مقال');
+                }, `حذف مقال ID: ${id}`);
 
                 backupArticlesToCloud(updatedArticles);
                 await updateRssFeedOnGithub(token, updatedArticles);
 
                 hideTopBanner();
-                showToast('🗑️ تم حذف المقال وتحديث RSS بنجاح!', 'success');
+                showToast('🗑️ تم حذف المقال وتحديث ملفات JSON و RSS بنجاح!', 'success');
                 loadArticlesList();
             } catch (err) {
                 hideTopBanner();
