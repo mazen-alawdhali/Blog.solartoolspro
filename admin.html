@@ -1241,20 +1241,21 @@
 
                     showToast('🚀 تم نشر المقال بنجاح!', 'success');
 
-                    // إرسال البيانات فوراً إلى Zapier Webhook الخاص بك
+                    // إرسال البيانات إلى Zapier Webhook بحقل نصي مباشر (message)
                     try {
                         const articleUrl = `https://blog.solartoolspro.com/#${articleId}`;
                         const webhookUrl = 'https://hooks.zapier.com/hooks/catch/29142059/415x3bi/';
                         
+                        // تصميم رسالة نصية صريحة ونظيفة لفيسبوك لتجنب مشاكل Object.to_json
+                        const postMessage = `📢 ${title}\n\n📝 ${desc}\n\n🔗 اقرأ المقال كاملاً:\n${articleUrl}`;
+
                         if (webhookUrl && webhookUrl.startsWith('http')) {
                             await fetch(webhookUrl, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
-                                    title: title,
-                                    description: desc,
-                                    url: articleUrl,
-                                    category: category
+                                    message: postMessage,
+                                    url: articleUrl
                                 })
                             });
                         }
