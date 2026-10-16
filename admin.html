@@ -1227,8 +1227,21 @@
         const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
         const rssApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/rss.xml`;
 
-        // 🌟 دالة جلب ذكية ومحصنة (تجرب GitHub API أولاً، وإذا فشلت تجلب من النسخة الاحتياطية السحابية Firebase فوراً)
+        // 🌟 دالة جلب ذكية ومحصنة تماماً (تجرب Raw العام أولاً لتجنب CORS، ثم API، ثم Firebase)
         async function fetchFileFromGithub(token) {
+            // الطريقة الأولى: الجلب عبر رابط Raw العام (سريع جداً، لا يحتاج توكن ولا يواجه قيود CORS)
+            try {
+                const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${filePath}?cache_bust=` + Math.random();
+                const rawRes = await fetch(rawUrl);
+                if (rawRes.ok) {
+                    const articles = await rawRes.json();
+                    return { sha: '', articles: Array.isArray(articles) ? articles : [] };
+                }
+            } catch (err) {
+                console.warn("فشل الجلب عبر Raw، جاري المحاولة عبر API...");
+            }
+
+            // الطريقة الثانية: عبر GitHub API الرسمي
             try {
                 const response = await fetch(apiUrl + '?cache_bust=' + Math.random(), { 
                     method: 'GET',
@@ -1243,10 +1256,10 @@
                     return { sha: data.sha, articles: JSON.parse(content) };
                 }
             } catch (e) {
-                console.warn("فشل الاتصال المباشر بـ GitHub، جاري الجلب من السحابة البديلة...");
+                console.warn("فشل الاتصال بـ GitHub API مباشرة...");
             }
 
-            // نظام الطوارئ: الجلب من Firebase إذا تعذر GitHub API
+            // الطريقة الثالثة (طوارئ سحابية): الجلب من Firebase
             try {
                 const doc = await db.collection("blogData").doc("articlesBackup").get();
                 if (doc.exists && doc.data().articles) {
@@ -1257,7 +1270,7 @@
                 console.error("فشل الجلب السحابي أيضاً:", cloudErr);
             }
 
-            throw new Error('تعذر جلب المقالات من GitHub ومن السحابة. تحقق من اتصال الإنترنت أو رمز الـ Token.');
+            throw new Error('تعذر جلب المقالات. تحقق من اتصال الإنترنت أو رمز الـ Token.');
         }
 
         async function saveToGithubWithRetry(token, updateCallback, commitMessage, maxRetries = 3) {
