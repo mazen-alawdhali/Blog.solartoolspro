@@ -16,7 +16,7 @@
     <link rel="manifest" href="site.webmanifest" />
     
     <title id="metaTitle">مدونة منصة أدوات الطاقة الشمسية والتقنية - SolarToolsPro</title>
-    <meta name="description" id="metaDesc" content="دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.">
+    <meta name="description" id="metaDesc" content="دليلكم لبناء حياة ذكية ومستدامة بأحدث الأجهزة.">
     
     <!-- 🌟 الـ Canonical المحدث ديناميكياً لتجنب توجيه فيسبوك للرئيسية -->
     <link id="canonicalUrl" rel="canonical" href="https://blog.solartoolspro.com/">
@@ -25,7 +25,7 @@
     <meta property="og:type" content="article">
     <meta property="og:url" id="ogUrl" content="https://blog.solartoolspro.com/">
     <meta property="og:title" id="ogTitle" content="مدونة منصة أدوات الطاقة الشمسية والتقنية - SolarToolsPro">
-    <meta property="og:description" id="ogDesc" content="دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.">
+    <meta property="og:description" id="ogDesc" content="دليلكم لبناء حياة ذكية ومستدامة بأحدث الأجهزة.">
     <meta property="og:image" id="ogImage" content="https://blog.solartoolspro.com/images/header_balanced_sky_600w.webp">
     
     <style>
@@ -109,7 +109,7 @@
             border-color: #0284c7;
         }
 
-        /* صندوق الوصف التوضيحي بالنص المعتمد الجديد */
+        /* صندوق الوصف التوضيحي المحدث كمقدمة */
         .header-description {
             background-color: #1e293b;
             border: 1px solid #334155;
@@ -124,7 +124,7 @@
             margin-bottom: 20px;
         }
 
-        /* المنشور الترحيبي المثبت أعلى الواجهة */
+        /* المنشور الترحيبي المثبت في أعلى المدونة */
         .pinned-welcome-card {
             background: linear-gradient(135deg, #1e293b, #0f172a);
             border: 1px solid rgba(56, 189, 248, 0.4);
@@ -399,22 +399,22 @@
     <!-- شريط البحث السريع -->
     <input type="text" id="searchInput" class="search-box" placeholder="🔍 ابحث في المقالات والأخبار التقنية..." oninput="filterArticles()">
 
-    <!-- شريط التصنيفات والفلترة المحدث بالترتيب المطلوب (أدوات ذكية بعد الطاقة الشمسية والبديلة) -->
+    <!-- شريط التصنيفات والفلترة المحدث مع إضافة قسم أدوات ذكية وطاقة شمسية وبديلة -->
     <div class="categories-bar">
         <button class="cat-btn active" onclick="filterByCategory('all', this)">الكل</button>
         <button class="cat-btn" onclick="filterByCategory('طاقة', this)">☀️ الطاقة الشمسية والبديلة</button>
-        <button class="cat-btn" onclick="filterByCategory('أدوات', this)">⚙️ أدوات ذكية</button>
         <button class="cat-btn" onclick="filterByCategory('هواتف', this)">📱 الهواتف الذكية</button>
         <button class="cat-btn" onclick="filterByCategory('حواسيب', this)">💻 الحواسيب والتقنية</button>
         <button class="cat-btn" onclick="filterByCategory('بطاريات', this)">🔋 البطاريات</button>
+        <button class="cat-btn" onclick="filterByCategory('أدوات', this)">⚙️ أدوات ذكية</button>
     </div>
 
-    <!-- صندوق الوصف التوضيحي بالنص المعتمد الجديد -->
+    <!-- صندوق الوصف التوضيحي المحدث -->
     <div class="header-description">
-        دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.
+        مدونة منصة أدوات الطاقة الشمسية والتقنية: دليلكم لبناء حياة ذكية ومستدامة بأحدث الأجهزة.
     </div>
 
-    <!-- المنشور الترحيبي المثبت أعلى الواجهة -->
+    <!-- المنشور الترحيبي المثبت أعلى الواجهة الرئيسي -->
     <div class="pinned-welcome-card" id="pinnedWelcomePost">
         <span class="pinned-badge">📌 منشور ترحيبي مثبت</span>
         <h2>أهلاً بكم أصدقائي ومتابعي المدونة الأعزاء 👋</h2>
@@ -462,7 +462,7 @@
                 if (!res.ok) throw new Error('تعذر تحميل المقالات');
                 allArticles = await res.json();
                 
-                // 🌟 التقاط المعرف سواء كان عبر ?id= أو عبر الـ Hash #
+                // 🌟 التقاط المعرف سواء كان عبر ?id= (الأفضل لفيسبوك) أو عبر الـ Hash #
                 const urlParams = new URLSearchParams(window.location.search);
                 let targetId = urlParams.get('id');
                 
@@ -477,11 +477,13 @@
                         document.getElementById('metaTitle').innerText = currentArt.title + ' - SolarToolsPro';
                         document.getElementById('metaDesc').setAttribute('content', currentArt.description);
                         
+                        // 🌟 تحديث الـ Canonical والـ OG لضمان مطابقة الرابط الدقيق وتجنب توجيه فيسبوك للرئيسية
                         document.getElementById('canonicalUrl').setAttribute('href', currentUrl);
                         document.getElementById('ogUrl').setAttribute('content', currentUrl);
                         document.getElementById('ogTitle').setAttribute('content', currentArt.title);
                         document.getElementById('ogDesc').setAttribute('content', currentArt.description);
 
+                        // استخراج أول صورة من محتوى المقال ووضعها كوسم رئيسي لفيسبوك
                         if (currentArt.body) {
                             const imgMatch = currentArt.body.match(/<img[^>]+src=["']([^"']+)["']/i);
                             if (imgMatch && imgMatch[1]) {
@@ -529,12 +531,7 @@
             let html = '';
             articles.forEach(art => {
                 const readTime = calculateReadingTime(art.body || '');
-                // دعم توافق وتحديث التصنيفات القديمة تلقائياً
-                let categoryTag = art.category ? art.category : 'عام';
-                if (categoryTag === '☀️ الطاقة الشمسية' || categoryTag === 'الطاقة الشمسية') {
-                    categoryTag = '☀️ الطاقة الشمسية والبديلة';
-                }
-
+                const categoryTag = art.category ? art.category : 'عام';
                 html += `
                     <div class="article-card" id="card-${art.id}">
                         <div class="article-meta">
@@ -612,6 +609,7 @@
                 (art.category && art.category.toLowerCase().includes(query))
             );
             
+            // إخفاء الكارت المثبت عند البحث لتسهيل رؤية النتائج
             const welcomePost = document.getElementById('pinnedWelcomePost');
             if (welcomePost) {
                 welcomePost.style.display = query.length > 0 ? 'none' : 'block';
@@ -632,10 +630,7 @@
             } else {
                 if (welcomePost) welcomePost.style.display = 'none';
                 const filtered = allArticles.filter(art => {
-                    let cat = (art.category || '').toLowerCase();
-                    if (cat === '☀️ الطاقة الشمسية' || cat === 'الطاقة الشمسية') {
-                        cat = '☀️ الطاقة الشمسية والبديلة';
-                    }
+                    const cat = (art.category || '').toLowerCase();
                     const title = art.title.toLowerCase();
                     const desc = art.description.toLowerCase();
                     return cat.includes(category) || title.includes(category) || desc.includes(category);
