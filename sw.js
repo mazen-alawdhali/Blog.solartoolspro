@@ -1,4 +1,4 @@
-const CACHE_NAME = 'solar-blog-v1';
+const CACHE_NAME = 'solar-blog-v2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -20,7 +20,7 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// تفعيل الخدمة وتنظيف الكاش القديم إن وجد
+// تفعيل الخدمة وتنظيف الكاش القديم فوراً
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((keys) => {
@@ -36,16 +36,23 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// استراتيجية الجلب: محاولة جلب التحديث من الشبكة أولاً، وإن فشل (انقطع النت) يتم جلب النسخة المخزنة
+// إدارة طلبات الشبكة (جلب المقالات من السيرفر مباشرة أولاً لضمان ظهور المنشورات الجديدة فوراً)
 self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        fetch(event.request)
-            .then((response) => {
-                // إذا كانت الاستجابة سليمة، نقوم بتحديث الكاش الخاص بها اختيارياً
-                return response;
+    if (event.request.url.includes('articles.json')) {
+        event.respondWith(
+            fetch(event.request)
+                .then((networkResponse) => {
+                    return networkResponse;
+                })
+                .catch(() => {
+                    return caches.match(event.request);
+                })
+        );
+    } else {
+        event.respondWith(
+            caches.match(event.request).then((cachedResponse) => {
+                return cachedResponse || fetch(event.request);
             })
-            .catch(() => {
-                return caches.match(event.request);
-            })
-    );
+        );
+    }
 });
