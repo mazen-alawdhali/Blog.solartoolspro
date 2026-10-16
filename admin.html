@@ -232,14 +232,14 @@
         .preview-body { font-size: 15px; line-height: 1.8; color: #e2e8f0; border-top: 1px solid #334155; padding-top: 15px; }
         .preview-body img { max-width: 100% !important; height: auto !important; border-radius: 8px; margin: 12px 0; border: 1px solid #334155; }
         
-        /* 🌟 منع ظهور الخط تحت الروابط نهائياً في المعاينة والمحرر والموقع العام */
+        /* 🌟 منع ظهور الخط تحت الروابط نهائياً في المعاينة والمحرر وعامة الموقع بـ !important قاطعة */
         .preview-body a, .editor-box a, a {
             color: #38bdf8 !important;
             text-decoration: none !important;
             font-weight: 500;
         }
         .preview-body a:hover, .editor-box a:hover, a:hover {
-            text-decoration: underline !important;
+            text-decoration: none !important;
             color: #7dd3fc !important;
         }
 
@@ -641,7 +641,7 @@
             closePromptModal();
         };
 
-        // 🔗 إدراج الرابط بدون خط تحت النص نهائياً وبشكل نظيف
+        // 🔗 إدراج الرابط مع فرض إزالة الخط نهائياً بـ Inline Styles قاطعة
         function insertLink() {
             showCustomPrompt('🔗 إدراج رابط تشعبي', 'أدخل رابط الـ URL المطلوب:', 'https://', 'https://solartoolspro.com', function(url) {
                 if (!url || url === 'https://') return;
@@ -655,7 +655,7 @@
                     document.execCommand('createLink', false, url);
                     editor.querySelectorAll('a').forEach(a => {
                         a.style.color = '#38bdf8';
-                        a.style.textDecoration = 'none';
+                        a.style.setProperty('text-decoration', 'none', 'important');
                         a.setAttribute('target', '_blank');
                     });
                     scheduleAutoSave();
@@ -663,7 +663,7 @@
                 } else {
                     showCustomPrompt('✏️ نص الرابط', 'أدخل النص الذي سيظهر للقارئ للنقر عليه:', '', 'مثال: اضغط هنا لزيارة الموقع', function(linkText) {
                         const text = linkText || url;
-                        const linkHtml = `<a href="${url}" target="_blank" style="color: #38bdf8; text-decoration: none; font-weight: 500;">${text}</a>`;
+                        const linkHtml = `<a href="${url}" target="_blank" style="color: #38bdf8 !important; text-decoration: none !important; font-weight: 500;">${text}</a>`;
                         document.execCommand('insertHTML', false, linkHtml);
                         scheduleAutoSave();
                         showToast('🔗 تم إدراج الرابط بنجاح!', 'success');
@@ -1459,7 +1459,15 @@
             const token = document.getElementById('ghToken').value.trim();
             const title = document.getElementById('postTitle').value.trim();
             const desc = document.getElementById('postDesc').value.trim();
-            const bodyHtml = document.getElementById('postBody').innerHTML.trim();
+            
+            // تنظيف الروابط داخل محتوى المقال نهائياً قبل الحفظ لتأكيد عدم وجود خط تحته
+            const editorDiv = document.getElementById('postBody');
+            editorDiv.querySelectorAll('a').forEach(a => {
+                a.style.color = '#38bdf8';
+                a.style.setProperty('text-decoration', 'none', 'important');
+            });
+            const bodyHtml = editorDiv.innerHTML.trim();
+
             const category = document.getElementById('postCategory').value;
             const editId = document.getElementById('editArticleId').value;
             const draftEditIndex = document.getElementById('draftEditIndex').value;
