@@ -1227,17 +1227,17 @@
         const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
         const rssApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/rss.xml`;
 
-        // 🌟 الدالة المحصنة ضد الكاش لضمان جلب أحدث نسخة دائماً وتجنب تعارض الحفظ
+        // 🌟 الدالة المستقرة لطلب الملف من GitHub دون مشاكل جلب أو كاش
         async function fetchFileFromGithub(token) {
-            const res = await fetch(apiUrl + '?cache_bust=' + Math.random(), { 
+            const response = await fetch(apiUrl, { 
+                method: 'GET',
                 headers: { 
                     'Authorization': `token ${token}`,
-                    'Cache-Control': 'no-cache, no-store, must-revalidate',
-                    'Pragma': 'no-cache'
+                    'Accept': 'application/vnd.github.v3+json'
                 } 
             });
-            if (!res.ok) throw new Error('تعذر الاتصال بـ GitHub');
-            const data = await res.json();
+            if (!response.ok) throw new Error('تعذر الاتصال بـ GitHub (رمز الاستجابة: ' + response.status + ')');
+            const data = await response.json();
             const content = b64_to_utf8(data.content);
             return { sha: data.sha, articles: JSON.parse(content) };
         }
