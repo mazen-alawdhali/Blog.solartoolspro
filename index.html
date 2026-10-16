@@ -352,9 +352,10 @@
 
         async function fetchArticles() {
             try {
-                // 🌟 الجلب المباشر بالمسار النسبي وتجاوز الكاش السحابي ومحركات المتصفح
-                const res = await fetch('articles.json?v=' + Date.now() + '_' + Math.floor(Math.random() * 1000), { 
-                    cache: 'reload',
+                // 🌟 الجلب المباشر من رابط GitHub Raw لتفادي كاش صفحات المدونة وضمان التحديث اللحظي الفوري
+                const rawUrl = 'https://raw.githubusercontent.com/mazen-alawdhali/blog.solartoolspro.com/main/articles.json';
+                const res = await fetch(rawUrl + '?t=' + Date.now() + '&cb=' + Math.random(), { 
+                    cache: 'no-store',
                     headers: {
                         'Cache-Control': 'no-cache, no-store, must-revalidate',
                         'Pragma': 'no-cache',
