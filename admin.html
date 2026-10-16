@@ -816,7 +816,7 @@
             scheduleAutoSave();
         }
 
-        // --- نظام الحفظ التلقائي الذكي المنضبط تماماً ---
+        // --- نظام الحفظ التلقائي الذكي الشامل (يدعم الجديد والمعدل) ---
         function getSavedDrafts() {
             try {
                 const drafts = localStorage.getItem('blog_all_drafts');
@@ -843,7 +843,7 @@
                 const editId = document.getElementById('editArticleId').value;
                 const draftEditIndex = document.getElementById('draftEditIndex').value;
 
-                if (!editId && (title || desc || body)) {
+                if (title || desc || body) {
                     let drafts = getSavedDrafts();
                     const draftTitle = title || 'مسودة سريعة بدون عنوان';
                     
@@ -853,14 +853,15 @@
                         body,
                         category,
                         updatedAt: new Date().toLocaleString('ar-SA'),
-                        isAutoSave: true
+                        isAutoSave: true,
+                        editArticleId: editId // حفظ معرف المقال المرتبط إن وجد لضمان استمرارية التعديل
                     };
 
                     let targetIndex = -1;
                     if (draftEditIndex !== '' && drafts[draftEditIndex]) {
                         targetIndex = parseInt(draftEditIndex);
                     } else {
-                        targetIndex = drafts.findIndex(d => d.title === draftTitle);
+                        targetIndex = drafts.findIndex(d => d.title === draftTitle || (editId && d.editArticleId == editId));
                     }
 
                     if (targetIndex > -1) {
@@ -874,10 +875,8 @@
                     localStorage.setItem('blog_all_drafts', JSON.stringify(drafts));
                     renderDraftsList();
                     statusEl.innerText = `💾 تم الحفظ التلقائي (${new Date().toLocaleTimeString('ar-SA')})`;
-                } else if (!title && !desc && !body) {
-                    statusEl.innerText = '';
                 } else {
-                    statusEl.innerText = '💾 التعديلات جاهزة';
+                    statusEl.innerText = '';
                 }
             }, 1000);
         }
@@ -888,6 +887,7 @@
             const body = document.getElementById('postBody').innerHTML.trim();
             const category = document.getElementById('postCategory').value;
             const draftEditIndex = document.getElementById('draftEditIndex').value;
+            const editId = document.getElementById('editArticleId').value;
 
             if (!title && !desc && !body) {
                 return showToast('⚠️ لا توجد بيانات لحفظها كمسودة!', 'error');
@@ -900,7 +900,8 @@
                 body,
                 category,
                 updatedAt: new Date().toLocaleString('ar-SA'),
-                isAutoSave: false
+                isAutoSave: false,
+                editArticleId: editId
             };
 
             let targetIndex = -1;
@@ -937,10 +938,11 @@
             drafts.forEach((draft, index) => {
                 const badge = draft.isAutoSave ? ' <span style="background:#0284c7; font-size:10px; padding:2px 6px; border-radius:4px;">حفظ تلقائي</span>' : '';
                 const catBadge = draft.category ? ` <span style="background:#334155; color:#34d399; font-size:10px; padding:2px 6px; border-radius:4px;">${draft.category}</span>` : '';
+                const editBadge = draft.editArticleId ? ' <span style="background:#f59e0b; color:#fff; font-size:10px; padding:2px 6px; border-radius:4px;">تعديل مقال منشور</span>' : '';
                 html += `
                     <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
                         <div style="font-size: 15px; font-weight: bold; color: #38bdf8; margin-bottom: 6px; word-break: break-word;">
-                            📄 ${draft.title} ${badge} ${catBadge}
+                            📄 ${draft.title} ${badge} ${catBadge} ${editBadge}
                         </div>
                         <div style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">آخر تعديل: ${draft.updatedAt}</div>
                         <div style="display: flex; gap: 6px; flex-wrap: wrap;">
@@ -962,6 +964,12 @@
                 document.getElementById('postTitle').value = draft.title;
                 document.getElementById('postDesc').value = draft.desc;
                 document.getElementById('postBody').innerHTML = draft.body;
+                if (draft.editArticleId) {
+                    document.getElementById('editArticleId').value = draft.editArticleId;
+                    document.getElementById('formTitle').innerText = '✏️ تعديل المقال المنشور';
+                    document.getElementById('publishBtn').innerText = 'حفظ التعديلات 💾';
+                    document.getElementById('cancelEditBtn').style.display = 'block';
+                }
                 if (draft.category) {
                     let cat = draft.category;
                     if (cat.includes('أدوات ذكية')) cat = '💡 أدوات ذكية';
@@ -999,6 +1007,9 @@
             document.getElementById('postTitle').value = draft.title;
             document.getElementById('postDesc').value = draft.desc;
             document.getElementById('postBody').innerHTML = draft.body;
+            if (draft.editArticleId) {
+                document.getElementById('editArticleId').value = draft.editArticleId;
+            }
             if (draft.category) {
                 let cat = draft.category;
                 if (cat.includes('أدوات ذكية')) cat = '💡 أدوات ذكية';
@@ -1492,6 +1503,8 @@
                             articles[index].description = desc;
                             articles[index].body = bodyHtml;
                             articles[index].category = category;
+                        } else {
+                            articles.unshift({ id: articleId, title, description: desc, body: bodyHtml, category });
                         }
                     } else {
                         articles.unshift({ id: articleId, title, description: desc, body: bodyHtml, category });
