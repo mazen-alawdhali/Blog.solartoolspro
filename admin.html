@@ -42,23 +42,6 @@
             outline: none;
         }
         input:focus, select:focus { border-color: #38bdf8; }
-        
-        /* تنسيق عصري مخصص للقائمة المنسدلة */
-        select {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg fill="%2338bdf8" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-            background-repeat: no-repeat;
-            background-position: left 12px center;
-            padding-left: 36px;
-            cursor: pointer;
-        }
-        select option {
-            background-color: #1e293b;
-            color: #ffffff;
-            padding: 10px;
-        }
 
         button {
             padding: 10px 14px;
@@ -234,6 +217,23 @@
         
         /* القائمة المنسدلة المخصصة */
         .custom-dropdown { position: relative; display: inline-block; }
+        .category-select-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            text-align: right;
+            font-weight: bold;
+        }
+        .category-select-btn:focus { border-color: #38bdf8; }
+
         .dropdown-menu {
             display: none;
             position: absolute;
@@ -362,16 +362,23 @@
     <input type="hidden" id="editArticleId" value="">
     <input type="hidden" id="draftEditIndex" value="">
 
-    <!-- قائمة اختيار تصنيف المقال المحدثة بترتيب دقيق (أدوات ذكية بعد الطاقة الشمسية والبديلة مباشرة) -->
+    <!-- قائمة اختيار تصنيف المقال المنسدلة المخصصة (بنفس نمط قائمة الخطوط تماماً) -->
     <div class="form-group">
         <label>تصنيف المقال:</label>
-        <select id="postCategory" onchange="scheduleAutoSave()">
-            <option value="☀️ الطاقة الشمسية والبديلة">☀️ الطاقة الشمسية والبديلة</option>
-            <option value="⚙️ أدوات ذكية">⚙️ أدوات ذكية</option>
-            <option value="📱 الهواتف الذكية">📱 الهواتف الذكية</option>
-            <option value="💻 الحواسيب والتقنية">💻 الحواسيب والتقنية</option>
-            <option value="🔋 البطاريات">🔋 البطاريات</option>
-        </select>
+        <input type="hidden" id="postCategory" value="☀️ الطاقة الشمسية والبديلة">
+        <div class="custom-dropdown" style="width: 100%;">
+            <button type="button" id="categoryDropdownBtn" class="category-select-btn" onclick="toggleMenu('categoryDropdown', event)">
+                <span id="selectedCategoryText">☀️ الطاقة الشمسية والبديلة</span>
+                <span style="font-size: 11px; color: #38bdf8;">▼</span>
+            </button>
+            <div id="categoryDropdown" class="dropdown-menu" style="width: 100%;">
+                <div class="dropdown-item" onclick="selectCategory('☀️ الطاقة الشمسية والبديلة')">☀️ الطاقة الشمسية والبديلة</div>
+                <div class="dropdown-item" onclick="selectCategory('⚙️ أدوات ذكية')">⚙️ أدوات ذكية</div>
+                <div class="dropdown-item" onclick="selectCategory('📱 الهواتف الذكية')">📱 الهواتف الذكية</div>
+                <div class="dropdown-item" onclick="selectCategory('💻 الحواسيب والتقنية')">💻 الحواسيب والتقنية</div>
+                <div class="dropdown-item" onclick="selectCategory('🔋 البطاريات')">🔋 البطاريات</div>
+            </div>
+        </div>
     </div>
 
     <div class="form-group">
@@ -617,6 +624,13 @@
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
+        function selectCategory(catName) {
+            document.getElementById('postCategory').value = catName;
+            document.getElementById('selectedCategoryText').innerText = catName;
+            document.getElementById('categoryDropdown').style.display = 'none';
+            scheduleAutoSave();
+        }
+
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.custom-dropdown')) {
                 document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
@@ -818,6 +832,7 @@
                 document.getElementById('postBody').innerHTML = draft.body;
                 if (draft.category) {
                     document.getElementById('postCategory').value = draft.category;
+                    document.getElementById('selectedCategoryText').innerText = draft.category;
                 }
                 document.getElementById('draftEditIndex').value = index;
                 showToast('📂 تم تحميل المسودة في المحرر بنجاح!', 'success');
@@ -852,6 +867,7 @@
             document.getElementById('postBody').innerHTML = draft.body;
             if (draft.category) {
                 document.getElementById('postCategory').value = draft.category;
+                document.getElementById('selectedCategoryText').innerText = draft.category;
             }
             document.getElementById('draftEditIndex').value = index;
 
@@ -865,6 +881,8 @@
             document.getElementById('editArticleId').value = '';
             document.getElementById('draftEditIndex').value = '';
             document.getElementById('draftStatus').innerText = '';
+            document.getElementById('postCategory').value = '☀️ الطاقة الشمسية والبديلة';
+            document.getElementById('selectedCategoryText').innerText = '☀️ الطاقة الشمسية والبديلة';
             selectedImageElements = [];
         }
 
@@ -1384,6 +1402,7 @@
                     document.getElementById('postBody').innerHTML = art.body;
                     if (art.category) {
                         document.getElementById('postCategory').value = art.category;
+                        document.getElementById('selectedCategoryText').innerText = art.category;
                     }
                     
                     document.getElementById('formTitle').innerText = '✏️ تعديل المقال المنشور';
