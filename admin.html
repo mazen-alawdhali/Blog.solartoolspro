@@ -344,14 +344,15 @@
     <input type="hidden" id="editArticleId" value="">
     <input type="hidden" id="draftEditIndex" value="">
 
-    <!-- قائمة اختيار تصنيف المقال -->
+    <!-- قائمة اختيار تصنيف المقال المحدثة شمولياً -->
     <div class="form-group">
         <label>تصنيف المقال:</label>
         <select id="postCategory" onchange="scheduleAutoSave()">
-            <option value="☀️ الطاقة الشمسية">☀️ الطاقة الشمسية</option>
+            <option value="☀️ الطاقة الشمسية والبديلة">☀️ الطاقة الشمسية والبديلة</option>
             <option value="📱 الهواتف الذكية">📱 الهواتف الذكية</option>
             <option value="💻 الحواسيب والتقنية">💻 الحواسيب والتقنية</option>
             <option value="🔋 البطاريات">🔋 البطاريات</option>
+            <option value="⚙️ أدوات ذكية">⚙️ أدوات ذكية</option>
         </select>
     </div>
 
@@ -1115,9 +1116,9 @@
                 let rssXml = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
 <channel>
-    <title>مدونة أدوات الطاقة الشمسية الاحترافية</title>
+    <title>مدونة منصة أدوات الطاقة الشمسية والتقنية</title>
     <link>https://blog.solartoolspro.com</link>
-    <description>أحدث المقالات التقنية في الطاقة الشمسية والتقنية الحديثة</description>
+    <description>دليلكم لبناء حياة ذكية ومستدامة بأحدث الأجهزة.</description>
     <language>ar</language>`;
 
                 if (Array.isArray(articles)) {
