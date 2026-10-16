@@ -532,7 +532,21 @@
             let html = '';
             articles.forEach(art => {
                 const readTime = calculateReadingTime(art.body || '');
-                const articleDate = art.date || 'وقت غير محدد';
+                
+                // 🌟 توليد التاريخ والوقت تلقائياً من الـ id (الـ Timestamp) أو الاعتماد على حقل date القديم إن وُجد
+                let articleDate = 'وقت غير محدد';
+                if (art.date) {
+                    articleDate = art.date;
+                } else if (art.id && !isNaN(art.id)) {
+                    const dateObj = new Date(Number(art.id));
+                    articleDate = dateObj.toLocaleString('ar-SA', { 
+                        year: 'numeric', 
+                        month: '2-digit', 
+                        day: '2-digit', 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                }
                 
                 // 🌟 معالجة وتحديث التصنيفات القديمة تلقائياً لتظهر أيقونة المصباح المضيء 💡
                 let categoryTag = art.category ? art.category : 'عام';
@@ -546,7 +560,7 @@
                 html += `
                     <div class="article-card" id="card-${art.id}">
                         <div class="article-meta">
-                            <span>⏱️ ${readTime} دقائق قراءة</span>
+                            <span>⏱️ ${readTime} دقائق</span>
                             <span>📅 ${articleDate}</span>
                             <span class="article-category-tag">${categoryTag}</span>
                         </div>
