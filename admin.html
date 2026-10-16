@@ -1187,7 +1187,7 @@
         function openPreviewModal() {
             const title = document.getElementById('postTitle').value.trim() || 'عنوان المقال المعاين';
             const desc = document.getElementById('postDesc').value.trim() || 'نبذة مختصرة عن المقال...';
-            const body = document.getElementById('postBody').innerHTML.trim() || '<p style="color:#64748b;">لا يوجد محتوى للمقال بعد...</p>';
+            const body = document.getElementById('postBody').innerHTML.trim() || '<p style="color:#64748b;">لا يوجد للمقال محتوى بعد...</p>';
 
             document.getElementById('pvTitle').innerText = title;
             document.getElementById('pvDesc').innerText = desc;
@@ -1227,8 +1227,15 @@
         const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
         const rssApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/rss.xml`;
 
+        // 🌟 الدالة المحصنة ضد الكاش لضمان جلب أحدث نسخة دائماً وتجنب تعارض الحفظ
         async function fetchFileFromGithub(token) {
-            const res = await fetch(apiUrl, { headers: { 'Authorization': `token ${token}` } });
+            const res = await fetch(apiUrl + '?cache_bust=' + Math.random(), { 
+                headers: { 
+                    'Authorization': `token ${token}`,
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache'
+                } 
+            });
             if (!res.ok) throw new Error('تعذر الاتصال بـ GitHub');
             const data = await res.json();
             const content = b64_to_utf8(data.content);
