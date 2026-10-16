@@ -109,7 +109,7 @@
             border-color: #0284c7;
         }
 
-        /* صندوق الوصف التوضيحي بالنص المعتمد الجديد */
+        /* صندوق الوصف التوضيحي الديناميكي */
         .header-description {
             background-color: #1e293b;
             border: 1px solid #334155;
@@ -409,9 +409,8 @@
         <button class="cat-btn" onclick="filterByCategory('بطاريات', this)">🔋 البطاريات</button>
     </div>
 
-    <!-- صندوق الوصف التوضيحي بالنص النظيف المعتمد -->
-    <div class="header-description">  دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.
-    </div>
+    <!-- صندوق الوصف التوضيحي الديناميكي الآمن ضد الكاش -->
+    <div class="header-description" id="descBox"></div>
 
     <!-- المنشور الترحيبي المثبت أعلى الواجهة -->
     <div class="pinned-welcome-card" id="pinnedWelcomePost">
@@ -450,6 +449,9 @@
 
     <script>
         let allArticles = [];
+
+        // حقن النص الوصفي برمجياً لتجاوز مشكلة الكاش في السيرفر نهائياً
+        document.getElementById('descBox').innerText = "دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.";
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
