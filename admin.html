@@ -231,7 +231,18 @@
         .preview-content .preview-desc { font-size: 14px; color: #94a3b8; border-right: 3px solid #38bdf8; padding-right: 10px; margin-bottom: 20px; font-style: italic; }
         .preview-body { font-size: 15px; line-height: 1.8; color: #e2e8f0; border-top: 1px solid #334155; padding-top: 15px; }
         .preview-body img { max-width: 100% !important; height: auto !important; border-radius: 8px; margin: 12px 0; border: 1px solid #334155; }
-        .preview-body a { color: #38bdf8; text-decoration: underline; }
+        
+        /* 🌟 تعديل مظهر الروابط لإزالة الخط المزعج (Underline) وجعلها أنيقة وعصرية */
+        .preview-body a, .editor-box a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .preview-body a:hover, .editor-box a:hover {
+            text-decoration: underline;
+            color: #7dd3fc;
+        }
 
         /* شريط أزرار التنسيق المرئي */
         .toolbar {
@@ -330,10 +341,6 @@
             border: 1px solid #334155;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             cursor: pointer;
-        }
-        .editor-box a {
-            color: #38bdf8;
-            text-decoration: underline;
         }
         .editor-box blockquote {
             border-right: 3px solid #38bdf8;
@@ -635,7 +642,7 @@
             closePromptModal();
         };
 
-        // 🔗 دالة إدراج الرابط في المحرر بالنوافذ الأنيقة
+        // 🔗 دالة إدراج الرابط في المحرر بدون خط مزعج تحت النص
         function insertLink() {
             showCustomPrompt('🔗 إدراج رابط تشعبي', 'أدخل رابط الـ URL المطلوب:', 'https://', 'https://solartoolspro.com', function(url) {
                 if (!url || url === 'https://') return;
@@ -647,12 +654,18 @@
                 const sel = window.getSelection();
                 if (sel && sel.rangeCount > 0 && !sel.getRangeAt(0).collapsed) {
                     document.execCommand('createLink', false, url);
+                    // تنظيف الروابط المُنشأة لضمان عدم وجود خط مزعج
+                    editor.querySelectorAll('a').forEach(a => {
+                        a.style.color = '#38bdf8';
+                        a.style.textDecoration = 'none';
+                        a.setAttribute('target', '_blank');
+                    });
                     scheduleAutoSave();
                     showToast('🔗 تم تحويل النص المكتوب إلى رابط بنجاح!', 'success');
                 } else {
                     showCustomPrompt('✏️ نص الرابط', 'أدخل النص الذي سيظهر للقارئ للنقر عليه:', '', 'مثال: اضغط هنا لزيارة الموقع', function(linkText) {
                         const text = linkText || url;
-                        const linkHtml = `<a href="${url}" target="_blank" style="color: #38bdf8; text-decoration: underline;">${text}</a>`;
+                        const linkHtml = `<a href="${url}" target="_blank" style="color: #38bdf8; text-decoration: none; font-weight: 500;">${text}</a>`;
                         document.execCommand('insertHTML', false, linkHtml);
                         scheduleAutoSave();
                         showToast('🔗 تم إدراج الرابط بنجاح!', 'success');
@@ -805,7 +818,7 @@
             scheduleAutoSave();
         }
 
-        // --- نظام إدارة المسودات ومنع تكرار "جاري الكتابة..." ---
+        // --- نظام الحفظ التلقائي الذكي لمنع تعليق عبارة "جاري الكتابة..." ---
         function getSavedDrafts() {
             try {
                 const drafts = localStorage.getItem('blog_all_drafts');
@@ -869,7 +882,7 @@
                 } else if (!title && !desc && !body) {
                     document.getElementById('draftStatus').innerText = '';
                 }
-            }, 1200);
+            }, 1500);
         }
 
         function saveAsDraftManual() {
