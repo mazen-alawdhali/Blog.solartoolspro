@@ -1227,19 +1227,8 @@
         const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
         const rssApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/rss.xml`;
 
-        // 🌟 دالة جلب المقالات بذكاء وأمان تام
+        // 🌟 دالة جلب البيانات الأصلية السلسة والمباشرة عبر API مع حفظ الـ SHA والمحتوى معاً
         async function fetchFileFromGithub(token) {
-            try {
-                const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${filePath}?cache_bust=` + Math.random();
-                const rawRes = await fetch(rawUrl);
-                if (rawRes.ok) {
-                    const articles = await rawRes.json();
-                    return { sha: '', articles: Array.isArray(articles) ? articles : [] };
-                }
-            } catch (err) {
-                console.warn("فشل الجلب عبر Raw، جاري المحاولة عبر API...");
-            }
-
             try {
                 const response = await fetch(apiUrl + '?cache_bust=' + Math.random(), { 
                     method: 'GET',
@@ -1254,9 +1243,10 @@
                     return { sha: data.sha, articles: JSON.parse(content) };
                 }
             } catch (e) {
-                console.warn("فشل الاتصال بـ GitHub API مباشرة...");
+                console.warn("فشل الاتصال المباشر بـ GitHub API، جاري المحاولة عبر السحابة...");
             }
 
+            // نظام الطوارئ السحابي عبر Firebase إذا تعذر GitHub API
             try {
                 const doc = await db.collection("blogData").doc("articlesBackup").get();
                 if (doc.exists && doc.data().articles) {
@@ -1394,29 +1384,16 @@
             }
         }
 
-        // 🌟 دالة تحديث وجلب قائمة المقالات مع جلب الـ SHA الحقيقي للحذف والتعديل
         async function loadArticlesList() {
             const token = document.getElementById('ghToken').value.trim();
             const listDiv = document.getElementById('articlesList');
             if (!token) return showToast('يرجى إدخال رمز الـ Token أولاً!', 'error');
 
-            showTopBanner('جاري جلب المقالات وتحديث البيانات...');
+            showTopBanner('جاري جلب المقالات...');
             try {
                 const result = await fetchFileFromGithub(token);
                 loadedArticles = result.articles;
-                
-                try {
-                    const apiRes = await fetch(apiUrl + '?cache_bust=' + Math.random(), {
-                        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                    });
-                    if (apiRes.ok) {
-                        const apiData = await apiRes.json();
-                        currentFileSha = apiData.sha;
-                    }
-                } catch(e) {
-                    if (result.sha) currentFileSha = result.sha;
-                }
-
+                currentFileSha = result.sha;
                 hideTopBanner();
                 if (loadedArticles.length === 0) {
                     listDiv.innerText = 'لا توجد مقالات منشورة.';
@@ -1425,7 +1402,7 @@
 
                 backupArticlesToCloud(loadedArticles);
                 renderArticlesCards();
-                showToast('✅ تم تحديث المقالات وجاهزية الحذف والتعديل!', 'success');
+                showToast('✅ تم تحميل المقالات وجاهزية الحذف والتعديل بنجاح!', 'success');
             } catch (err) {
                 hideTopBanner();
                 listDiv.innerText = '❌ خطأ: ' + err.message;
