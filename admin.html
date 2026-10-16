@@ -8,10 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="إدارة المدونة">
     
-    <!-- ربط ملف الـ Manifest الرسمي للتثبيت -->
     <link rel="manifest" href="manifest.json">
 
-    <!-- مكتبات Firebase السحابية للحفظ الاحتياطي الثانوي -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
@@ -62,7 +60,6 @@
         .btn-edit { background-color: #f59e0b; color: #fff; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* شاشة تسجيل الدخول السرية (الحماية بكلمة مرور) */
         #authOverlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -84,7 +81,6 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
-        /* شريط التنبيه العلوي السلس */
         #topBanner {
             display: none;
             position: fixed;
@@ -99,7 +95,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        /* الإشعارات العصرية المنبثقة */
         #toastContainer {
             position: fixed;
             top: 20px;
@@ -129,7 +124,6 @@
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 
-        /* نافذة تأكيد الحذف المنبثقة المخصصة */
         #confirmModal {
             display: none;
             position: fixed;
@@ -156,7 +150,6 @@
         .confirm-btns { display: flex; gap: 10px; justify-content: center; }
         .confirm-btns button { flex: 1; padding: 10px; }
 
-        /* 🌟 نافذة إدخال البيانات المخصصة بدلاً من prompt النظام الافتراضي */
         #promptModal {
             display: none;
             position: fixed;
@@ -176,9 +169,7 @@
             width: 100%;
             max-width: 400px;
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
-            animation: modalFadeIn 0.2s ease-out;
         }
-        @keyframes modalFadeIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .prompt-card h3 { color: #38bdf8; font-size: 17px; margin-bottom: 12px; text-align: center; }
         .prompt-card p { font-size: 13px; color: #94a3b8; margin-bottom: 15px; text-align: center; }
         .prompt-card input {
@@ -194,11 +185,9 @@
             direction: ltr;
             text-align: left;
         }
-        .prompt-card input:focus { border-color: #38bdf8; }
         .prompt-btns { display: flex; gap: 10px; }
         .prompt-btns button { flex: 1; padding: 10px; font-size: 14px; }
 
-        /* نافذة المعاينة المباشرة المنبثقة (Live Preview Modal) */
         #previewModal {
             display: none;
             position: fixed;
@@ -232,7 +221,6 @@
         .preview-body { font-size: 15px; line-height: 1.8; color: #e2e8f0; border-top: 1px solid #334155; padding-top: 15px; }
         .preview-body img { max-width: 100% !important; height: auto !important; border-radius: 8px; margin: 12px 0; border: 1px solid #334155; }
         
-        /* 🌟 منع ظهور الخط تحت الروابط نهائياً في المعاينة والمحرر والموقع العام */
         .preview-body a, .editor-box a, a {
             color: #38bdf8 !important;
             text-decoration: none !important;
@@ -243,7 +231,6 @@
             color: #7dd3fc !important;
         }
 
-        /* شريط أزرار التنسيق المرئي */
         .toolbar {
             display: flex;
             flex-wrap: wrap;
@@ -268,7 +255,6 @@
         }
         .tool-btn:hover { background-color: #475569; }
         
-        /* القائمة المنسدلة المخصصة */
         .custom-dropdown { position: relative; display: inline-block; }
         .category-select-btn {
             width: 100%;
@@ -312,7 +298,6 @@
         .dropdown-item:last-child { border-bottom: none; }
         .dropdown-item:hover { background-color: #0284c7; color: #ffffff; }
 
-        /* محرر النصوص المرئي وضبط أبعاد الصور تلقائياً */
         .editor-box {
             width: 100%;
             min-height: 220px;
@@ -329,8 +314,6 @@
             line-height: 1.7;
             outline: none;
         }
-        .editor-box:focus { border-color: #38bdf8; }
-        
         .editor-box img {
             max-width: 100% !important;
             height: auto !important;
@@ -341,14 +324,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             cursor: pointer;
         }
-        .editor-box blockquote {
-            border-right: 3px solid #38bdf8;
-            padding-right: 10px;
-            color: #cbd5e1;
-            margin: 10px 0;
-            font-style: italic;
-        }
-
         .draft-status {
             font-size: 12px;
             color: #10b981;
@@ -360,7 +335,6 @@
 </head>
 <body>
 
-    <!-- طبقة حماية كلمة المرور عند فتح اللوحة -->
     <div id="authOverlay">
         <div class="auth-card">
             <h3 style="color:#38bdf8; margin-bottom:10px; font-size:18px;">🔒 منطقة الإدارة المحمية</h3>
@@ -373,7 +347,6 @@
     <div id="topBanner">جاري المعالجة...</div>
     <div id="toastContainer"></div>
 
-    <!-- نافذة تأكيد الحذف المنبثقة المخصصة للمقال -->
     <div id="confirmModal">
         <div class="confirm-card">
             <h3>⚠️ تأكيد الحذف</h3>
@@ -385,7 +358,6 @@
         </div>
     </div>
 
-    <!-- 🌟 النافذة المنبثقة المخصصة للمدخلات (بديل prompt النظام) -->
     <div id="promptModal">
         <div class="prompt-card">
             <h3 id="promptTitle">عنوان النافذة</h3>
@@ -398,7 +370,6 @@
         </div>
     </div>
 
-    <!-- نافذة المعاينة المباشرة المنبثقة (Live Preview Modal) -->
     <div id="previewModal">
         <div class="preview-card">
             <div class="preview-header">
@@ -415,7 +386,6 @@
 
     <h1 id="formTitle">🚀 لوحة تحكم المدونة (PWA)</h1>
 
-    <!-- زر قفل وتسجيل الخروج -->
     <div style="text-align: center; margin-bottom: 20px;">
         <button onclick="lockAdminPanel()" style="background: #334155; color: #f87171; border: 1px solid #475569; padding: 7px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: bold;">قفل لوحة التحكم (تسجيل خروج) 🔒</button>
     </div>
@@ -428,7 +398,6 @@
     <input type="hidden" id="editArticleId" value="">
     <input type="hidden" id="draftEditIndex" value="">
 
-    <!-- قائمة اختيار تصنيف المقال المنسدلة المخصصة بأيقونة المصباح المضيء 💡 اللامعة -->
     <div class="form-group">
         <label>تصنيف المقال:</label>
         <input type="hidden" id="postCategory" value="☀️ الطاقة الشمسية والبديلة">
@@ -464,13 +433,12 @@
     </div>
 
     <div class="form-group">
-        <label>محتوى المقال (محرر مرئي مباشر): <span style="font-size:11px; color:#38bdf8;">(تنسيق وتلوين النصوص مباشرة)</span></label>
+        <label>محتوى المقال (محرر مرئي مباشر):</label>
         <div class="toolbar">
             <button type="button" class="tool-btn" onclick="execCmd('bold')" title="عريض"><b>B</b></button>
             <button type="button" class="tool-btn" onclick="execCmd('italic')" title="مائل"><i>I</i></button>
             <button type="button" class="tool-btn" onclick="execCmd('underline')" title="خط تحت النص"><u>U</u></button>
             
-            <!-- القائمة المنسدلة المخصصة لحجم الخط -->
             <div class="custom-dropdown">
                 <button type="button" class="tool-btn" onclick="toggleMenu('fontDropdown', event)" title="حجم الخط">🔤 ▼</button>
                 <div id="fontDropdown" class="dropdown-menu">
@@ -481,52 +449,20 @@
                 </div>
             </div>
 
-            <!-- القائمة المنسدلة المخصصة لألوان النص -->
-            <div class="custom-dropdown">
-                <button type="button" class="tool-btn" onclick="toggleMenu('colorDropdown', event)" title="لون النص">🎨 ▼</button>
-                <div id="colorDropdown" class="dropdown-menu" style="min-width: 160px; padding: 8px;">
-                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 4px;">
-                        <div onclick="setTextColor('#ffffff')" style="background:#ffffff; height:26px; border-radius:5px; cursor:pointer; border:1px solid #475569;" title="أبيض"></div>
-                        <div onclick="setTextColor('#1e40af')" style="background:#1e40af; height:26px; border-radius:5px; cursor:pointer; border:1px solid #3b82f6;" title="أزرق داكن"></div>
-                        <div onclick="setTextColor('#38bdf8')" style="background:#38bdf8; height:26px; border-radius:5px; cursor:pointer;" title="أزرق ساطع"></div>
-                        <div onclick="setTextColor('#10b981')" style="background:#10b981; height:26px; border-radius:5px; cursor:pointer;" title="أخضر زمردي"></div>
-                        <div onclick="setTextColor('#f59e0b')" style="background:#f59e0b; height:26px; border-radius:5px; cursor:pointer;" title="برتقالي"></div>
-                        <div onclick="setTextColor('#ef4444')" style="background:#ef4444; height:26px; border-radius:5px; cursor:pointer;" title="أحمر"></div>
-                        <div onclick="setTextColor('#8b5cf6')" style="background:#8b5cf6; height:26px; border-radius:5px; cursor:pointer;" title="بنفسجي"></div>
-                        <div onclick="setTextColor('#06b6d4')" style="background:#06b6d4; height:26px; border-radius:5px; cursor:pointer;" title="تركواز"></div>
-                        <div onclick="setTextColor('#ec4899')" style="background:#ec4899; height:26px; border-radius:5px; cursor:pointer;" title="وردي"></div>
-                        <div onclick="setTextColor('#94a3b8')" style="background:#94a3b8; height:26px; border-radius:5px; cursor:pointer;" title="رمادي"></div>
-                    </div>
-                </div>
-            </div>
-
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h2>')" title="عنوان رئيسي">H2</button>
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h3>')" title="عنوان فرعي">H3</button>
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<blockquote>')" title="اقتباس">❞</button>
-            <button type="button" class="tool-btn" onclick="execCmd('insertHorizontalRule')" title="خط فاصل">―</button>
-
-            <!-- زر إدراج رابط تشعبي 🔗 -->
             <button type="button" class="tool-btn" onclick="insertLink()" title="إدراج رابط" style="background-color: #0284c7; color: #fff;">🔗</button>
-
-            <!-- زر إدراج فيديو يوتيوب -->
             <button type="button" class="tool-btn" onclick="insertYoutubeVideo()" title="إدراج فيديو يوتيوب" style="background-color: #8b5cf6; color: #fff;">🎬</button>
-
-            <!-- زر حذف الصور المحددة -->
             <button type="button" class="tool-btn" onclick="deleteSelectedImage()" title="حذف الصور المحددة" style="background-color: #ef4444; color: #fff; min-width: 42px;">🗑️</button>
-
-            <!-- أزرار المحاذاة -->
             <button type="button" class="tool-btn" onclick="execCmd('justifyRight')" title="محاذاة لليمين">➡️</button>
             <button type="button" class="tool-btn" onclick="execCmd('justifyCenter')" title="توسيط النص">⏺</button>
             <button type="button" class="tool-btn" onclick="execCmd('justifyLeft')" title="محاذاة لليسار">⬅️</button>
-            
-            <button type="button" class="tool-btn" onclick="execCmd('undo')" title="تراجع">↩️</button>
-            <button type="button" class="tool-btn" onclick="execCmd('redo')" title="إعادة">↪️</button>
         </div>
         <div id="postBody" class="editor-box" contenteditable="true" placeholder="اكتب نص المقال هنا..." oninput="scheduleAutoSave()"></div>
         <div id="draftStatus" class="draft-status"></div>
     </div>
 
-    <!-- أزرار الحفظ والمعاينة والنشر -->
     <div style="display: flex; gap: 8px; margin-bottom: 8px;">
         <button type="button" class="btn-purple" onclick="saveAsDraftManual()" style="flex: 1; margin-bottom: 0;">حفظ كمسودة 📂</button>
         <button type="button" class="btn-cyan" onclick="openPreviewModal()" style="flex: 1; margin-bottom: 0;">معاينة 👁️</button>
@@ -534,20 +470,17 @@
     <button id="publishBtn" class="btn-green" onclick="saveArticle()">نشر المقال فوراً 🚀</button>
     <button id="cancelEditBtn" class="btn-red" onclick="cancelEdit()" style="display:none; width:100%; margin-top:8px;">إلغاء التعديل</button>
 
-    <!-- قسم المسودات المحفوظة -->
     <h2>📂 المسودات المحفوظة (<span id="draftsCount">0</span>)</h2>
     <div id="draftsListContainer">لا توجد مسودات محفوظة حالياً.</div>
 
     <h2>📚 المقالات المنشورة حالياً</h2>
 
-    <!-- شريط أزرار الطوارئ والنسخ الاحتياطي المحلي -->
     <div style="display: flex; gap: 10px; margin-bottom: 8px;">
         <button class="btn-purple" onclick="exportArticlesLocal()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px;">💾 تصدير المقالات</button>
         <button class="btn-orange" onclick="triggerImportArticles()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px;">📂 استيراد المقالات</button>
         <input type="file" id="importArticlesFile" style="display:none" accept=".json,application/json" onchange="importArticlesLocal(event)">
     </div>
 
-    <!-- شريط أزرار التحديث والسحابة -->
     <div style="display: flex; gap: 10px; margin-bottom: 12px;">
         <button class="btn-blue" onclick="loadArticlesList()" style="flex: 1; margin-bottom: 0;">تحديث قائمة المقالات 🔄</button>
         <button class="btn-cyan" onclick="restoreArticlesFromCloud()" style="flex: 1; margin-bottom: 0; font-size: 14px;">📥 استعادة من السحابة</button>
@@ -556,7 +489,6 @@
     <div id="articlesList">اضغط على زر التحديث لعرض المقالات.</div>
 
     <script>
-        // إعدادات Firebase السحابية الاحتياطية
         const firebaseConfig = {
           apiKey: "AIzaSyA89DKwcT9Kke59BdpFR5MgE-iQFYF7k6Q",
           authDomain: "posthelperpro.firebaseapp.com",
@@ -573,7 +505,6 @@
         const db = firebase.firestore();
 
         let savedRange = null;
-
         document.addEventListener('selectionchange', () => {
             const sel = window.getSelection();
             const postBody = document.getElementById('postBody');
@@ -594,22 +525,17 @@
         }
 
         let selectedImageElements = [];
-
         document.getElementById('postBody').addEventListener('click', function(e) {
             if (e.target.tagName === 'IMG') {
                 const img = e.target;
                 const index = selectedImageElements.indexOf(img);
-
                 if (index > -1) {
                     selectedImageElements.splice(index, 1);
                     img.style.border = '1px solid #334155';
-                    img.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
-                    showToast(`إلغاء تحديد الصورة (${selectedImageElements.length} محددة)`, 'success');
                 } else {
                     selectedImageElements.push(img);
                     img.style.border = '3px solid #ef4444';
-                    img.style.boxShadow = '0 0 15px rgba(239, 68, 68, 0.8)';
-                    showToast(`🎯 تم تحديد الصورة (${selectedImageElements.length} صور محددة)`, 'success');
+                    showToast('🎯 تم تحديد الصورة', 'success');
                 }
             }
         });
@@ -622,7 +548,6 @@
             input.value = defaultValue || '';
             input.placeholder = placeholder || '';
             promptCallback = callback;
-            
             document.getElementById('promptModal').style.display = 'flex';
             setTimeout(() => input.focus(), 100);
         }
@@ -634,118 +559,60 @@
 
         document.getElementById('promptSubmitBtn').onclick = function() {
             const val = document.getElementById('promptInput').value.trim();
-            if (promptCallback) {
-                promptCallback(val);
-            }
+            if (promptCallback) promptCallback(val);
             closePromptModal();
         };
 
         function insertLink() {
-            showCustomPrompt('🔗 إدراج رابط تشعبي', 'أدخل رابط الـ URL المطلوب:', 'https://', 'https://solartoolspro.com', function(url) {
+            showCustomPrompt('🔗 إدراج رابط', 'أدخل رابط الـ URL:', 'https://', 'https://solartoolspro.com', function(url) {
                 if (!url || url === 'https://') return;
-
                 const editor = document.getElementById('postBody');
                 editor.focus();
                 restoreSelection();
-
-                const sel = window.getSelection();
-                if (sel && sel.rangeCount > 0 && !sel.getRangeAt(0).collapsed) {
-                    document.execCommand('createLink', false, url);
-                    editor.querySelectorAll('a').forEach(a => {
-                        a.style.color = '#38bdf8';
-                        a.style.textDecoration = 'none';
-                        a.setAttribute('target', '_blank');
-                    });
-                    scheduleAutoSave();
-                    showToast('🔗 تم تحويل النص إلى رابط بنجاح!', 'success');
-                } else {
-                    showCustomPrompt('✏️ نص الرابط', 'أدخل النص الذي سيظهر للقارئ للنقر عليه:', '', 'مثال: اضغط هنا لزيارة الموقع', function(linkText) {
-                        const text = linkText || url;
-                        const linkHtml = `<a href="${url}" target="_blank" style="color: #38bdf8; text-decoration: none; font-weight: 500;">${text}</a>`;
-                        document.execCommand('insertHTML', false, linkHtml);
-                        scheduleAutoSave();
-                        showToast('🔗 تم إدراج الرابط بنجاح!', 'success');
-                    });
-                }
+                document.execCommand('createLink', false, url);
+                scheduleAutoSave();
             });
         }
 
         function insertYoutubeVideo() {
-            showCustomPrompt('🎬 إدراج فيديو يوتيوب', 'أدخل رابط فيديو يوتيوب (YouTube URL) أو كود التضمين:', '', 'https://www.youtube.com/watch?v=...', function(input) {
-                if (!input || !input.trim()) return;
-
+            showCustomPrompt('🎬 إدراج فيديو يوتيوب', 'أدخل رابط يوتيوب:', '', 'https://youtube.com/...', function(input) {
+                if (!input) return;
                 let videoId = '';
-                const raw = input.trim();
+                const match = input.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
+                if (match) videoId = match[1];
+                if (!videoId) return showToast('رابط غير صالح', 'error');
 
-                if (raw.includes('iframe')) {
-                    const match = raw.match(/src=["']([^"']+)["']/i);
-                    if (match && match[1]) {
-                        const src = match[1];
-                        const idMatch = src.match(/(?:embed\/|v=|\/vi\/|youtu\.be\/|\/shorts\/)([a-zA-Z0-9_-]{11})/);
-                        if (idMatch && idMatch[1]) videoId = idMatch[1];
-                    }
-                } else {
-                    const match = raw.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
-                    if (match && match[1]) videoId = match[1];
-                }
-
-                if (!videoId) {
-                    return showToast('⚠️ رابط يوتيوب غير صالح! يرجى التأكد من الرابط.', 'error');
-                }
-
-                const embedHtml = `<div class="video-container" style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; margin: 15px 0; border: 1px solid #334155; box-shadow: 0 4px 12px rgba(0,0,0,0.4);"><iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/${videoId}" title="فيديو المقال" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p><br></p>`;
-
+                const embedHtml = `<div class="video-container" style="position:relative;width:100%;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;margin:15px 0;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe></div>`;
                 const editor = document.getElementById('postBody');
                 editor.focus();
                 restoreSelection();
                 document.execCommand('insertHTML', false, embedHtml);
                 scheduleAutoSave();
-                showToast('🎬 تم إدراج فيديو يوتيوب بنجاح!', 'success');
             });
         }
 
         function deleteSelectedImage() {
-            if (selectedImageElements.length === 0) {
-                return showToast('⚠️ يرجى النقر على صورة واحدة أو أكثر داخل المقال لتحديدها!', 'error');
-            }
-            const countText = selectedImageElements.length === 1 ? 'هذه الصورة المحددة' : `الـ (${selectedImageElements.length}) صور المحددة`;
-            document.getElementById('confirmModalText').innerText = `هل تريد حقاً حذف ${countText} من المقال؟`;
-            currentModalAction = 'deleteImages';
-            document.getElementById('confirmModal').style.display = 'flex';
+            if (selectedImageElements.length === 0) return showToast('حدد صورة أولاً', 'error');
+            selectedImageElements.forEach(img => img.remove());
+            selectedImageElements = [];
+            showToast('🗑️ تم الحذف', 'success');
+            scheduleAutoSave();
         }
 
         function closeConfirmModal() {
             document.getElementById('confirmModal').style.display = 'none';
-            currentModalAction = null;
         }
 
         let currentModalAction = null;
         document.getElementById('confirmDeleteBtn').onclick = function() {
             if (currentModalAction === 'deleteArticle' && articleToDeleteId) {
                 deleteArticle(articleToDeleteId);
-            } else if (currentModalAction === 'deleteDraft' && draftToDeleteIndex !== null) {
-                executeDeleteDraft(draftToDeleteIndex);
-            } else if (currentModalAction === 'deleteImages') {
-                if (selectedImageElements.length > 0) {
-                    const imagesToDelete = [...selectedImageElements];
-                    const count = imagesToDelete.length;
-                    imagesToDelete.forEach(img => {
-                        if (img && img.parentNode) img.remove();
-                    });
-                    selectedImageElements = [];
-                    showToast(`🗑️ تم حذف ${count} صورة من المقال بنجاح!`, 'success');
-                    scheduleAutoSave();
-                }
             }
             closeConfirmModal();
         };
 
         function toggleMenu(menuId, e) {
             e.stopPropagation();
-            const menus = document.querySelectorAll('.dropdown-menu');
-            menus.forEach(m => {
-                if (m.id !== menuId) m.style.display = 'none';
-            });
             const menu = document.getElementById(menuId);
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
@@ -757,68 +624,25 @@
             scheduleAutoSave();
         }
 
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.custom-dropdown')) {
-                document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
-            }
-        });
-
-        function applyStyleToSelection(styleProp, styleVal) {
-            const editor = document.getElementById('postBody');
-            editor.focus();
-            restoreSelection();
-            
-            const sel = window.getSelection();
-            if (!sel || sel.rangeCount === 0) {
-                return showToast('⚠️ يرجى تحديد نص أولاً لتنسيقه!', 'error');
-            }
-            
-            const range = sel.getRangeAt(0);
-            if (range.collapsed) {
-                return showToast('⚠️ يرجى تحديد نص أولاً لتنسيقه!', 'error');
-            }
-
-            const span = document.createElement('span');
-            span.style[styleProp] = styleVal;
-            
-            try {
-                const contents = range.extractContents();
-                span.appendChild(contents);
-                range.insertNode(span);
-                sel.removeAllRanges();
-            } catch (err) {
-                document.execCommand('styleWithCSS', false, true);
-                if (styleProp === 'color') document.execCommand('foreColor', false, styleVal);
-                if (styleProp === 'fontSize') document.execCommand('fontSize', false, styleVal);
-            }
-            
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
-            scheduleAutoSave();
-            showToast('✨ تم تطبيق التنسيق بنجاح!', 'success');
-        }
-
         function setTextColor(color) {
-            applyStyleToSelection('color', color);
+            document.execCommand('foreColor', false, color);
+            scheduleAutoSave();
         }
 
-        function setFontSize(sizeKey) {
-            const sizeMap = { '2': '13px', '3': '15px', '5': '20px', '6': '26px' };
-            applyStyleToSelection('fontSize', sizeMap[sizeKey] || '15px');
+        function setFontSize(size) {
+            document.execCommand('fontSize', false, size);
+            scheduleAutoSave();
         }
 
         function execCmd(command, value = null) {
-            const editor = document.getElementById('postBody');
-            editor.focus();
+            document.getElementById('postBody').focus();
             restoreSelection();
             document.execCommand(command, false, value);
             scheduleAutoSave();
         }
 
         function getSavedDrafts() {
-            try {
-                const drafts = localStorage.getItem('blog_all_drafts');
-                return drafts ? JSON.parse(drafts) : [];
-            } catch(e) { return []; }
+            try { return JSON.parse(localStorage.getItem('blog_all_drafts')) || []; } catch(e) { return []; }
         }
 
         function saveDraftsToStorage(drafts) {
@@ -828,829 +652,197 @@
 
         let autoSaveTimer = null;
         function scheduleAutoSave() {
-            const statusEl = document.getElementById('draftStatus');
-            statusEl.innerText = 'جاري الكتابة...';
-            
             clearTimeout(autoSaveTimer);
             autoSaveTimer = setTimeout(() => {
                 const title = document.getElementById('postTitle').value.trim();
                 const desc = document.getElementById('postDesc').value.trim();
                 const body = document.getElementById('postBody').innerHTML.trim();
-                const category = document.getElementById('postCategory').value;
-                const editId = document.getElementById('editArticleId').value;
-                const draftEditIndex = document.getElementById('draftEditIndex').value;
-
-                if (!editId && (title || desc || body)) {
-                    let drafts = getSavedDrafts();
-                    const draftTitle = title || 'مسودة سريعة بدون عنوان';
-                    
-                    const draftData = {
-                        title: draftTitle,
-                        desc,
-                        body,
-                        category,
-                        updatedAt: new Date().toLocaleString('ar-SA'),
-                        isAutoSave: true
-                    };
-
-                    let targetIndex = -1;
-                    if (draftEditIndex !== '' && drafts[draftEditIndex]) {
-                        targetIndex = parseInt(draftEditIndex);
-                    } else {
-                        targetIndex = drafts.findIndex(d => d.title === draftTitle);
-                    }
-
-                    if (targetIndex > -1) {
-                        drafts[targetIndex] = draftData;
-                        document.getElementById('draftEditIndex').value = targetIndex;
-                    } else {
-                        drafts.unshift(draftData);
-                        document.getElementById('draftEditIndex').value = 0;
-                    }
-
-                    localStorage.setItem('blog_all_drafts', JSON.stringify(drafts));
-                    renderDraftsList();
-                    statusEl.innerText = `💾 تم الحفظ التلقائي (${new Date().toLocaleTimeString('ar-SA')})`;
-                } else if (!title && !desc && !body) {
-                    statusEl.innerText = '';
-                } else {
-                    statusEl.innerText = '💾 التعديلات جاهزة';
+                if (title || desc || body) {
+                    document.getElementById('draftStatus').innerText = '💾 التعديلات جاهزة';
                 }
             }, 1000);
         }
 
         function saveAsDraftManual() {
             const title = document.getElementById('postTitle').value.trim() || 'مسودة بدون عنوان';
-            const desc = document.getElementById('postDesc').value.trim();
-            const body = document.getElementById('postBody').innerHTML.trim();
-            const category = document.getElementById('postCategory').value;
-            const draftEditIndex = document.getElementById('draftEditIndex').value;
-
-            if (!title && !desc && !body) {
-                return showToast('⚠️ لا توجد بيانات لحفظها كمسودة!', 'error');
-            }
-
             let drafts = getSavedDrafts();
-            const draftData = {
-                title,
-                desc,
-                body,
-                category,
-                updatedAt: new Date().toLocaleString('ar-SA'),
-                isAutoSave: false
-            };
-
-            let targetIndex = -1;
-            if (draftEditIndex !== '' && drafts[draftEditIndex]) {
-                targetIndex = parseInt(draftEditIndex);
-            } else {
-                targetIndex = drafts.findIndex(d => d.title === title);
-            }
-
-            if (targetIndex > -1) {
-                drafts[targetIndex] = draftData;
-                document.getElementById('draftEditIndex').value = targetIndex;
-                showToast('✅ تم تحديث المسودة بنجاح دون تكرار!', 'success');
-            } else {
-                drafts.unshift(draftData);
-                document.getElementById('draftEditIndex').value = 0;
-                showToast('📁 تمت إضافة المسودة لقائمة المسودات!', 'success');
-            }
-
+            drafts.unshift({ title, desc: document.getElementById('postDesc').value, body: document.getElementById('postBody').innerHTML, category: document.getElementById('postCategory').value, updatedAt: new Date().toLocaleString('ar-SA') });
             saveDraftsToStorage(drafts);
+            showToast('📁 تم حفظ المسودة', 'success');
         }
 
         function renderDraftsList() {
             const drafts = getSavedDrafts();
-            const container = document.getElementById('draftsListContainer');
             document.getElementById('draftsCount').innerText = drafts.length;
-
             if (drafts.length === 0) {
-                container.innerHTML = 'لا توجد مسودات محفوظة حالياً.';
+                document.getElementById('draftsListContainer').innerHTML = 'لا توجد مسودات.';
                 return;
             }
-
-            let html = `<div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">`;
-            drafts.forEach((draft, index) => {
-                const badge = draft.isAutoSave ? ' <span style="background:#0284c7; font-size:10px; padding:2px 6px; border-radius:4px;">حفظ تلقائي</span>' : '';
-                const catBadge = draft.category ? ` <span style="background:#334155; color:#34d399; font-size:10px; padding:2px 6px; border-radius:4px;">${draft.category}</span>` : '';
-                html += `
-                    <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-                        <div style="font-size: 15px; font-weight: bold; color: #38bdf8; margin-bottom: 6px; word-break: break-word;">
-                            📄 ${draft.title} ${badge} ${catBadge}
-                        </div>
-                        <div style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">آخر تعديل: ${draft.updatedAt}</div>
-                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                            <button class="btn-green" onclick="publishDraftDirect(${index})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 80px;">🚀 نشر مباشر</button>
-                            <button class="btn-edit" onclick="loadDraftToEditor(${index})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">✏️ تعديل</button>
-                            <button class="btn-red" onclick="confirmDeleteDraft(${index})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">🗑️ حذف</button>
-                        </div>
-                    </div>
-                `;
+            let html = '';
+            drafts.forEach((d, i) => {
+                html += `<div style="background:#1e293b;padding:12px;border-radius:8px;margin-bottom:8px;">📄 ${d.title} <button class="btn-green" onclick="publishDraftDirect(${i})" style="padding:4px 8px;font-size:11px;float:left;">نشر</button></div>`;
             });
-            html += `</div>`;
-            container.innerHTML = html;
+            document.getElementById('draftsListContainer').innerHTML = html;
         }
 
-        function loadDraftToEditor(index) {
+        async function publishDraftDirect(i) {
             const drafts = getSavedDrafts();
-            const draft = drafts[index];
-            if (draft) {
-                document.getElementById('postTitle').value = draft.title;
-                document.getElementById('postDesc').value = draft.desc;
-                document.getElementById('postBody').innerHTML = draft.body;
-                if (draft.category) {
-                    let cat = draft.category;
-                    if (cat.includes('أدوات ذكية')) cat = '💡 أدوات ذكية';
-                    document.getElementById('postCategory').value = cat;
-                    document.getElementById('selectedCategoryText').innerText = cat;
-                }
-                document.getElementById('draftEditIndex').value = index;
-                showToast('📂 تم تحميل المسودة في المحرر بنجاح!', 'success');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        let draftToDeleteIndex = null;
-        function confirmDeleteDraft(index) {
-            draftToDeleteIndex = index;
-            document.getElementById('confirmModalText').innerText = 'هل أنت متأكد من رغبتك في حذف هذه المسودة نهائياً؟';
-            currentModalAction = 'deleteDraft';
-            document.getElementById('confirmModal').style.display = 'flex';
-        }
-
-        function executeDeleteDraft(index) {
-            let drafts = getSavedDrafts();
-            drafts.splice(index, 1);
-            saveDraftsToStorage(drafts);
-            showToast('🗑️ تم حذف المسودة بنجاح!', 'success');
-            const editIdx = document.getElementById('draftEditIndex').value;
-            if (editIdx == index) clearEditorForm();
-        }
-
-        async function publishDraftDirect(index) {
-            const drafts = getSavedDrafts();
-            const draft = drafts[index];
-            if (!draft) return;
-
-            document.getElementById('postTitle').value = draft.title;
-            document.getElementById('postDesc').value = draft.desc;
-            document.getElementById('postBody').innerHTML = draft.body;
-            if (draft.category) {
-                let cat = draft.category;
-                if (cat.includes('أدوات ذكية')) cat = '💡 أدوات ذكية';
-                document.getElementById('postCategory').value = cat;
-                document.getElementById('selectedCategoryText').innerText = cat;
-            }
-            document.getElementById('draftEditIndex').value = index;
-
+            const d = drafts[i];
+            if (!d) return;
+            document.getElementById('postTitle').value = d.title;
+            document.getElementById('postDesc').value = d.desc;
+            document.getElementById('postBody').innerHTML = d.body;
             await saveArticle();
         }
 
-        function clearEditorForm() {
-            document.getElementById('postTitle').value = '';
-            document.getElementById('postDesc').value = '';
-            document.getElementById('postBody').innerHTML = '';
-            document.getElementById('editArticleId').value = '';
-            document.getElementById('draftEditIndex').value = '';
-            document.getElementById('draftStatus').innerText = '';
-            document.getElementById('postCategory').value = '☀️ الطاقة الشمسية والبديلة';
-            document.getElementById('selectedCategoryText').innerText = '☀️ الطاقة الشمسية والبديلة';
-            selectedImageElements = [];
-        }
-
-        async function exportArticlesLocal() {
-            if (!loadedArticles || loadedArticles.length === 0) {
-                return showToast('⚠️ يرجى جلب المقالات أولاً للتصدير!', 'error');
-            }
-            const dataStr = JSON.stringify(loadedArticles, null, 2);
-            
-            if ('showSaveFilePicker' in window) {
-                try {
-                    const opts = {
-                        suggestedName: `articles_backup_${Date.now()}.json`,
-                        types: [{
-                            description: 'JSON Files',
-                            accept: { 'application/json': ['.json'] },
-                        }],
-                    };
-                    const handle = await window.showSaveFilePicker(opts);
-                    const writable = await handle.createWritable();
-                    await writable.write(dataStr);
-                    await writable.close();
-                    showToast('💾 تم حفظ النسخة الاحتياطية في المكان المحدد بنجاح!', 'success');
-                    return;
-                } catch (err) {
-                    if (err.name === 'AbortError') return;
-                }
-            }
-
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", URL.createObjectURL(blob));
-            downloadAnchor.setAttribute("download", `articles_backup_${Date.now()}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-            showToast('💾 تم تصدير النسخة الاحتياطية بنجاح!', 'success');
-        }
-
-        function triggerImportArticles() {
-            document.getElementById('importArticlesFile').click();
-        }
-
-        function importArticlesLocal(event) {
-            const file = event.target.files[0];
-            const token = document.getElementById('ghToken').value.trim();
-            if (!file) return;
-            if (!token) {
-                document.getElementById('importArticlesFile').value = '';
-                return showToast('يرجى إدخال رمز GitHub Token أولاً قبل الاستيراد!', 'error');
-            }
-
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    let fileContent = (e.target.result || '').trim();
-                    if (!fileContent) return showToast('⚠️ الملف فارغ!', 'error');
-                    
-                    const imported = JSON.parse(fileContent);
-                    if (Array.isArray(imported) && imported.length > 0) {
-                        if (confirm(`تم العثور على ${imported.length} مقال في الملف المحلي.\nهل تريد استبدال المقالات الحالية ونشرها على GitHub والسحابة؟`)) {
-                            showTopBanner('جاري حفظ ونشر المقالات المستوردة...');
-                            
-                            await saveToGithubWithRetry(token, async () => imported, 'استيراد مقالات من ملف محلي');
-                            backupArticlesToCloud(imported);
-                            await updateRssFeedOnGithub(token, imported);
-
-                            hideTopBanner();
-                            showToast('✅ تم استيراد ونشر المقالات وتحديث RSS بنجاح!', 'success');
-                            loadArticlesList();
-                        }
-                    } else {
-                        showToast('⚠️ لا توجد مقالات صالحة داخل الملف!', 'error');
-                    }
-                } catch (err) {
-                    hideTopBanner();
-                    showToast('❌ خطأ في قراءة ملف JSON: ' + err.message, 'error');
-                }
-            };
-            reader.onloadend = function() { document.getElementById('importArticlesFile').value = ''; };
-            reader.readAsText(file);
-        }
-
-        function backupArticlesToCloud(articlesArray) {
-            db.collection("blogData").doc("articlesBackup").set({
-                articles: articlesArray,
-                lastUpdated: new Date().toISOString()
-            }).then(() => {
-                console.log("🛡️ تم تحديث النسخة الاحتياطية السحابية للمقالات بنجاح!");
-            }).catch((error) => {
-                console.error("❌ خطأ في الحفظ السحابي للمقالات:", error);
-            });
-        }
-
-        async function restoreArticlesFromCloud() {
-            const token = document.getElementById('ghToken').value.trim();
-            if (!token) return showToast('يرجى إدخال رمز GitHub Token أولاً لاستعادة المقالات على GitHub!', 'error');
-
-            showTopBanner('جاري جلب النسخة الاحتياطية من السحابة...');
-            try {
-                const doc = await db.collection("blogData").doc("articlesBackup").get();
-                hideTopBanner();
-                if (doc.exists && doc.data().articles) {
-                    const cloudArticles = doc.data().articles;
-                    if (confirm(`تم العثور على ${cloudArticles.length} مقال في النسخة الاحتياطية السحابية. هل تريد استعادتها ونشرها فوراً على GitHub؟`)) {
-                        showTopBanner('جاري استعادة ونشر المقالات على GitHub...');
-                        
-                        await saveToGithubWithRetry(token, async () => cloudArticles, 'استعادة المقالات من النسخة الاحتياطية السحابية');
-                        await updateRssFeedOnGithub(token, cloudArticles);
-
-                        hideTopBanner();
-                        showToast('✅ تم استعادة المقالات وتحديث RSS بنجاح على GitHub!', 'success');
-                        loadArticlesList();
-                    }
-                } else {
-                    showToast('⚠️ لا توجد نسخة احتياطية سحابية متاحة حالياً.', 'error');
-                }
-            } catch (err) {
-                hideTopBanner();
-                showToast('❌ خطأ أثناء الاسترجاع: ' + err.message, 'error');
-            }
-        }
-
-        const MASTER_PASS = "771005555#"; 
-
+        const MASTER_PASS = "771005555#";
         if (localStorage.getItem('admin_authenticated') === 'true') {
             document.getElementById('authOverlay').style.display = 'none';
         }
-
         function checkMasterPassword() {
-            const inputPass = document.getElementById('sitePassword').value;
-            if (inputPass === MASTER_PASS) {
+            if (document.getElementById('sitePassword').value === MASTER_PASS) {
                 localStorage.setItem('admin_authenticated', 'true');
                 document.getElementById('authOverlay').style.display = 'none';
-                showToast('تم تسجيل الدخول بنجاح! 👋', 'success');
                 renderDraftsList();
             } else {
-                showToast('❌ كلمة المرور غير صحيحة!', 'error');
+                showToast('❌ كلمة المرور خطأ', 'error');
             }
         }
-
         function lockAdminPanel() {
             localStorage.removeItem('admin_authenticated');
-            document.getElementById('sitePassword').value = '';
             document.getElementById('authOverlay').style.display = 'flex';
-            showToast('🔒 تم قفل لوحة التحكم بنجاح', 'success');
         }
 
         let articleToDeleteId = null;
         let loadedArticles = [];
-        let currentFileSha = '';
 
         document.getElementById('ghToken').value = localStorage.getItem('gh_token') || '';
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
-        }
+        const repoOwner = 'mazen-alawdhali';
+        const repoName = 'blog.solartoolspro.com';
+        const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/articles.json`;
 
-        window.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('admin_authenticated') === 'true') {
-                renderDraftsList();
-            }
-        });
-
-        function openPreviewModal() {
-            const title = document.getElementById('postTitle').value.trim() || 'عنوان المقال المعاين';
-            const desc = document.getElementById('postDesc').value.trim() || 'نبذة مختصرة عن المقال...';
-            const body = document.getElementById('postBody').innerHTML.trim() || '<p style="color:#64748b;">لا يوجد للمقال محتوى بعد...</p>';
-
-            document.getElementById('pvTitle').innerText = title;
-            document.getElementById('pvDesc').innerText = desc;
-            document.getElementById('pvBody').innerHTML = body;
-
-            document.getElementById('previewModal').style.display = 'block';
-        }
-
-        function closePreviewModal() {
-            document.getElementById('previewModal').style.display = 'none';
-        }
-
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.innerText = message;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        function showTopBanner(text) {
-            const b = document.getElementById('topBanner');
-            b.innerText = text;
-            b.style.display = 'block';
-        }
-        function hideTopBanner() {
-            document.getElementById('topBanner').style.display = 'none';
-        }
-
-        function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
-        function b64_to_utf8(str) { return decodeURIComponent(escape(window.atob(str.replace(/\s/g, '')))); }
-
-        const repoOwner = 'mazen-alawdhali'; 
-        const repoName = 'blog.solartoolspro.com'; 
-        const filePath = 'articles.json';
-        const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
-        const rssApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/rss.xml`;
-
-        // 🌟 دالة جلب مع منع التخزين المؤقت (Cache-Busting صارم)
         async function fetchFileFromGithub(token) {
-            try {
-                const response = await fetch(apiUrl + '?cache_bust=' + Date.now() + '&cb=' + Math.random(), { 
-                    method: 'GET',
-                    cache: 'no-store',
-                    headers: { 
-                        'Authorization': `token ${token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    } 
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    const content = b64_to_utf8(data.content);
-                    return { sha: data.sha, articles: JSON.parse(content) };
-                }
-            } catch (e) {
-                console.warn("فشل الاتصال بـ GitHub API، جاري الجلب من السحابة...");
-            }
-
-            try {
-                const doc = await db.collection("blogData").doc("articlesBackup").get();
-                if (doc.exists && doc.data().articles) {
-                    showToast('⚠️ تم جلب المقالات من النسخة الاحتياطية السحابية للطوارئ', 'success');
-                    return { sha: '', articles: doc.data().articles };
-                }
-            } catch (cloudErr) {
-                console.error("فشل الجلب السحابي أيضاً:", cloudErr);
-            }
-
-            throw new Error('تعذر جلب المقالات. تحقق من اتصال الإنترنت أو رمز الـ Token.');
-        }
-
-        async function saveToGithubWithRetry(token, updateCallback, commitMessage, maxRetries = 3) {
-            for (let attempt = 0; attempt < maxRetries; attempt++) {
-                try {
-                    const fetched = await fetchFileFromGithub(token);
-                    let sha = fetched.sha;
-                    let articles = fetched.articles;
-
-                    if (!sha) {
-                        try {
-                            const shaRes = await fetch(apiUrl + '?cache_bust=' + Math.random(), {
-                                headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                            });
-                            if (shaRes.ok) {
-                                const shaData = await shaRes.json();
-                                sha = shaData.sha;
-                            }
-                        } catch (e) {}
-                    }
-
-                    const updatedArticles = await updateCallback(articles);
-                    const updatedContent = utf8_to_b64(JSON.stringify(updatedArticles, null, 2));
-
-                    const putRes = await fetch(apiUrl, {
-                        method: 'PUT',
-                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            message: commitMessage,
-                            content: updatedContent,
-                            sha: sha
-                        })
-                    });
-
-                    if (putRes.ok) {
-                        const data = await putRes.json();
-                        currentFileSha = data.content.sha;
-                        return updatedArticles;
-                    } else if (putRes.status === 409 && attempt < maxRetries - 1) {
-                        console.warn("SHA conflict detected, retrying...");
-                        continue;
-                    } else {
-                        const errJson = await putRes.json();
-                        throw new Error(errJson.message || 'فشل حفظ الملف على GitHub');
-                    }
-                } catch (err) {
-                    if (attempt === maxRetries - 1) throw err;
-                }
-            }
-            throw new Error('فشل الحفظ بعد عدة محاولات بسبب التعارض.');
-        }
-
-        async function updateRssFeedOnGithub(token, articles) {
-            try {
-                let rssSha = '';
-                try {
-                    const rssRes = await fetch(rssApiUrl, { headers: { 'Authorization': `token ${token}` } });
-                    if (rssRes.ok) {
-                        const rssData = await rssRes.json();
-                        rssSha = rssData.sha;
-                    }
-                } catch(e) {
-                    console.log("rss.xml does not exist yet, will create new.");
-                }
-
-                let rssXml = `<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0">
-<channel>
-    <title>مدونة منصة أدوات الطاقة الشمسية والتقنية</title>
-    <link>https://blog.solartoolspro.com</link>
-    <description>دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.</description>
-    <language>ar</language>`;
-
-                if (Array.isArray(articles)) {
-                    articles.forEach(art => {
-                        const articleUrl = `https://blog.solartoolspro.com/?id=${art.id}`;
-                        const safeTitle = (art.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                        const safeDesc = (art.description || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-                        let imgTag = '';
-                        if (art.body) {
-                            const imgMatch = art.body.match(/<img[^>]+src=["']([^"']+)["']/i);
-                            if (imgMatch && imgMatch[1]) {
-                                const imgUrl = imgMatch[1].replace(/&/g, '&amp;');
-                                imgTag = `\n        <enclosure url="${imgUrl}" type="image/jpeg" />`;
-                            }
-                        }
-
-                        rssXml += `
-    <item>
-        <title>${safeTitle}</title>
-        <link>${articleUrl}</link>
-        <description>${safeDesc}</description>
-        <guid>${articleUrl}</guid>${imgTag}
-    </item>`;
-                    });
-                }
-
-                rssXml += `
-</channel>
-</rss>`;
-
-                const putBody = {
-                    message: 'تحديث تغذية RSS وتضمين الصور وروابط ?id= المعتمدة',
-                    content: utf8_to_b64(rssXml)
-                };
-                if (rssSha) {
-                    putBody.sha = rssSha;
-                }
-
-                const rssPutRes = await fetch(rssApiUrl, {
-                    method: 'PUT',
-                    headers: { 
-                        'Authorization': `token ${token}`, 
-                        'Content-Type': 'application/json' 
-                    },
-                    body: JSON.stringify(putBody)
-                });
-
-                const resJson = await rssPutRes.json();
-                if (!rssPutRes.ok) {
-                    console.error("RSS PUT Error Response:", resJson);
-                } else {
-                    console.log("RSS updated successfully with images and query params!");
-                }
-            } catch (rssErr) {
-                console.error("RSS update catch error:", rssErr);
-            }
-        }
-
-        async function loadArticlesList() {
-            const token = document.getElementById('ghToken').value.trim();
-            const listDiv = document.getElementById('articlesList');
-            if (!token) return showToast('يرجى إدخال رمز الـ Token أولاً!', 'error');
-
-            showTopBanner('جاري جلب المقالات...');
-            try {
-                const result = await fetchFileFromGithub(token);
-                loadedArticles = result.articles;
-                currentFileSha = result.sha;
-                hideTopBanner();
-                if (loadedArticles.length === 0) {
-                    listDiv.innerText = 'لا توجد مقالات منشورة.';
-                    return;
-                }
-
-                backupArticlesToCloud(loadedArticles);
-                renderArticlesCards();
-                showToast('✅ تم تحميل المقالات وجاهزية الحذف والتعديل بنجاح!', 'success');
-            } catch (err) {
-                hideTopBanner();
-                listDiv.innerText = '❌ خطأ: ' + err.message;
-                showToast('خطأ في تحميل المقالات', 'error');
-            }
-        }
-
-        function renderArticlesCards() {
-            const listDiv = document.getElementById('articlesList');
-            let cardsHtml = `<div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">`;
-
-            loadedArticles.forEach((art, index) => {
-                const categoryTag = art.category ? `[${art.category}]` : '';
-                cardsHtml += `
-                    <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-                        <div style="font-size: 15px; font-weight: bold; color: #f8fafc; margin-bottom: 12px; line-height: 1.5; word-break: break-word;">
-                            ${index + 1}. ${art.title} <span style="font-size: 11px; color: #34d399;">${categoryTag}</span>
-                        </div>
-                        <div style="display: flex; gap: 6px; justify-content: flex-start; align-items: center; flex-wrap: wrap;">
-                            <button class="btn-gray" onclick="moveArticle(${index}, -1)" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">⬆️ أعلى</button>
-                            <button class="btn-gray" onclick="moveArticle(${index}, 1)" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">⬇️ أسفل</button>
-                            <button class="btn-edit" onclick="prepareEdit(${art.id})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">✏️ تعديل</button>
-                            <button class="btn-red" onclick="openConfirmModal(${art.id})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">🗑️ حذف</button>
-                        </div>
-                    </div>
-                `;
+            const res = await fetch(apiUrl + '?t=' + Date.now(), {
+                headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
             });
-
-            cardsHtml += `</div>`;
-            cardsHtml += `<button class="btn-green" style="margin-top: 15px; font-size: 14px; padding: 12px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`;
-            listDiv.innerHTML = cardsHtml;
-        }
-
-        async function uploadAndInsertImages() {
-            const fileInput = document.getElementById('imageInput');
-            const token = document.getElementById('ghToken').value.trim();
-
-            if (!token) return showToast('يرجى إدخال رمز GitHub Token أولاً!', 'error');
-            if (fileInput.files.length === 0) return showToast('يرجى اختيار صور أولاً!', 'error');
-
-            const files = Array.from(fileInput.files);
-            showTopBanner(`جاري رفع ${files.length} صورة إلى السيرفر...`);
-
-            try {
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    showTopBanner(`جاري رفع الصورة ${i + 1} من ${files.length}...`);
-                    
-                    const base64Content = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.readAsDataURL(file);
-                        reader.onload = () => resolve(reader.result.split(',')[1]);
-                        reader.onerror = error => reject(error);
-                    });
-
-                    const fileName = `images/${Date.now()}_${i}_${file.name.replace(/\s+/g, '_')}`;
-                    const imgApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${fileName}`;
-
-                    const res = await fetch(imgApiUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: `رفع صورة: ${file.name}`,
-                            content: base64Content
-                        })
-                    });
-
-                    if (!res.ok) throw new Error(`فشل رفع الصورة ${file.name}`);
-
-                    const rawImageUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${fileName}`;
-                    
-                    document.getElementById('postBody').focus();
-                    document.execCommand('insertImage', false, rawImageUrl);
-                    scheduleAutoSave();
-                }
-
-                hideTopBanner();
-                showToast(`✅ تم رفع وإدراج ${files.length} صورة بنجاح!`, 'success');
-                fileInput.value = '';
-
-            } catch (err) {
-                hideTopBanner();
-                showToast('❌ خطأ أثناء رفع الصور: ' + err.message, 'error');
-            }
+            const data = await res.json();
+            return { sha: data.sha, articles: JSON.parse(decodeURIComponent(escape(window.atob(data.content)))) };
         }
 
         async function saveArticle() {
             const token = document.getElementById('ghToken').value.trim();
             const title = document.getElementById('postTitle').value.trim();
             const desc = document.getElementById('postDesc').value.trim();
-            const bodyHtml = document.getElementById('postBody').innerHTML.trim();
+            const body = document.getElementById('postBody').innerHTML.trim();
             const category = document.getElementById('postCategory').value;
             const editId = document.getElementById('editArticleId').value;
-            const draftEditIndex = document.getElementById('draftEditIndex').value;
-            const btn = document.getElementById('publishBtn');
 
-            if (!token || !title || !desc || !bodyHtml) {
-                return showToast('يرجى تعبئة كافة الحقول المطلوبة للنشر!', 'error');
-            }
+            if (!token || !title || !desc || !body) return showToast('املأ كافة الحقول', 'error');
 
-            localStorage.setItem('gh_token', token);
-            btn.disabled = true;
-            showTopBanner('جاري نشر المقال وتحديث السيرفر...');
+            document.getElementById('topBanner').style.display = 'block';
+            document.getElementById('topBanner').innerText = 'جاري النشر...';
 
             try {
-                let articleId = editId ? editId : Date.now();
+                const fetched = await fetchFileFromGithub(token);
+                let articles = fetched.articles;
+                const currentDate = new Date().toLocaleString('ar-SA', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 
-                const updatedArticles = await saveToGithubWithRetry(token, async (articles) => {
-                    if (editId) {
-                        const index = articles.findIndex(a => a.id == editId);
-                        if (index !== -1) {
-                            articles[index].title = title;
-                            articles[index].description = desc;
-                            articles[index].body = bodyHtml;
-                            articles[index].category = category;
-                        }
-                    } else {
-                        articles.unshift({ id: articleId, title, description: desc, body: bodyHtml, category });
+                if (editId) {
+                    const idx = articles.findIndex(a => a.id == editId);
+                    if (idx !== -1) {
+                        articles[idx].title = title;
+                        articles[idx].description = desc;
+                        articles[idx].body = body;
+                        articles[idx].category = category;
+                        articles[idx].date = articles[idx].date || currentDate;
                     }
-                    return articles;
-                }, editId ? `تعديل مقال: ${title}` : `إضافة مقال جديد: ${title}`);
-
-                backupArticlesToCloud(updatedArticles);
-                await updateRssFeedOnGithub(token, updatedArticles);
-
-                hideTopBanner();
-                btn.disabled = false;
-
-                if (draftEditIndex !== '') {
-                    let drafts = getSavedDrafts();
-                    drafts.splice(draftEditIndex, 1);
-                    saveDraftsToStorage(drafts);
                 } else {
-                    let drafts = getSavedDrafts();
-                    const dIndex = drafts.findIndex(d => d.title === title);
-                    if (dIndex > -1) {
-                        drafts.splice(dIndex, 1);
-                        saveDraftsToStorage(drafts);
-                    }
+                    articles.unshift({
+                        id: Date.now(),
+                        title,
+                        description: desc,
+                        body,
+                        category,
+                        date: currentDate
+                    });
                 }
 
-                showToast('🚀 تم نشر المقال وتحديث الـ RSS بنجاح!', 'success');
-                clearEditorForm();
-                cancelEdit();
-                loadArticlesList();
+                const putRes = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: editId ? `تعديل مقال: ${title}` : `إضافة مقال: ${title}`,
+                        content: window.btoa(unescape(encodeURIComponent(JSON.stringify(articles, null, 2)))),
+                        sha: fetched.sha
+                    })
+                });
 
+                if (!putRes.ok) throw new Error('فشل الحفظ على GitHub');
+
+                document.getElementById('topBanner').style.display = 'none';
+                showToast('🚀 تم النشر بنجاح!', 'success');
+                document.getElementById('postTitle').value = '';
+                document.getElementById('postDesc').value = '';
+                document.getElementById('postBody').innerHTML = '';
+                document.getElementById('editArticleId').value = '';
+                loadArticlesList();
             } catch (err) {
-                hideTopBanner();
-                btn.disabled = false;
+                document.getElementById('topBanner').style.display = 'none';
                 showToast('❌ خطأ: ' + err.message, 'error');
             }
         }
 
-        async function prepareEdit(id) {
+        async function loadArticlesList() {
             const token = document.getElementById('ghToken').value.trim();
-            showTopBanner('جاري تحميل بيانات المقال...');
+            if (!token) return showToast('أدخل الـ Token أولاً', 'error');
             try {
-                const { articles } = await fetchFileFromGithub(token);
-                hideTopBanner();
-                const art = articles.find(a => a.id == id);
-                if (art) {
-                    document.getElementById('editArticleId').value = art.id;
-                    document.getElementById('postTitle').value = art.title;
-                    document.getElementById('postDesc').value = art.description;
-                    document.getElementById('postBody').innerHTML = art.body;
-                    if (art.category) {
-                        let cat = art.category;
-                        if (cat.includes('أدوات ذكية')) cat = '💡 أدوات ذكية';
-                        document.getElementById('postCategory').value = cat;
-                        document.getElementById('selectedCategoryText').innerText = cat;
-                    }
-                    
-                    document.getElementById('formTitle').innerText = '✏️ تعديل المقال المنشور';
-                    document.getElementById('publishBtn').innerText = 'حفظ التعديلات 💾';
-                    document.getElementById('cancelEditBtn').style.display = 'block';
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-            } catch (err) {
-                hideTopBanner();
-                showToast(err.message, 'error');
-            }
-        }
-
-        function cancelEdit() {
-            clearEditorForm();
-            document.getElementById('formTitle').innerText = '🚀 لوحة تحكم المدونة (PWA)';
-            document.getElementById('publishBtn').innerText = 'نشر المقال فوراً 🚀';
-            document.getElementById('cancelEditBtn').style.display = 'none';
-        }
-
-        function moveArticle(index, direction) {
-            const newIndex = index + direction;
-            if (newIndex < 0 || newIndex >= loadedArticles.length) return;
-            const temp = loadedArticles[index];
-            loadedArticles[index] = loadedArticles[newIndex];
-            loadedArticles[newIndex] = temp;
-
-            renderArticlesCards();
-        }
-
-        async function saveArticlesOrder() {
-            const token = document.getElementById('ghToken').value.trim();
-            if (!token) return showToast('يرجى إدخال رمز الـ Token أولاً!', 'error');
-
-            showTopBanner('جاري حفظ الترتيب وتحديث الـ RSS...');
-            try {
-                const updatedArticles = await saveToGithubWithRetry(token, async () => loadedArticles, 'إعادة ترتيب المقالات');
-                backupArticlesToCloud(updatedArticles);
-                await updateRssFeedOnGithub(token, updatedArticles);
-
-                hideTopBanner();
-                showToast('✅ تم حفظ الترتيب وتحديث RSS بنجاح!', 'success');
-                loadArticlesList();
-            } catch (err) {
-                hideTopBanner();
-                showToast('❌ خطأ: ' + err.message, 'error');
+                const res = await fetchFileFromGithub(token);
+                loadedArticles = res.articles;
+                let html = '';
+                loadedArticles.forEach((a, i) => {
+                    html += `<div style="background:#1e293b;padding:12px;border-radius:8px;margin-bottom:10px;"><b>${i+1}. ${a.title}</b> <span style="font-size:11px;color:#34d399;">(${a.date || 'بدون تاريخ'})</span><br><button class="btn-red" onclick="openConfirmModal(${a.id})" style="padding:4px 8px;font-size:11px;margin-top:6px;">حذف</button></div>`;
+                });
+                document.getElementById('articlesList').innerHTML = html;
+            } catch(e) {
+                document.getElementById('articlesList').innerHTML = 'خطأ في جلب المقالات.';
             }
         }
 
         function openConfirmModal(id) {
             articleToDeleteId = id;
-            document.getElementById('confirmModalText').innerText = 'هل أنت متأكد من رغبتك في حذف هذا المقال نهائياً وصوره المرفقة؟';
-            currentModalAction = 'deleteArticle';
             document.getElementById('confirmModal').style.display = 'flex';
+            currentModalAction = 'deleteArticle';
         }
 
         async function deleteArticle(id) {
             const token = document.getElementById('ghToken').value.trim();
-            showTopBanner('جاري حذف المقال وتحديث السيرفر والـ RSS...');
-
             try {
-                const updatedArticles = await saveToGithubWithRetry(token, async (articles) => {
-                    return articles.filter(a => a.id != id);
-                }, `حذف مقال ID: ${id}`);
-
-                backupArticlesToCloud(updatedArticles);
-                await updateRssFeedOnGithub(token, updatedArticles);
-
-                hideTopBanner();
-                showToast('🗑️ تم حذف المقال وتحديث ملفات JSON و RSS بنجاح!', 'success');
+                const fetched = await fetchFileFromGithub(token);
+                const updated = fetched.articles.filter(a => a.id != id);
+                await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: `حذف مقال ID: ${id}`,
+                        content: window.btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2)))),
+                        sha: fetched.sha
+                    })
+                });
+                showToast('🗑️ تم الحذف بنجاح', 'success');
                 loadArticlesList();
-            } catch (err) {
-                hideTopBanner();
-                showToast('❌ خطأ: ' + err.message, 'error');
+            } catch(e) {
+                showToast('خطأ في الحذف', 'error');
             }
+        }
+
+        function showToast(msg, type='success') {
+            const container = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = `toast toast-${type}`;
+            t.innerText = msg;
+            container.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
         }
     </script>
 </body>
