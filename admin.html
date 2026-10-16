@@ -8,14 +8,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="إدارة المدونة">
     
-    <!-- ربط ملف الـ Manifest الرسمي للتثبيت[span_0](start_span)[span_0](end_span) -->
     <link rel="manifest" href="manifest.json">
 
-    <!-- مكتبات Firebase السحابية للحفظ الاحتياطي الثانوي[span_1](start_span)[span_1](end_span) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
-    <title>لوحة إدارة المدونة | SolarToolsPro[span_2](start_span)[span_2](end_span)</title>
+    <title>لوحة إدارة المدونة | SolarToolsPro</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -62,7 +60,6 @@
         .btn-edit { background-color: #f59e0b; color: #fff; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* شاشة تسجيل الدخول السرية (الحماية بكلمة مرور)[span_3](start_span)[span_3](end_span) */
         #authOverlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -84,7 +81,6 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
-        /* شريط التنبيه العلوي السلس[span_4](start_span)[span_4](end_span) */
         #topBanner {
             display: none;
             position: fixed;
@@ -99,7 +95,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        /* الإشعارات العصرية المنبثقة[span_5](start_span)[span_5](end_span) */
         #toastContainer {
             position: fixed;
             top: 20px;
@@ -129,7 +124,6 @@
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 
-        /* نافذة تأكيد الحذف المنبثقة المخصصة[span_6](start_span)[span_6](end_span) */
         #confirmModal {
             display: none;
             position: fixed;
@@ -156,7 +150,6 @@
         .confirm-btns { display: flex; gap: 10px; justify-content: center; }
         .confirm-btns button { flex: 1; padding: 10px; }
 
-        /* نافذة إدخال البيانات المخصصة بدلاً من prompt النظام الافتراضي[span_7](start_span)[span_7](end_span) */
         #promptModal {
             display: none;
             position: fixed;
@@ -198,7 +191,6 @@
         .prompt-btns { display: flex; gap: 10px; }
         .prompt-btns button { flex: 1; padding: 10px; font-size: 14px; }
 
-        /* نافذة المعاينة المباشرة المنبثقة (Live Preview Modal)[span_8](start_span)[span_8](end_span) */
         #previewModal {
             display: none;
             position: fixed;
@@ -365,7 +357,7 @@
         </div>
     </div>
 
-    <div id="topBanner">جاري المعالجة...[span_9](start_span)[span_9](end_span)</div>
+    <div id="topBanner">جاري المعالجة...</div>
     <div id="toastContainer"></div>
 
     <div id="confirmModal">
@@ -405,22 +397,22 @@
         </div>
     </div>
 
-    <h1 id="formTitle">🚀 لوحة تحكم المدونة (PWA)[span_10](start_span)[span_10](end_span)</h1>
+    <h1 id="formTitle">🚀 لوحة تحكم المدونة (PWA)</h1>
 
     <div style="text-align: center; margin-bottom: 20px;">
         <button onclick="lockAdminPanel()" style="background: #334155; color: #f87171; border: 1px solid #475569; padding: 7px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: bold;">قفل لوحة التحكم (تسجيل خروج) 🔒</button>
     </div>
 
     <div class="form-group">
-        <label>رمز الوصول الخاص (GitHub Token):[span_11](start_span)[span_11](end_span)</label>
-        <input type="password" id="ghToken" autocomplete="new-password" oninput="localStorage.setItem('gh_token', this.value.trim()); scheduleAutoSave();" placeholder="الصق رمز GitHub Token هنا[span_12](start_span)[span_12](end_span)">
+        <label>رمز الوصول الخاص (GitHub Token):</label>
+        <input type="password" id="ghToken" autocomplete="new-password" oninput="localStorage.setItem('gh_token', this.value.trim()); scheduleAutoSave();" placeholder="الصق رمز GitHub Token هنا">
     </div>
 
     <input type="hidden" id="editArticleId" value="">
     <input type="hidden" id="draftEditIndex" value="">
 
     <div class="form-group">
-        <label>تصنيف المقال:[span_13](start_span)[span_13](end_span)</label>
+        <label>تصنيف المقال:</label>
         <input type="hidden" id="postCategory" value="☀️ الطاقة الشمسية والبديلة">
         <div class="custom-dropdown" style="width: 100%;">
             <button type="button" id="categoryDropdownBtn" class="category-select-btn" onclick="toggleMenu('categoryDropdown', event)">
@@ -429,7 +421,7 @@
             </button>
             <div id="categoryDropdown" class="dropdown-menu" style="width: 100%;">
                 <div class="dropdown-item" onclick="selectCategory('☀️ الطاقة الشمسية والبديلة')">☀️ الطاقة الشمسية والبديلة</div>
-                <div class="dropdown-item" onclick="selectCategory('💡 أدوات ذكية')">💡 أدوات ذكية[span_14](start_span)[span_14](end_span)</div>
+                <div class="dropdown-item" onclick="selectCategory('💡 أدوات ذكية')">💡 أدوات ذكية</div>
                 <div class="dropdown-item" onclick="selectCategory('📱 الهواتف الذكية')">📱 الهواتف الذكية</div>
                 <div class="dropdown-item" onclick="selectCategory('💻 الحواسيب والتقنية')">💻 الحواسيب والتقنية</div>
                 <div class="dropdown-item" onclick="selectCategory('🔋 البطاريات')">🔋 البطاريات</div>
@@ -438,23 +430,23 @@
     </div>
 
     <div class="form-group">
-        <label>عنوان المقال:[span_15](start_span)[span_15](end_span)</label>
-        <input type="text" id="postTitle" placeholder="عنوان المقال[span_16](start_span)[span_16](end_span)" oninput="scheduleAutoSave()">
+        <label>عنوان المقال:</label>
+        <input type="text" id="postTitle" placeholder="عنوان المقال" oninput="scheduleAutoSave()">
     </div>
 
     <div class="form-group">
-        <label>مقدمة قصيرة (الوصف):[span_17](start_span)[span_17](end_span)</label>
-        <input type="text" id="postDesc" placeholder="نبذة مختصرة تظهر في الكارت الرئيسي[span_18](start_span)[span_18](end_span)" oninput="scheduleAutoSave()">
+        <label>مقدمة قصيرة (الوصف):</label>
+        <input type="text" id="postDesc" placeholder="نبذة مختصرة تظهر في الكارت الرئيسي" oninput="scheduleAutoSave()">
     </div>
 
     <div class="form-group">
-        <label>إدراج صورة/صور داخل المقال:[span_19](start_span)[span_19](end_span)</label>
+        <label>إدراج صورة/صور داخل المقال:</label>
         <input type="file" id="imageInput" accept="image/*" multiple style="padding: 8px; margin-bottom: 6px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff;">
-        <button type="button" class="btn-purple" onclick="uploadAndInsertImages()">رفع وإدراج الصور مرئياً في موضع المؤشر 🖼️[span_20](start_span)[span_20](end_span)</button>
+        <button type="button" class="btn-purple" onclick="uploadAndInsertImages()">رفع وإدراج الصور مرئياً في موضع المؤشر 🖼️</button>
     </div>
 
     <div class="form-group">
-        <label>محتوى المقال (محرر مرئي مباشر): <span style="font-size:11px; color:#38bdf8;">(تنسيق وتلوين النصوص مباشرة)[span_21](start_span)[span_21](end_span)</span></label>
+        <label>محتوى المقال (محرر مرئي مباشر): <span style="font-size:11px; color:#38bdf8;">(تنسيق وتلوين النصوص مباشرة)</span></label>
         <div class="toolbar">
             <button type="button" class="tool-btn" onclick="execCmd('bold')" title="عريض"><b>B</b></button>
             <button type="button" class="tool-btn" onclick="execCmd('italic')" title="مائل"><i>I</i></button>
@@ -504,34 +496,34 @@
             <button type="button" class="tool-btn" onclick="execCmd('undo')" title="تراجع">↩️</button>
             <button type="button" class="tool-btn" onclick="execCmd('redo')" title="إعادة">↪️</button>
         </div>
-        <div id="postBody" class="editor-box" contenteditable="true" placeholder="اكتب نص المقال هنا...[span_22](start_span)[span_22](end_span)" oninput="scheduleAutoSave()"></div>
+        <div id="postBody" class="editor-box" contenteditable="true" placeholder="اكتب نص المقال هنا..." oninput="scheduleAutoSave()"></div>
         <div id="draftStatus" class="draft-status"></div>
     </div>
 
     <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-        <button type="button" class="btn-purple" onclick="saveAsDraftManual()" style="flex: 1; margin-bottom: 0;">حفظ كمسودة 📂[span_23](start_span)[span_23](end_span)</button>
-        <button type="button" class="btn-cyan" onclick="openPreviewModal()" style="flex: 1; margin-bottom: 0;">معاينة 👁️[span_24](start_span)[span_24](end_span)</button>
+        <button type="button" class="btn-purple" onclick="saveAsDraftManual()" style="flex: 1; margin-bottom: 0;">حفظ كمسودة 📂</button>
+        <button type="button" class="btn-cyan" onclick="openPreviewModal()" style="flex: 1; margin-bottom: 0;">معاينة 👁️</button>
     </div>
-    <button id="publishBtn" class="btn-green" onclick="saveArticle()">نشر المقال فوراً 🚀[span_25](start_span)[span_25](end_span)</button>
-    <button id="cancelEditBtn" class="btn-red" onclick="cancelEdit()" style="display:none; width:100%; margin-top:8px;">إلغاء التعديل[span_26](start_span)[span_26](end_span)</button>
+    <button id="publishBtn" class="btn-green" onclick="saveArticle()">نشر المقال فوراً 🚀</button>
+    <button id="cancelEditBtn" class="btn-red" onclick="cancelEdit()" style="display:none; width:100%; margin-top:8px;">إلغاء التعديل</button>
 
-    <h2>📂 المسودات المحفوظة (<span id="draftsCount">0</span>)[span_27](start_span)[span_27](end_span)</h2>
-    <div id="draftsListContainer">لا توجد مسودات محفوظة حالياً.[span_28](start_span)[span_28](end_span)</div>
+    <h2>📂 المسودات المحفوظة (<span id="draftsCount">0</span>)</h2>
+    <div id="draftsListContainer">لا توجد مسودات محفوظة حالياً.</div>
 
-    <h2>📚 المقالات المنشورة حالياً[span_29](start_span)[span_29](end_span)</h2>
+    <h2>📚 المقالات المنشورة حالياً</h2>
 
     <div style="display: flex; gap: 10px; margin-bottom: 8px;">
-        <button class="btn-purple" onclick="exportArticlesLocal()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px;">💾 تصدير المقالات[span_30](start_span)[span_30](end_span)</button>
-        <button class="btn-orange" onclick="triggerImportArticles()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px;">📂 استيراد المقالات[span_31](start_span)[span_31](end_span)</button>
+        <button class="btn-purple" onclick="exportArticlesLocal()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px;">💾 تصدير المقالات</button>
+        <button class="btn-orange" onclick="triggerImportArticles()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px;">📂 استيراد المقالات</button>
         <input type="file" id="importArticlesFile" style="display:none" accept=".json,application/json" onchange="importArticlesLocal(event)">
     </div>
 
     <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-        <button class="btn-blue" onclick="loadArticlesList()" style="flex: 1; margin-bottom: 0;">تحديث قائمة المقالات 🔄[span_32](start_span)[span_32](end_span)</button>
-        <button class="btn-cyan" onclick="restoreArticlesFromCloud()" style="flex: 1; margin-bottom: 0; font-size: 14px;">📥 استعادة من السحابة[span_33](start_span)[span_33](end_span)</button>
+        <button class="btn-blue" onclick="loadArticlesList()" style="flex: 1; margin-bottom: 0;">تحديث قائمة المقالات 🔄</button>
+        <button class="btn-cyan" onclick="restoreArticlesFromCloud()" style="flex: 1; margin-bottom: 0; font-size: 14px;">📥 استعادة من السحابة</button>
     </div>
     
-    <div id="articlesList">اضغط على زر التحديث لعرض المقالات.[span_34](start_span)[span_34](end_span)</div>
+    <div id="articlesList">اضغط على زر التحديث لعرض المقالات.</div>
 
     <script>
         const firebaseConfig = {
@@ -1361,8 +1353,8 @@
                         <div style="display: flex; gap: 6px; justify-content: flex-start; align-items: center; flex-wrap: wrap;">
                             <button class="btn-gray" onclick="moveArticle(${index}, -1)" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">⬆️ أعلى</button>
                             <button class="btn-gray" onclick="moveArticle(${index}, 1)" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">⬇️ أسفل</button>
-                            <button class="btn-edit" onclick="prepareEdit(${art.id})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">✏️ تعديل</button>
-                            <button class="btn-red" onclick="openConfirmModal(${art.id})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">🗑️ حذف</button>
+                            <button class="btn-edit" onclick="prepareEdit('${art.id}')" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">✏️ تعديل</button>
+                            <button class="btn-red" onclick="openConfirmModal('${art.id}')" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">🗑️ حذف</button>
                         </div>
                     </div>
                 `;
@@ -1429,7 +1421,6 @@
             }
         }
 
-        // ⚡ دالة حفظ ونشر وتعديل المقالات المحسنة والمضمونة 100%
         async function saveArticle() {
             const token = document.getElementById('ghToken').value.trim();
             const title = document.getElementById('postTitle').value.trim();
@@ -1460,7 +1451,7 @@
                             articles[index].category = category;
                             articles[index].updatedAt = Date.now();
                         } else {
-                            articles.unshift({ id: Number(editId) || editId, title, description: desc, body: bodyHtml, category, updatedAt: Date.now() });
+                            articles.unshift({ id: editId, title, description: desc, body: bodyHtml, category, updatedAt: Date.now() });
                         }
                     } else {
                         const newId = Date.now();
