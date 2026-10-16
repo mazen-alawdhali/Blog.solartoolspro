@@ -344,15 +344,14 @@
     <input type="hidden" id="editArticleId" value="">
     <input type="hidden" id="draftEditIndex" value="">
 
-    <!-- قائمة اختيار تصنيف المقال المحدثة شمولياً -->
+    <!-- قائمة اختيار تصنيف المقال -->
     <div class="form-group">
         <label>تصنيف المقال:</label>
         <select id="postCategory" onchange="scheduleAutoSave()">
-            <option value="☀️ الطاقة الشمسية والبديلة">☀️ الطاقة الشمسية والبديلة</option>
+            <option value="☀️ الطاقة الشمسية">☀️ الطاقة الشمسية</option>
             <option value="📱 الهواتف الذكية">📱 الهواتف الذكية</option>
             <option value="💻 الحواسيب والتقنية">💻 الحواسيب والتقنية</option>
             <option value="🔋 البطاريات">🔋 البطاريات</option>
-            <option value="⚙️ أدوات ذكية">⚙️ أدوات ذكية</option>
         </select>
     </div>
 
@@ -413,9 +412,6 @@
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h3>')" title="عنوان فرعي">H3</button>
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<blockquote>')" title="اقتباس">❞</button>
             <button type="button" class="tool-btn" onclick="execCmd('insertHorizontalRule')" title="خط فاصل">―</button>
-
-            <!-- زر إدراج فيديو يوتيوب -->
-            <button type="button" class="tool-btn" onclick="insertYoutubeVideo()" title="إدراج فيديو يوتيوب" style="background-color: #8b5cf6; color: #fff;">🎬</button>
 
             <!-- زر حذف الصور المحددة -->
             <button type="button" class="tool-btn" onclick="deleteSelectedImage()" title="حذف الصور المحددة" style="background-color: #ef4444; color: #fff; min-width: 42px;">🗑️</button>
@@ -519,39 +515,6 @@
                 }
             }
         });
-
-        function insertYoutubeVideo() {
-            const input = prompt('أدخل رابط فيديو يوتيوب (YouTube URL) أو كود التضمين:');
-            if (!input || !input.trim()) return;
-
-            let videoId = '';
-            const raw = input.trim();
-
-            if (raw.includes('iframe')) {
-                const match = raw.match(/src=["']([^"']+)["']/i);
-                if (match && match[1]) {
-                    const src = match[1];
-                    const idMatch = src.match(/(?:embed\/|v=|\/vi\/|youtu\.be\/|\/shorts\/)([a-zA-Z0-9_-]{11})/);
-                    if (idMatch && idMatch[1]) videoId = idMatch[1];
-                }
-            } else {
-                const match = raw.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
-                if (match && match[1]) videoId = match[1];
-            }
-
-            if (!videoId) {
-                return showToast('⚠️ رابط يوتيوب غير صالح! يرجى التأكد من الرابط.', 'error');
-            }
-
-            const embedHtml = `<div class="video-container" style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; margin: 15px 0; border: 1px solid #334155; box-shadow: 0 4px 12px rgba(0,0,0,0.4);"><iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/${videoId}" title="فيديو المقال" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p><br></p>`;
-
-            const editor = document.getElementById('postBody');
-            editor.focus();
-            restoreSelection();
-            document.execCommand('insertHTML', false, embedHtml);
-            scheduleAutoSave();
-            showToast('🎬 تم إدراج فيديو يوتيوب بنجاح!', 'success');
-        }
 
         function deleteSelectedImage() {
             if (selectedImageElements.length === 0) {
@@ -1116,9 +1079,9 @@
                 let rssXml = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
 <channel>
-    <title>مدونة منصة أدوات الطاقة الشمسية والتقنية</title>
+    <title>مدونة أدوات الطاقة الشمسية الاحترافية</title>
     <link>https://blog.solartoolspro.com</link>
-    <description>دليلكم لبناء حياة ذكية ومستدامة بأحدث الأجهزة.</description>
+    <description>أحدث المقالات التقنية في الطاقة الشمسية والتقنية الحديثة</description>
     <language>ar</language>`;
 
                 if (Array.isArray(articles)) {
