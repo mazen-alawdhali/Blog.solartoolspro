@@ -42,6 +42,7 @@
             outline: none;
         }
         input:focus, select:focus { border-color: #38bdf8; }
+
         button {
             padding: 10px 14px;
             border: none;
@@ -133,7 +134,7 @@
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(6px);
             z-index: 10001;
             justify-content: center;
@@ -154,6 +155,48 @@
         .confirm-card p { font-size: 14px; color: #cbd5e1; margin-bottom: 20px; line-height: 1.5; }
         .confirm-btns { display: flex; gap: 10px; justify-content: center; }
         .confirm-btns button { flex: 1; padding: 10px; }
+
+        /* 🌟 نافذة إدخال البيانات المخصصة بدلاً من prompt النظام الافتراضي */
+        #promptModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10003;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .prompt-card {
+            background: #1e293b;
+            border: 1px solid #38bdf8;
+            border-radius: 16px;
+            padding: 22px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+            animation: modalFadeIn 0.2s ease-out;
+        }
+        @keyframes modalFadeIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .prompt-card h3 { color: #38bdf8; font-size: 17px; margin-bottom: 12px; text-align: center; }
+        .prompt-card p { font-size: 13px; color: #94a3b8; margin-bottom: 15px; text-align: center; }
+        .prompt-card input {
+            width: 100%;
+            padding: 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 15px;
+            outline: none;
+            direction: ltr;
+            text-align: left;
+        }
+        .prompt-card input:focus { border-color: #38bdf8; }
+        .prompt-btns { display: flex; gap: 10px; }
+        .prompt-btns button { flex: 1; padding: 10px; font-size: 14px; }
 
         /* نافذة المعاينة المباشرة المنبثقة (Live Preview Modal) */
         #previewModal {
@@ -188,6 +231,17 @@
         .preview-content .preview-desc { font-size: 14px; color: #94a3b8; border-right: 3px solid #38bdf8; padding-right: 10px; margin-bottom: 20px; font-style: italic; }
         .preview-body { font-size: 15px; line-height: 1.8; color: #e2e8f0; border-top: 1px solid #334155; padding-top: 15px; }
         .preview-body img { max-width: 100% !important; height: auto !important; border-radius: 8px; margin: 12px 0; border: 1px solid #334155; }
+        
+        /* 🌟 منع ظهور الخط تحت الروابط نهائياً في المعاينة والمحرر والموقع العام */
+        .preview-body a, .editor-box a, a {
+            color: #38bdf8 !important;
+            text-decoration: none !important;
+            font-weight: 500;
+        }
+        .preview-body a:hover, .editor-box a:hover, a:hover {
+            text-decoration: underline !important;
+            color: #7dd3fc !important;
+        }
 
         /* شريط أزرار التنسيق المرئي */
         .toolbar {
@@ -216,6 +270,23 @@
         
         /* القائمة المنسدلة المخصصة */
         .custom-dropdown { position: relative; display: inline-block; }
+        .category-select-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            text-align: right;
+            font-weight: bold;
+        }
+        .category-select-btn:focus { border-color: #38bdf8; }
+
         .dropdown-menu {
             display: none;
             position: absolute;
@@ -234,7 +305,7 @@
             color: #e2e8f0;
             cursor: pointer;
             border-bottom: 1px solid #28374d;
-            text-align: center;
+            text-align: right;
             font-weight: bold;
             transition: background 0.2s;
         }
@@ -314,6 +385,19 @@
         </div>
     </div>
 
+    <!-- 🌟 النافذة المنبثقة المخصصة للمدخلات (بديل prompt النظام) -->
+    <div id="promptModal">
+        <div class="prompt-card">
+            <h3 id="promptTitle">عنوان النافذة</h3>
+            <p id="promptSubtitle">وصف توضيحي للـ Input...</p>
+            <input type="text" id="promptInput" placeholder="">
+            <div class="prompt-btns">
+                <button class="btn-green" id="promptSubmitBtn">موافق 👍</button>
+                <button class="btn-gray" onclick="closePromptModal()">إلغاء ❌</button>
+            </div>
+        </div>
+    </div>
+
     <!-- نافذة المعاينة المباشرة المنبثقة (Live Preview Modal) -->
     <div id="previewModal">
         <div class="preview-card">
@@ -338,21 +422,29 @@
 
     <div class="form-group">
         <label>رمز الوصول الخاص (GitHub Token):</label>
-        <input type="password" id="ghToken" oninput="localStorage.setItem('gh_token', this.value.trim())" placeholder="الصق رمز GitHub Token هنا">
+        <input type="password" id="ghToken" oninput="localStorage.setItem('gh_token', this.value.trim()); scheduleAutoSave();" placeholder="الصق رمز GitHub Token هنا">
     </div>
 
     <input type="hidden" id="editArticleId" value="">
     <input type="hidden" id="draftEditIndex" value="">
 
-    <!-- قائمة اختيار تصنيف المقال -->
+    <!-- قائمة اختيار تصنيف المقال المنسدلة المخصصة بأيقونة المصباح المضيء 💡 اللامعة -->
     <div class="form-group">
         <label>تصنيف المقال:</label>
-        <select id="postCategory" onchange="scheduleAutoSave()">
-            <option value="☀️ الطاقة الشمسية">☀️ الطاقة الشمسية</option>
-            <option value="📱 الهواتف الذكية">📱 الهواتف الذكية</option>
-            <option value="💻 الحواسيب والتقنية">💻 الحواسيب والتقنية</option>
-            <option value="🔋 البطاريات">🔋 البطاريات</option>
-        </select>
+        <input type="hidden" id="postCategory" value="☀️ الطاقة الشمسية والبديلة">
+        <div class="custom-dropdown" style="width: 100%;">
+            <button type="button" id="categoryDropdownBtn" class="category-select-btn" onclick="toggleMenu('categoryDropdown', event)">
+                <span id="selectedCategoryText">☀️ الطاقة الشمسية والبديلة</span>
+                <span style="font-size: 11px; color: #38bdf8;">▼</span>
+            </button>
+            <div id="categoryDropdown" class="dropdown-menu" style="width: 100%;">
+                <div class="dropdown-item" onclick="selectCategory('☀️ الطاقة الشمسية والبديلة')">☀️ الطاقة الشمسية والبديلة</div>
+                <div class="dropdown-item" onclick="selectCategory('💡 أدوات ذكية')">💡 أدوات ذكية</div>
+                <div class="dropdown-item" onclick="selectCategory('📱 الهواتف الذكية')">📱 الهواتف الذكية</div>
+                <div class="dropdown-item" onclick="selectCategory('💻 الحواسيب والتقنية')">💻 الحواسيب والتقنية</div>
+                <div class="dropdown-item" onclick="selectCategory('🔋 البطاريات')">🔋 البطاريات</div>
+            </div>
+        </div>
     </div>
 
     <div class="form-group">
@@ -412,6 +504,12 @@
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h3>')" title="عنوان فرعي">H3</button>
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<blockquote>')" title="اقتباس">❞</button>
             <button type="button" class="tool-btn" onclick="execCmd('insertHorizontalRule')" title="خط فاصل">―</button>
+
+            <!-- زر إدراج رابط تشعبي 🔗 -->
+            <button type="button" class="tool-btn" onclick="insertLink()" title="إدراج رابط" style="background-color: #0284c7; color: #fff;">🔗</button>
+
+            <!-- زر إدراج فيديو يوتيوب -->
+            <button type="button" class="tool-btn" onclick="insertYoutubeVideo()" title="إدراج فيديو يوتيوب" style="background-color: #8b5cf6; color: #fff;">🎬</button>
 
             <!-- زر حذف الصور المحددة -->
             <button type="button" class="tool-btn" onclick="deleteSelectedImage()" title="حذف الصور المحددة" style="background-color: #ef4444; color: #fff; min-width: 42px;">🗑️</button>
@@ -516,6 +614,96 @@
             }
         });
 
+        let promptCallback = null;
+        function showCustomPrompt(title, subtitle, defaultValue, placeholder, callback) {
+            document.getElementById('promptTitle').innerText = title;
+            document.getElementById('promptSubtitle').innerText = subtitle;
+            const input = document.getElementById('promptInput');
+            input.value = defaultValue || '';
+            input.placeholder = placeholder || '';
+            promptCallback = callback;
+            
+            document.getElementById('promptModal').style.display = 'flex';
+            setTimeout(() => input.focus(), 100);
+        }
+
+        function closePromptModal() {
+            document.getElementById('promptModal').style.display = 'none';
+            promptCallback = null;
+        }
+
+        document.getElementById('promptSubmitBtn').onclick = function() {
+            const val = document.getElementById('promptInput').value.trim();
+            if (promptCallback) {
+                promptCallback(val);
+            }
+            closePromptModal();
+        };
+
+        function insertLink() {
+            showCustomPrompt('🔗 إدراج رابط تشعبي', 'أدخل رابط الـ URL المطلوب:', 'https://', 'https://solartoolspro.com', function(url) {
+                if (!url || url === 'https://') return;
+
+                const editor = document.getElementById('postBody');
+                editor.focus();
+                restoreSelection();
+
+                const sel = window.getSelection();
+                if (sel && sel.rangeCount > 0 && !sel.getRangeAt(0).collapsed) {
+                    document.execCommand('createLink', false, url);
+                    editor.querySelectorAll('a').forEach(a => {
+                        a.style.color = '#38bdf8';
+                        a.style.textDecoration = 'none';
+                        a.setAttribute('target', '_blank');
+                    });
+                    scheduleAutoSave();
+                    showToast('🔗 تم تحويل النص إلى رابط بنجاح!', 'success');
+                } else {
+                    showCustomPrompt('✏️ نص الرابط', 'أدخل النص الذي سيظهر للقارئ للنقر عليه:', '', 'مثال: اضغط هنا لزيارة الموقع', function(linkText) {
+                        const text = linkText || url;
+                        const linkHtml = `<a href="${url}" target="_blank" style="color: #38bdf8; text-decoration: none; font-weight: 500;">${text}</a>`;
+                        document.execCommand('insertHTML', false, linkHtml);
+                        scheduleAutoSave();
+                        showToast('🔗 تم إدراج الرابط بنجاح!', 'success');
+                    });
+                }
+            });
+        }
+
+        function insertYoutubeVideo() {
+            showCustomPrompt('🎬 إدراج فيديو يوتيوب', 'أدخل رابط فيديو يوتيوب (YouTube URL) أو كود التضمين:', '', 'https://www.youtube.com/watch?v=...', function(input) {
+                if (!input || !input.trim()) return;
+
+                let videoId = '';
+                const raw = input.trim();
+
+                if (raw.includes('iframe')) {
+                    const match = raw.match(/src=["']([^"']+)["']/i);
+                    if (match && match[1]) {
+                        const src = match[1];
+                        const idMatch = src.match(/(?:embed\/|v=|\/vi\/|youtu\.be\/|\/shorts\/)([a-zA-Z0-9_-]{11})/);
+                        if (idMatch && idMatch[1]) videoId = idMatch[1];
+                    }
+                } else {
+                    const match = raw.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
+                    if (match && match[1]) videoId = match[1];
+                }
+
+                if (!videoId) {
+                    return showToast('⚠️ رابط يوتيوب غير صالح! يرجى التأكد من الرابط.', 'error');
+                }
+
+                const embedHtml = `<div class="video-container" style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; margin: 15px 0; border: 1px solid #334155; box-shadow: 0 4px 12px rgba(0,0,0,0.4);"><iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/${videoId}" title="فيديو المقال" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p><br></p>`;
+
+                const editor = document.getElementById('postBody');
+                editor.focus();
+                restoreSelection();
+                document.execCommand('insertHTML', false, embedHtml);
+                scheduleAutoSave();
+                showToast('🎬 تم إدراج فيديو يوتيوب بنجاح!', 'success');
+            });
+        }
+
         function deleteSelectedImage() {
             if (selectedImageElements.length === 0) {
                 return showToast('⚠️ يرجى النقر على صورة واحدة أو أكثر داخل المقال لتحديدها!', 'error');
@@ -560,6 +748,13 @@
             });
             const menu = document.getElementById(menuId);
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function selectCategory(catName) {
+            document.getElementById('postCategory').value = catName;
+            document.getElementById('selectedCategoryText').innerText = catName;
+            document.getElementById('categoryDropdown').style.display = 'none';
+            scheduleAutoSave();
         }
 
         document.addEventListener('click', function(e) {
@@ -619,7 +814,6 @@
             scheduleAutoSave();
         }
 
-        // --- نظام إدارة المسودات ومنع التكرار ---
         function getSavedDrafts() {
             try {
                 const drafts = localStorage.getItem('blog_all_drafts');
@@ -634,7 +828,9 @@
 
         let autoSaveTimer = null;
         function scheduleAutoSave() {
-            document.getElementById('draftStatus').innerText = 'جاري الكتابة...';
+            const statusEl = document.getElementById('draftStatus');
+            statusEl.innerText = 'جاري الكتابة...';
+            
             clearTimeout(autoSaveTimer);
             autoSaveTimer = setTimeout(() => {
                 const title = document.getElementById('postTitle').value.trim();
@@ -674,9 +870,11 @@
 
                     localStorage.setItem('blog_all_drafts', JSON.stringify(drafts));
                     renderDraftsList();
-                    document.getElementById('draftStatus').innerText = `💾 تم الحفظ التلقائي (${new Date().toLocaleTimeString('ar-SA')})`;
+                    statusEl.innerText = `💾 تم الحفظ التلقائي (${new Date().toLocaleTimeString('ar-SA')})`;
                 } else if (!title && !desc && !body) {
-                    document.getElementById('draftStatus').innerText = '';
+                    statusEl.innerText = '';
+                } else {
+                    statusEl.innerText = '💾 التعديلات جاهزة';
                 }
             }, 1000);
         }
@@ -762,7 +960,10 @@
                 document.getElementById('postDesc').value = draft.desc;
                 document.getElementById('postBody').innerHTML = draft.body;
                 if (draft.category) {
-                    document.getElementById('postCategory').value = draft.category;
+                    let cat = draft.category;
+                    if (cat.includes('أدوات ذكية')) cat = '💡 أدوات ذكية';
+                    document.getElementById('postCategory').value = cat;
+                    document.getElementById('selectedCategoryText').innerText = cat;
                 }
                 document.getElementById('draftEditIndex').value = index;
                 showToast('📂 تم تحميل المسودة في المحرر بنجاح!', 'success');
@@ -796,7 +997,10 @@
             document.getElementById('postDesc').value = draft.desc;
             document.getElementById('postBody').innerHTML = draft.body;
             if (draft.category) {
-                document.getElementById('postCategory').value = draft.category;
+                let cat = draft.category;
+                if (cat.includes('أدوات ذكية')) cat = '💡 أدوات ذكية';
+                document.getElementById('postCategory').value = cat;
+                document.getElementById('selectedCategoryText').innerText = cat;
             }
             document.getElementById('draftEditIndex').value = index;
 
@@ -810,6 +1014,8 @@
             document.getElementById('editArticleId').value = '';
             document.getElementById('draftEditIndex').value = '';
             document.getElementById('draftStatus').innerText = '';
+            document.getElementById('postCategory').value = '☀️ الطاقة الشمسية والبديلة';
+            document.getElementById('selectedCategoryText').innerText = '☀️ الطاقة الشمسية والبديلة';
             selectedImageElements = [];
         }
 
@@ -933,7 +1139,6 @@
             }
         }
 
-        // 🔑 كلمة المرور المعتمدة
         const MASTER_PASS = "771005555#"; 
 
         if (localStorage.getItem('admin_authenticated') === 'true') {
@@ -978,7 +1183,7 @@
         function openPreviewModal() {
             const title = document.getElementById('postTitle').value.trim() || 'عنوان المقال المعاين';
             const desc = document.getElementById('postDesc').value.trim() || 'نبذة مختصرة عن المقال...';
-            const body = document.getElementById('postBody').innerHTML.trim() || '<p style="color:#64748b;">لا يوجد محتوى للمقال بعد...</p>';
+            const body = document.getElementById('postBody').innerHTML.trim() || '<p style="color:#64748b;">لا يوجد للمقال محتوى بعد...</p>';
 
             document.getElementById('pvTitle').innerText = title;
             document.getElementById('pvDesc').innerText = desc;
@@ -1018,19 +1223,58 @@
         const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
         const rssApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/rss.xml`;
 
+        // 🌟 دالة جلب مع منع التخزين المؤقت (Cache-Busting صارم)
         async function fetchFileFromGithub(token) {
-            const res = await fetch(apiUrl, { headers: { 'Authorization': `token ${token}` } });
-            if (!res.ok) throw new Error('تعذر الاتصال بـ GitHub');
-            const data = await res.json();
-            const content = b64_to_utf8(data.content);
-            return { sha: data.sha, articles: JSON.parse(content) };
+            try {
+                const response = await fetch(apiUrl + '?cache_bust=' + Date.now() + '&cb=' + Math.random(), { 
+                    method: 'GET',
+                    cache: 'no-store',
+                    headers: { 
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    } 
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const content = b64_to_utf8(data.content);
+                    return { sha: data.sha, articles: JSON.parse(content) };
+                }
+            } catch (e) {
+                console.warn("فشل الاتصال بـ GitHub API، جاري الجلب من السحابة...");
+            }
+
+            try {
+                const doc = await db.collection("blogData").doc("articlesBackup").get();
+                if (doc.exists && doc.data().articles) {
+                    showToast('⚠️ تم جلب المقالات من النسخة الاحتياطية السحابية للطوارئ', 'success');
+                    return { sha: '', articles: doc.data().articles };
+                }
+            } catch (cloudErr) {
+                console.error("فشل الجلب السحابي أيضاً:", cloudErr);
+            }
+
+            throw new Error('تعذر جلب المقالات. تحقق من اتصال الإنترنت أو رمز الـ Token.');
         }
 
-        // 🛡️ دالة الحفظ الذكية مع إعادة المحاولة التلقائية (Auto-Retry) لمنع أخطاء تعارض الـ SHA نهائياً
         async function saveToGithubWithRetry(token, updateCallback, commitMessage, maxRetries = 3) {
             for (let attempt = 0; attempt < maxRetries; attempt++) {
                 try {
-                    const { sha, articles } = await fetchFileFromGithub(token);
+                    const fetched = await fetchFileFromGithub(token);
+                    let sha = fetched.sha;
+                    let articles = fetched.articles;
+
+                    if (!sha) {
+                        try {
+                            const shaRes = await fetch(apiUrl + '?cache_bust=' + Math.random(), {
+                                headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                            });
+                            if (shaRes.ok) {
+                                const shaData = await shaRes.json();
+                                sha = shaData.sha;
+                            }
+                        } catch (e) {}
+                    }
+
                     const updatedArticles = await updateCallback(articles);
                     const updatedContent = utf8_to_b64(JSON.stringify(updatedArticles, null, 2));
 
@@ -1062,7 +1306,6 @@
             throw new Error('فشل الحفظ بعد عدة محاولات بسبب التعارض.');
         }
 
-        // 🌟 دالة مساعدة لتوليد وتحديث ملف الـ RSS على GitHub مع استخدام روابط ?id= المعتمدة فيسبوكياً
         async function updateRssFeedOnGithub(token, articles) {
             try {
                 let rssSha = '';
@@ -1079,19 +1322,17 @@
                 let rssXml = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
 <channel>
-    <title>مدونة أدوات الطاقة الشمسية الاحترافية</title>
+    <title>مدونة منصة أدوات الطاقة الشمسية والتقنية</title>
     <link>https://blog.solartoolspro.com</link>
-    <description>أحدث المقالات التقنية في الطاقة الشمسية والتقنية الحديثة</description>
+    <description>دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.</description>
     <language>ar</language>`;
 
                 if (Array.isArray(articles)) {
                     articles.forEach(art => {
-                        // 🚀 تعديل حاسم: استخدام ?id= لتتوافق مع فيسبوك مع الحفاظ على الـ Hash للتوافق المزدوج
                         const articleUrl = `https://blog.solartoolspro.com/?id=${art.id}`;
                         const safeTitle = (art.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         const safeDesc = (art.description || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-                        // استخراج أول صورة من محتوى المقال وإضافتها كـ enclosure لـ dlvr.it و فيسبوك
                         let imgTag = '';
                         if (art.body) {
                             const imgMatch = art.body.match(/<img[^>]+src=["']([^"']+)["']/i);
@@ -1161,6 +1402,7 @@
 
                 backupArticlesToCloud(loadedArticles);
                 renderArticlesCards();
+                showToast('✅ تم تحميل المقالات وجاهزية الحذف والتعديل بنجاح!', 'success');
             } catch (err) {
                 hideTopBanner();
                 listDiv.innerText = '❌ خطأ: ' + err.message;
@@ -1287,14 +1529,11 @@
                 }, editId ? `تعديل مقال: ${title}` : `إضافة مقال جديد: ${title}`);
 
                 backupArticlesToCloud(updatedArticles);
-
-                // تحديث ملف الـ RSS تلقائياً في الخلفية
                 await updateRssFeedOnGithub(token, updatedArticles);
 
                 hideTopBanner();
                 btn.disabled = false;
 
-                // حذف المسودة بعد النشر الناجح
                 if (draftEditIndex !== '') {
                     let drafts = getSavedDrafts();
                     drafts.splice(draftEditIndex, 1);
@@ -1333,7 +1572,10 @@
                     document.getElementById('postDesc').value = art.description;
                     document.getElementById('postBody').innerHTML = art.body;
                     if (art.category) {
-                        document.getElementById('postCategory').value = art.category;
+                        let cat = art.category;
+                        if (cat.includes('أدوات ذكية')) cat = '💡 أدوات ذكية';
+                        document.getElementById('postCategory').value = cat;
+                        document.getElementById('selectedCategoryText').innerText = cat;
                     }
                     
                     document.getElementById('formTitle').innerText = '✏️ تعديل المقال المنشور';
