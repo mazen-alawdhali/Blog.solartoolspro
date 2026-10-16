@@ -42,6 +42,24 @@
             outline: none;
         }
         input:focus, select:focus { border-color: #38bdf8; }
+        
+        /* تنسيق عصري مخصص للقائمة المنسدلة */
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%2338bdf8" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: left 12px center;
+            padding-left: 36px;
+            cursor: pointer;
+        }
+        select option {
+            background-color: #1e293b;
+            color: #ffffff;
+            padding: 10px;
+        }
+
         button {
             padding: 10px 14px;
             border: none;
@@ -344,15 +362,15 @@
     <input type="hidden" id="editArticleId" value="">
     <input type="hidden" id="draftEditIndex" value="">
 
-    <!-- قائمة اختيار تصنيف المقال المحدثة شمولياً -->
+    <!-- قائمة اختيار تصنيف المقال المحدثة بترتيب دقيق (أدوات ذكية بعد الطاقة الشمسية والبديلة مباشرة) -->
     <div class="form-group">
         <label>تصنيف المقال:</label>
         <select id="postCategory" onchange="scheduleAutoSave()">
             <option value="☀️ الطاقة الشمسية والبديلة">☀️ الطاقة الشمسية والبديلة</option>
+            <option value="⚙️ أدوات ذكية">⚙️ أدوات ذكية</option>
             <option value="📱 الهواتف الذكية">📱 الهواتف الذكية</option>
             <option value="💻 الحواسيب والتقنية">💻 الحواسيب والتقنية</option>
             <option value="🔋 البطاريات">🔋 البطاريات</option>
-            <option value="⚙️ أدوات ذكية">⚙️ أدوات ذكية</option>
         </select>
     </div>
 
@@ -1118,17 +1136,15 @@
 <channel>
     <title>مدونة منصة أدوات الطاقة الشمسية والتقنية</title>
     <link>https://blog.solartoolspro.com</link>
-    <description>دليلكم لبناء حياة ذكية ومستدامة بأحدث الأجهزة.</description>
+    <description>دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.</description>
     <language>ar</language>`;
 
                 if (Array.isArray(articles)) {
                     articles.forEach(art => {
-                        // 🚀 تعديل حاسم: استخدام ?id= لتتوافق مع فيسبوك مع الحفاظ على الـ Hash للتوافق المزدوج
                         const articleUrl = `https://blog.solartoolspro.com/?id=${art.id}`;
                         const safeTitle = (art.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         const safeDesc = (art.description || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-                        // استخراج أول صورة من محتوى المقال وإضافتها كـ enclosure لـ dlvr.it و فيسبوك
                         let imgTag = '';
                         if (art.body) {
                             const imgMatch = art.body.match(/<img[^>]+src=["']([^"']+)["']/i);
@@ -1324,14 +1340,11 @@
                 }, editId ? `تعديل مقال: ${title}` : `إضافة مقال جديد: ${title}`);
 
                 backupArticlesToCloud(updatedArticles);
-
-                // تحديث ملف الـ RSS تلقائياً في الخلفية
                 await updateRssFeedOnGithub(token, updatedArticles);
 
                 hideTopBanner();
                 btn.disabled = false;
 
-                // حذف المسودة بعد النشر الناجح
                 if (draftEditIndex !== '') {
                     let drafts = getSavedDrafts();
                     drafts.splice(draftEditIndex, 1);
