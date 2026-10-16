@@ -232,16 +232,15 @@
         .preview-body { font-size: 15px; line-height: 1.8; color: #e2e8f0; border-top: 1px solid #334155; padding-top: 15px; }
         .preview-body img { max-width: 100% !important; height: auto !important; border-radius: 8px; margin: 12px 0; border: 1px solid #334155; }
         
-        /* 🌟 تعديل مظهر الروابط لإزالة الخط المزعج (Underline) وجعلها أنيقة وعصرية */
-        .preview-body a, .editor-box a {
-            color: #38bdf8;
-            text-decoration: none;
+        /* 🌟 منع ظهور الخط تحت الروابط نهائياً في المعاينة والمحرر والموقع العام */
+        .preview-body a, .editor-box a, a {
+            color: #38bdf8 !important;
+            text-decoration: none !important;
             font-weight: 500;
-            transition: 0.2s;
         }
-        .preview-body a:hover, .editor-box a:hover {
-            text-decoration: underline;
-            color: #7dd3fc;
+        .preview-body a:hover, .editor-box a:hover, a:hover {
+            text-decoration: underline !important;
+            color: #7dd3fc !important;
         }
 
         /* شريط أزرار التنسيق المرئي */
@@ -423,7 +422,7 @@
 
     <div class="form-group">
         <label>رمز الوصول الخاص (GitHub Token):</label>
-        <input type="password" id="ghToken" oninput="localStorage.setItem('gh_token', this.value.trim())" placeholder="الصق رمز GitHub Token هنا">
+        <input type="password" id="ghToken" oninput="localStorage.setItem('gh_token', this.value.trim()); scheduleAutoSave();" placeholder="الصق رمز GitHub Token هنا">
     </div>
 
     <input type="hidden" id="editArticleId" value="">
@@ -642,7 +641,7 @@
             closePromptModal();
         };
 
-        // 🔗 دالة إدراج الرابط في المحرر بدون خط مزعج تحت النص
+        // 🔗 إدراج الرابط بدون خط تحت النص نهائياً وبشكل نظيف
         function insertLink() {
             showCustomPrompt('🔗 إدراج رابط تشعبي', 'أدخل رابط الـ URL المطلوب:', 'https://', 'https://solartoolspro.com', function(url) {
                 if (!url || url === 'https://') return;
@@ -654,14 +653,13 @@
                 const sel = window.getSelection();
                 if (sel && sel.rangeCount > 0 && !sel.getRangeAt(0).collapsed) {
                     document.execCommand('createLink', false, url);
-                    // تنظيف الروابط المُنشأة لضمان عدم وجود خط مزعج
                     editor.querySelectorAll('a').forEach(a => {
                         a.style.color = '#38bdf8';
                         a.style.textDecoration = 'none';
                         a.setAttribute('target', '_blank');
                     });
                     scheduleAutoSave();
-                    showToast('🔗 تم تحويل النص المكتوب إلى رابط بنجاح!', 'success');
+                    showToast('🔗 تم تحويل النص إلى رابط بنجاح!', 'success');
                 } else {
                     showCustomPrompt('✏️ نص الرابط', 'أدخل النص الذي سيظهر للقارئ للنقر عليه:', '', 'مثال: اضغط هنا لزيارة الموقع', function(linkText) {
                         const text = linkText || url;
@@ -818,7 +816,7 @@
             scheduleAutoSave();
         }
 
-        // --- نظام الحفظ التلقائي الذكي لمنع تعليق عبارة "جاري الكتابة..." ---
+        // --- نظام الحفظ التلقائي الذكي المنضبط تماماً ---
         function getSavedDrafts() {
             try {
                 const drafts = localStorage.getItem('blog_all_drafts');
@@ -832,15 +830,12 @@
         }
 
         let autoSaveTimer = null;
-        let isTypingIndicatorShown = false;
         function scheduleAutoSave() {
-            if (!isTypingIndicatorShown) {
-                document.getElementById('draftStatus').innerText = 'جاري الكتابة...';
-                isTypingIndicatorShown = true;
-            }
+            const statusEl = document.getElementById('draftStatus');
+            statusEl.innerText = 'جاري الكتابة...';
+            
             clearTimeout(autoSaveTimer);
             autoSaveTimer = setTimeout(() => {
-                isTypingIndicatorShown = false;
                 const title = document.getElementById('postTitle').value.trim();
                 const desc = document.getElementById('postDesc').value.trim();
                 const body = document.getElementById('postBody').innerHTML.trim();
@@ -878,11 +873,13 @@
 
                     localStorage.setItem('blog_all_drafts', JSON.stringify(drafts));
                     renderDraftsList();
-                    document.getElementById('draftStatus').innerText = `💾 تم الحفظ التلقائي (${new Date().toLocaleTimeString('ar-SA')})`;
+                    statusEl.innerText = `💾 تم الحفظ التلقائي (${new Date().toLocaleTimeString('ar-SA')})`;
                 } else if (!title && !desc && !body) {
-                    document.getElementById('draftStatus').innerText = '';
+                    statusEl.innerText = '';
+                } else {
+                    statusEl.innerText = '💾 التعديلات جاهزة';
                 }
-            }, 1500);
+            }, 1000);
         }
 
         function saveAsDraftManual() {
