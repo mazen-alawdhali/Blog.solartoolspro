@@ -352,8 +352,16 @@
 
         async function fetchArticles() {
             try {
-                // 🌟 الجلب المباشر مع منع التخزين المؤقت (Cache-Busting صارم) لضمان ظهور التحديثات فوراً
-                const res = await fetch('articles.json?t=' + Date.now() + '&cb=' + Math.random(), { cache: 'no-store' });
+                // 🌟 الجلب من المسار الجذري المطلق مع منع الكاش تماماً لتجاوز ذاكرة الجوال
+                const res = await fetch('/articles.json?t=' + Date.now() + '&cb=' + Math.random(), { 
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                });
+                
                 if (!res.ok) throw new Error('رمز الاستجابة من السيرفر: ' + res.status);
                 
                 const textData = await res.text();
@@ -394,6 +402,13 @@
                 document.getElementById('articlesContainer').innerHTML = `<div class="error-msg">❌ تعذر تحميل المقالات: ${err.message}</div>`;
             }
         }
+
+        // 🌟 إعادة الجلب التلقائي عند العودة للصفحة لتفادي كاش الخلفية في الجوال
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                fetchArticles();
+            }
+        });
 
         function calculateReadingTime(text) {
             const words = text.replace(/<[^>]*>/g, '').split(/\s+/).length;
