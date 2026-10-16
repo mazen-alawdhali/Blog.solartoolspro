@@ -464,7 +464,8 @@
 
         async function fetchArticles() {
             try {
-                const res = await fetch('articles.json?cache_bust=' + Math.random());
+                // 🌟 منع التخزين المؤقت (Cache) تماماً بوضع وقت عشوائي للتحديث الفوري عند جلب articles.json
+                const res = await fetch('articles.json?v=' + Date.now() + '&cache_bust=' + Math.random());
                 if (!res.ok) throw new Error('رمز الاستجابة من السيرفر: ' + res.status);
                 
                 const textData = await res.text();
