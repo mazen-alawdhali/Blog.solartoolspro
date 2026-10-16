@@ -15,6 +15,10 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=3" />
     <link rel="manifest" href="site.webmanifest" />
     
+    <!-- مكتبات Firebase السحابية للجلب الفوري وتجاوز كاش GitHub -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <title id="metaTitle">مدونة منصة أدوات الطاقة الشمسية والتقنية - SolarToolsPro</title>
     <meta name="description" id="metaDesc" content="دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.">
     
@@ -448,6 +452,21 @@
     </footer>
 
     <script>
+        // إعدادات Firebase السحابية للجلب الفوري
+        const firebaseConfig = {
+          apiKey: "AIzaSyA89DKwcT9Kke59BdpFR5MgE-iQFYF7k6Q",
+          authDomain: "posthelperpro.firebaseapp.com",
+          projectId: "posthelperpro",
+          storageBucket: "posthelperpro.firebasestorage.app",
+          messagingSenderId: "867686946998",
+          appId: "1:867686946998:web:4660f6531f9b089ad0ae17",
+          measurementId: "G-Y6BHWKVJJL"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
         let allArticles = [];
 
         // حقن النص الوصفي برمجياً لتجاوز مشكلة الكاش في السيرفر نهائياً
@@ -464,15 +483,16 @@
 
         async function fetchArticles() {
             try {
-                // 🌟 إجبار المتصفح على جلب أحدث نسخة حصرياً وتخطي الكاش نهائياً
-                const res = await fetch('articles.json?v=' + Date.now() + '&cb=' + Math.random(), { cache: 'no-store' });
-                if (!res.ok) throw new Error('رمز الاستجابة من السيرفر: ' + res.status);
-                
-                const textData = await res.text();
-                try {
+                // الجلب الفوري من قاعدة البيانات السحابية (Firebase) لتجاوز تأخير كاش GitHub Pages
+                const doc = await db.collection("blogData").doc("articlesBackup").get();
+                if (doc.exists && doc.data().articles) {
+                    allArticles = doc.data().articles;
+                } else {
+                    // كخطوة بديلة، الجلب من ملف articles.json مباشرة مع مانع الكاش التام
+                    const res = await fetch('articles.json?v=' + Date.now() + '&cb=' + Math.random(), { cache: 'no-store' });
+                    if (!res.ok) throw new Error('رمز الاستجابة من السيرفر: ' + res.status);
+                    const textData = await res.text();
                     allArticles = JSON.parse(textData);
-                } catch (jsonErr) {
-                    throw new Error('خطأ في تنسيق ملف articles.json: ' + jsonErr.message);
                 }
                 
                 const urlParams = new URLSearchParams(window.location.search);
