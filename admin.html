@@ -422,17 +422,17 @@
     <input type="hidden" id="editArticleId" value="">
     <input type="hidden" id="draftEditIndex" value="">
 
-    <!-- قائمة اختيار تصنيف المقال المنسدلة المخصصة بأيقونة المصباح المضيء 💡 اللامعة والأقسام الجديدة -->
+    <!-- قائمة اختيار تصنيف المقال المنسدلة المخصصة بأيقونة المصباح المضيء 💡 اللامعة -->
     <div class="form-group">
         <label>تصنيف المقال:</label>
-        <input type="hidden" id="postCategory" value="☀️ الطاقة الشمسية">
+        <input type="hidden" id="postCategory" value="☀️ الطاقة الشمسية والبديلة">
         <div class="custom-dropdown" style="width: 100%;">
             <button type="button" id="categoryDropdownBtn" class="category-select-btn" onclick="toggleMenu('categoryDropdown', event)">
-                <span id="selectedCategoryText">☀️ الطاقة الشمسية</span>
+                <span id="selectedCategoryText">☀️ الطاقة الشمسية والبديلة</span>
                 <span style="font-size: 11px; color: #38bdf8;">▼</span>
             </button>
             <div id="categoryDropdown" class="dropdown-menu" style="width: 100%;">
-                <div class="dropdown-item" onclick="selectCategory('☀️ الطاقة الشمسية')">☀️ الطاقة الشمسية</div>
+                <div class="dropdown-item" onclick="selectCategory('☀️ الطاقة الشمسية والبديلة')">☀️ الطاقة الشمسية والبديلة</div>
                 <div class="dropdown-item" onclick="selectCategory('💡 أدوات ذكية')">💡 أدوات ذكية</div>
                 <div class="dropdown-item" onclick="selectCategory('📱 الهواتف الذكية')">📱 الهواتف الذكية</div>
                 <div class="dropdown-item" onclick="selectCategory('💻 الحواسيب والتقنية')">💻 الحواسيب والتقنية</div>
@@ -805,7 +805,7 @@
             scheduleAutoSave();
         }
 
-        // --- نظام إدارة المسودات ومعالجة تكرار "جاري الكتابة..." ---
+        // --- نظام إدارة المسودات ومنع التكرار ---
         function getSavedDrafts() {
             try {
                 const drafts = localStorage.getItem('blog_all_drafts');
@@ -819,15 +819,10 @@
         }
 
         let autoSaveTimer = null;
-        let isTypingIndicatorShown = false;
         function scheduleAutoSave() {
-            if (!isTypingIndicatorShown) {
-                document.getElementById('draftStatus').innerText = 'جاري الكتابة...';
-                isTypingIndicatorShown = true;
-            }
+            document.getElementById('draftStatus').innerText = 'جاري الكتابة...';
             clearTimeout(autoSaveTimer);
             autoSaveTimer = setTimeout(() => {
-                isTypingIndicatorShown = false;
                 const title = document.getElementById('postTitle').value.trim();
                 const desc = document.getElementById('postDesc').value.trim();
                 const body = document.getElementById('postBody').innerHTML.trim();
@@ -869,7 +864,7 @@
                 } else if (!title && !desc && !body) {
                     document.getElementById('draftStatus').innerText = '';
                 }
-            }, 1200);
+            }, 1000);
         }
 
         function saveAsDraftManual() {
@@ -954,6 +949,7 @@
                 document.getElementById('postBody').innerHTML = draft.body;
                 if (draft.category) {
                     let cat = draft.category;
+                    if (cat.includes('أدوات ذكية')) cat = '💡 أدوات ذكية';
                     document.getElementById('postCategory').value = cat;
                     document.getElementById('selectedCategoryText').innerText = cat;
                 }
@@ -990,6 +986,7 @@
             document.getElementById('postBody').innerHTML = draft.body;
             if (draft.category) {
                 let cat = draft.category;
+                if (cat.includes('أدوات ذكية')) cat = '💡 أدوات ذكية';
                 document.getElementById('postCategory').value = cat;
                 document.getElementById('selectedCategoryText').innerText = cat;
             }
@@ -1005,8 +1002,8 @@
             document.getElementById('editArticleId').value = '';
             document.getElementById('draftEditIndex').value = '';
             document.getElementById('draftStatus').innerText = '';
-            document.getElementById('postCategory').value = '☀️ الطاقة الشمسية';
-            document.getElementById('selectedCategoryText').innerText = '☀️ الطاقة الشمسية';
+            document.getElementById('postCategory').value = '☀️ الطاقة الشمسية والبديلة';
+            document.getElementById('selectedCategoryText').innerText = '☀️ الطاقة الشمسية والبديلة';
             selectedImageElements = [];
         }
 
@@ -1223,6 +1220,7 @@
             return { sha: data.sha, articles: JSON.parse(content) };
         }
 
+        // 🛡️ دالة الحفظ الذكية مع إعادة المحاولة التلقائية (Auto-Retry) لمنع أخطاء تعارض الـ SHA نهائياً
         async function saveToGithubWithRetry(token, updateCallback, commitMessage, maxRetries = 3) {
             for (let attempt = 0; attempt < maxRetries; attempt++) {
                 try {
@@ -1258,6 +1256,7 @@
             throw new Error('فشل الحفظ بعد عدة محاولات بسبب التعارض.');
         }
 
+        // 🌟 دالة مساعدة لتوليد وتحديث ملف الـ RSS على GitHub مع استخدام روابط ?id= المعتمدة فيسبوكياً
         async function updateRssFeedOnGithub(token, articles) {
             try {
                 let rssSha = '';
@@ -1524,6 +1523,7 @@
                     document.getElementById('postBody').innerHTML = art.body;
                     if (art.category) {
                         let cat = art.category;
+                        if (cat.includes('أدوات ذكية')) cat = '💡 أدوات ذكية';
                         document.getElementById('postCategory').value = cat;
                         document.getElementById('selectedCategoryText').innerText = cat;
                     }
