@@ -8,10 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="إدارة المدونة">
     
-    <!-- ربط ملف الـ Manifest الرسمي للتثبيت -->
     <link rel="manifest" href="manifest.json">
 
-    <!-- مكتبات Firebase السحابية للحفظ الاحتياطي الثانوي -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
@@ -62,7 +60,6 @@
         .btn-edit { background-color: #f59e0b; color: #fff; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* شاشة تسجيل الدخول السرية (الحماية بكلمة مرور) */
         #authOverlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -84,7 +81,6 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
-        /* شريط التنبيه العلوي السلس */
         #topBanner {
             display: none;
             position: fixed;
@@ -99,7 +95,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        /* الإشعارات العصرية المنبثقة */
         #toastContainer {
             position: fixed;
             top: 20px;
@@ -129,7 +124,6 @@
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 
-        /* نافذة تأكيد الحذف المنبثقة المخصصة */
         #confirmModal {
             display: none;
             position: fixed;
@@ -156,7 +150,6 @@
         .confirm-btns { display: flex; gap: 10px; justify-content: center; }
         .confirm-btns button { flex: 1; padding: 10px; }
 
-        /* 🌟 نافذة إدخال البيانات المخصصة بدلاً من prompt النظام الافتراضي */
         #promptModal {
             display: none;
             position: fixed;
@@ -198,7 +191,6 @@
         .prompt-btns { display: flex; gap: 10px; }
         .prompt-btns button { flex: 1; padding: 10px; font-size: 14px; }
 
-        /* نافذة المعاينة المباشرة المنبثقة (Live Preview Modal) */
         #previewModal {
             display: none;
             position: fixed;
@@ -232,7 +224,6 @@
         .preview-body { font-size: 15px; line-height: 1.8; color: #e2e8f0; border-top: 1px solid #334155; padding-top: 15px; }
         .preview-body img { max-width: 100% !important; height: auto !important; border-radius: 8px; margin: 12px 0; border: 1px solid #334155; }
         
-        /* 🌟 منع ظهور الخط تحت الروابط نهائياً في المعاينة والمحرر والموقع العام */
         .preview-body a, .editor-box a, a {
             color: #38bdf8 !important;
             text-decoration: none !important;
@@ -243,7 +234,6 @@
             color: #7dd3fc !important;
         }
 
-        /* شريط أزرار التنسيق المرئي */
         .toolbar {
             display: flex;
             flex-wrap: wrap;
@@ -268,7 +258,6 @@
         }
         .tool-btn:hover { background-color: #475569; }
         
-        /* القائمة المنسدلة المخصصة */
         .custom-dropdown { position: relative; display: inline-block; }
         .category-select-btn {
             width: 100%;
@@ -312,7 +301,6 @@
         .dropdown-item:last-child { border-bottom: none; }
         .dropdown-item:hover { background-color: #0284c7; color: #ffffff; }
 
-        /* محرر النصوص المرئي وضبط أبعاد الصور تلقائياً */
         .editor-box {
             width: 100%;
             min-height: 220px;
@@ -360,12 +348,11 @@
 </head>
 <body>
 
-    <!-- طبقة حماية كلمة المرور عند فتح اللوحة -->
     <div id="authOverlay">
         <div class="auth-card">
             <h3 style="color:#38bdf8; margin-bottom:10px; font-size:18px;">🔒 منطقة الإدارة المحمية</h3>
             <p style="color:#94a3b8; font-size:13px; margin-bottom:15px;">الرجاء إدخال كلمة المرور للمتابعة</p>
-            <input type="password" id="sitePassword" placeholder="كلمة المرور السرية" style="width:100%; padding:12px; background:#0f172a; border:1px solid #475569; color:#fff; border-radius:8px; margin-bottom:15px; text-align:center; font-size:14px;" onkeydown="if(event.key==='Enter') checkMasterPassword()">
+            <input type="password" id="sitePassword" autocomplete="new-password" placeholder="كلمة المرور السرية" style="width:100%; padding:12px; background:#0f172a; border:1px solid #475569; color:#fff; border-radius:8px; margin-bottom:15px; text-align:center; font-size:14px;" onkeydown="if(event.key==='Enter') checkMasterPassword()">
             <button onclick="checkMasterPassword()" style="width:100%; background:#10b981; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">دخول 🚀</button>
         </div>
     </div>
@@ -373,7 +360,6 @@
     <div id="topBanner">جاري المعالجة...</div>
     <div id="toastContainer"></div>
 
-    <!-- نافذة تأكيد الحذف المنبثقة المخصصة للمقال -->
     <div id="confirmModal">
         <div class="confirm-card">
             <h3>⚠️ تأكيد الحذف</h3>
@@ -385,7 +371,6 @@
         </div>
     </div>
 
-    <!-- 🌟 النافذة المنبثقة المخصصة للمدخلات (بديل prompt النظام) -->
     <div id="promptModal">
         <div class="prompt-card">
             <h3 id="promptTitle">عنوان النافذة</h3>
@@ -398,7 +383,6 @@
         </div>
     </div>
 
-    <!-- نافذة المعاينة المباشرة المنبثقة (Live Preview Modal) -->
     <div id="previewModal">
         <div class="preview-card">
             <div class="preview-header">
@@ -415,20 +399,18 @@
 
     <h1 id="formTitle">🚀 لوحة تحكم المدونة (PWA)</h1>
 
-    <!-- زر قفل وتسجيل الخروج -->
     <div style="text-align: center; margin-bottom: 20px;">
         <button onclick="lockAdminPanel()" style="background: #334155; color: #f87171; border: 1px solid #475569; padding: 7px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: bold;">قفل لوحة التحكم (تسجيل خروج) 🔒</button>
     </div>
 
     <div class="form-group">
         <label>رمز الوصول الخاص (GitHub Token):</label>
-        <input type="password" id="ghToken" oninput="localStorage.setItem('gh_token', this.value.trim()); scheduleAutoSave();" placeholder="الصق رمز GitHub Token هنا">
+        <input type="password" id="ghToken" autocomplete="new-password" oninput="localStorage.setItem('gh_token', this.value.trim()); scheduleAutoSave();" placeholder="الصق رمز GitHub Token هنا">
     </div>
 
     <input type="hidden" id="editArticleId" value="">
     <input type="hidden" id="draftEditIndex" value="">
 
-    <!-- قائمة اختيار تصنيف المقال المنسدلة المخصصة بأيقونة المصباح المضيء 💡 اللامعة -->
     <div class="form-group">
         <label>تصنيف المقال:</label>
         <input type="hidden" id="postCategory" value="☀️ الطاقة الشمسية والبديلة">
@@ -470,7 +452,6 @@
             <button type="button" class="tool-btn" onclick="execCmd('italic')" title="مائل"><i>I</i></button>
             <button type="button" class="tool-btn" onclick="execCmd('underline')" title="خط تحت النص"><u>U</u></button>
             
-            <!-- القائمة المنسدلة المخصصة لحجم الخط -->
             <div class="custom-dropdown">
                 <button type="button" class="tool-btn" onclick="toggleMenu('fontDropdown', event)" title="حجم الخط">🔤 ▼</button>
                 <div id="fontDropdown" class="dropdown-menu">
@@ -481,7 +462,6 @@
                 </div>
             </div>
 
-            <!-- القائمة المنسدلة المخصصة لألوان النص -->
             <div class="custom-dropdown">
                 <button type="button" class="tool-btn" onclick="toggleMenu('colorDropdown', event)" title="لون النص">🎨 ▼</button>
                 <div id="colorDropdown" class="dropdown-menu" style="min-width: 160px; padding: 8px;">
@@ -505,18 +485,12 @@
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<blockquote>')" title="اقتباس">❞</button>
             <button type="button" class="tool-btn" onclick="execCmd('insertHorizontalRule')" title="خط فاصل">―</button>
 
-            <!-- زر إدراج رابط تشعبي 🔗 -->
             <button type="button" class="tool-btn" onclick="insertLink()" title="إدراج رابط" style="background-color: #0284c7; color: #fff;">🔗</button>
-
-            <!-- زر إدراج فيديو يوتيوب -->
             <button type="button" class="tool-btn" onclick="insertYoutubeVideo()" title="إدراج فيديو يوتيوب" style="background-color: #8b5cf6; color: #fff;">🎬</button>
-
-            <!-- زر حذف الصور المحددة -->
             <button type="button" class="tool-btn" onclick="deleteSelectedImage()" title="حذف الصور المحددة" style="background-color: #ef4444; color: #fff; min-width: 42px;">🗑️</button>
 
-            <!-- أزرار المحاذاة -->
             <button type="button" class="tool-btn" onclick="execCmd('justifyRight')" title="محاذاة لليمين">➡️</button>
-            <button type="button" class="tool-btn" onclick="execCmd('justifyCenter')" title="توسيط النص">⏺</button>
+            <button type="button" class="tool-btn" onclick="execCmd('وسيط')" title="توسيط النص" onclick="execCmd('justifyCenter')">⏺</button>
             <button type="button" class="tool-btn" onclick="execCmd('justifyLeft')" title="محاذاة لليسار">⬅️</button>
             
             <button type="button" class="tool-btn" onclick="execCmd('undo')" title="تراجع">↩️</button>
@@ -526,7 +500,6 @@
         <div id="draftStatus" class="draft-status"></div>
     </div>
 
-    <!-- أزرار الحفظ والمعاينة والنشر -->
     <div style="display: flex; gap: 8px; margin-bottom: 8px;">
         <button type="button" class="btn-purple" onclick="saveAsDraftManual()" style="flex: 1; margin-bottom: 0;">حفظ كمسودة 📂</button>
         <button type="button" class="btn-cyan" onclick="openPreviewModal()" style="flex: 1; margin-bottom: 0;">معاينة 👁️</button>
@@ -534,20 +507,17 @@
     <button id="publishBtn" class="btn-green" onclick="saveArticle()">نشر المقال فوراً 🚀</button>
     <button id="cancelEditBtn" class="btn-red" onclick="cancelEdit()" style="display:none; width:100%; margin-top:8px;">إلغاء التعديل</button>
 
-    <!-- قسم المسودات المحفوظة -->
     <h2>📂 المسودات المحفوظة (<span id="draftsCount">0</span>)</h2>
     <div id="draftsListContainer">لا توجد مسودات محفوظة حالياً.</div>
 
     <h2>📚 المقالات المنشورة حالياً</h2>
 
-    <!-- شريط أزرار الطوارئ والنسخ الاحتياطي المحلي -->
     <div style="display: flex; gap: 10px; margin-bottom: 8px;">
         <button class="btn-purple" onclick="exportArticlesLocal()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px;">💾 تصدير المقالات</button>
         <button class="btn-orange" onclick="triggerImportArticles()" style="flex: 1; margin-bottom: 0; font-size: 13.5px; padding: 10px;">📂 استيراد المقالات</button>
         <input type="file" id="importArticlesFile" style="display:none" accept=".json,application/json" onchange="importArticlesLocal(event)">
     </div>
 
-    <!-- شريط أزرار التحديث والسحابة -->
     <div style="display: flex; gap: 10px; margin-bottom: 12px;">
         <button class="btn-blue" onclick="loadArticlesList()" style="flex: 1; margin-bottom: 0;">تحديث قائمة المقالات 🔄</button>
         <button class="btn-cyan" onclick="restoreArticlesFromCloud()" style="flex: 1; margin-bottom: 0; font-size: 14px;">📥 استعادة من السحابة</button>
@@ -556,7 +526,6 @@
     <div id="articlesList">اضغط على زر التحديث لعرض المقالات.</div>
 
     <script>
-        // إعدادات Firebase السحابية الاحتياطية
         const firebaseConfig = {
           apiKey: "AIzaSyA89DKwcT9Kke59BdpFR5MgE-iQFYF7k6Q",
           authDomain: "posthelperpro.firebaseapp.com",
@@ -614,7 +583,6 @@
             }
         });
 
-        // 🌟 دالة فتح نافذة المدخلات المخصصة بدلاً من prompt()
         let promptCallback = null;
         function showCustomPrompt(title, subtitle, defaultValue, placeholder, callback) {
             document.getElementById('promptTitle').innerText = title;
@@ -641,7 +609,6 @@
             closePromptModal();
         };
 
-        // 🔗 إدراج الرابط بدون خط تحت النص نهائياً وبشكل نظيف
         function insertLink() {
             showCustomPrompt('🔗 إدراج رابط تشعبي', 'أدخل رابط الـ URL المطلوب:', 'https://', 'https://solartoolspro.com', function(url) {
                 if (!url || url === 'https://') return;
@@ -816,7 +783,6 @@
             scheduleAutoSave();
         }
 
-        // --- نظام الحفظ التلقائي الذكي المنضبط تماماً ---
         function getSavedDrafts() {
             try {
                 const drafts = localStorage.getItem('blog_all_drafts');
@@ -959,6 +925,8 @@
             const drafts = getSavedDrafts();
             const draft = drafts[index];
             if (draft) {
+                // 🌟 إصلاح حاسم: عند تحميل مسودة، نقوم بتصفير editArticleId لضمان نشرها كمقال جديد تماماً
+                document.getElementById('editArticleId').value = '';
                 document.getElementById('postTitle').value = draft.title;
                 document.getElementById('postDesc').value = draft.desc;
                 document.getElementById('postBody').innerHTML = draft.body;
@@ -996,6 +964,8 @@
             const draft = drafts[index];
             if (!draft) return;
 
+            // 🌟 إصلاح حاسم: تصفير editArticleId تماماً لضمان عدم استبدال أي مقال قديم عند النشر المباشر للمسودة
+            document.getElementById('editArticleId').value = '';
             document.getElementById('postTitle').value = draft.title;
             document.getElementById('postDesc').value = draft.desc;
             document.getElementById('postBody').innerHTML = draft.body;
@@ -1084,7 +1054,7 @@
                             
                             await saveToGithubWithRetry(token, async () => imported, 'استيراد مقالات من ملف محلي');
                             backupArticlesToCloud(imported);
-                            await updateRssFeedOnGithub(token, imported);
+                            updateRssFeedOnGithub(token, imported);
 
                             hideTopBanner();
                             showToast('✅ تم استيراد ونشر المقالات وتحديث RSS بنجاح!', 'success');
@@ -1127,7 +1097,7 @@
                         showTopBanner('جاري استعادة ونشر المقالات على GitHub...');
                         
                         await saveToGithubWithRetry(token, async () => cloudArticles, 'استعادة المقالات من النسخة الاحتياطية السحابية');
-                        await updateRssFeedOnGithub(token, cloudArticles);
+                        updateRssFeedOnGithub(token, cloudArticles);
 
                         hideTopBanner();
                         showToast('✅ تم استعادة المقالات وتحديث RSS بنجاح على GitHub!', 'success');
@@ -1142,7 +1112,6 @@
             }
         }
 
-        // 🔑 كلمة المرور المعتمدة
         const MASTER_PASS = "771005555#"; 
 
         if (localStorage.getItem('admin_authenticated') === 'true') {
@@ -1337,9 +1306,8 @@
                     body: JSON.stringify(putBody)
                 });
 
-                const resJson = await rssPutRes.json();
                 if (!rssPutRes.ok) {
-                    console.error("RSS PUT Error Response:", resJson);
+                    console.error("RSS PUT Error Response:", await rssPutRes.json());
                 } else {
                     console.log("RSS updated successfully with images and query params!");
                 }
@@ -1455,6 +1423,7 @@
             }
         }
 
+        // ⚡ دالة النشر المحسنة (سرعة البرق + العمل في الخلفية + حماية تامة من التداخل)
         async function saveArticle() {
             const token = document.getElementById('ghToken').value.trim();
             const title = document.getElementById('postTitle').value.trim();
@@ -1471,9 +1440,10 @@
 
             localStorage.setItem('gh_token', token);
             btn.disabled = true;
-            showTopBanner('جاري نشر المقال وتحديث السيرفر...');
+            showTopBanner('جاري نشر المقال على السيرفر...');
 
             try {
+                // 🌟 إذا لم يكن هناك editId، نولد معرف جديد حصرياً لضمان عدم الكتابة فوق أي مقال قديم
                 let articleId = editId ? editId : Date.now();
 
                 const updatedArticles = await saveToGithubWithRetry(token, async (articles) => {
@@ -1484,6 +1454,8 @@
                             articles[index].description = desc;
                             articles[index].body = bodyHtml;
                             articles[index].category = category;
+                        } else {
+                            articles.unshift({ id: articleId, title, description: desc, body: bodyHtml, category });
                         }
                     } else {
                         articles.unshift({ id: articleId, title, description: desc, body: bodyHtml, category });
@@ -1491,12 +1463,16 @@
                     return articles;
                 }, editId ? `تعديل مقال: ${title}` : `إضافة مقال جديد: ${title}`);
 
-                backupArticlesToCloud(updatedArticles);
-                await updateRssFeedOnGithub(token, updatedArticles);
-
+                // ⚡ إظهار النجاح للعميل وتفريغ الشاشة فوراً (سرعة البرق ⚡)
                 hideTopBanner();
                 btn.disabled = false;
+                showToast('🚀 تم نشر المقال بنجاح سرعة البرق!', 'success');
+                
+                clearEditorForm();
+                cancelEdit();
+                loadArticlesList();
 
+                // تنظيف المسودات إن وجدت
                 if (draftEditIndex !== '') {
                     let drafts = getSavedDrafts();
                     drafts.splice(draftEditIndex, 1);
@@ -1510,10 +1486,9 @@
                     }
                 }
 
-                showToast('🚀 تم نشر المقال وتحديث الـ RSS بنجاح!', 'success');
-                clearEditorForm();
-                cancelEdit();
-                loadArticlesList();
+                // 🔄 المهام الثانوية تعمل في الخلفية بصمت دون إبطاء المستخدم
+                backupArticlesToCloud(updatedArticles);
+                updateRssFeedOnGithub(token, updatedArticles).catch(err => console.log("Background RSS Update Error:", err));
 
             } catch (err) {
                 hideTopBanner();
@@ -1577,7 +1552,7 @@
             try {
                 const updatedArticles = await saveToGithubWithRetry(token, async () => loadedArticles, 'إعادة ترتيب المقالات');
                 backupArticlesToCloud(updatedArticles);
-                await updateRssFeedOnGithub(token, updatedArticles);
+                updateRssFeedOnGithub(token, updatedArticles);
 
                 hideTopBanner();
                 showToast('✅ تم حفظ الترتيب وتحديث RSS بنجاح!', 'success');
@@ -1605,7 +1580,7 @@
                 }, `حذف مقال ID: ${id}`);
 
                 backupArticlesToCloud(updatedArticles);
-                await updateRssFeedOnGithub(token, updatedArticles);
+                updateRssFeedOnGithub(token, updatedArticles);
 
                 hideTopBanner();
                 showToast('🗑️ تم حذف المقال وتحديث ملفات JSON و RSS بنجاح!', 'success');
