@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="مدونة التقنية والطاقة">
     
-    <!-- وسوم الأيقونات الشاملة المعتمدة رسمياً -->
+    <!-- وسوم الأيقونات الشاملة المعتمدة رسمياً من favicon.zip -->
     <link rel="icon" type="image/png" href="favicon-96x96.png?v=3" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3" />
     <link rel="shortcut icon" href="favicon.ico?v=3" />
@@ -18,8 +18,10 @@
     <title id="metaTitle">مدونة منصة أدوات الطاقة الشمسية والتقنية - SolarToolsPro</title>
     <meta name="description" id="metaDesc" content="دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.">
     
+    <!-- 🌟 الـ Canonical المحدث ديناميكياً لتجنب توجيه فيسبوك للرئيسية -->
     <link id="canonicalUrl" rel="canonical" href="https://blog.solartoolspro.com/">
     
+    <!-- وسوم الـ OpenGraph المحدثة ديناميكياً لفيسبوك -->
     <meta property="og:type" content="article">
     <meta property="og:url" id="ogUrl" content="https://blog.solartoolspro.com/">
     <meta property="og:title" id="ogTitle" content="مدونة منصة أدوات الطاقة الشمسية والتقنية - SolarToolsPro">
@@ -39,6 +41,7 @@
             line-height: 1.7;
         }
         
+        /* الهيدر بخلفية الصورة النقية ومحجم بشكل مدمج */
         header {
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.25), rgba(30, 41, 59, 0.35)), url('images/header_balanced_sky_600w.webp') center/cover no-repeat;
             border-bottom: 1px solid #334155;
@@ -50,6 +53,7 @@
             margin-bottom: 16px;
         }
         
+        /* بانر الإطار الزجاجي الشفاف الأنيق للعنوان الرئيسي والفرعي */
         .hero-banner {
             background: rgba(15, 23, 42, 0.65);
             border: 1px solid rgba(56, 189, 248, 0.3);
@@ -64,6 +68,7 @@
         h1 { font-size: 19px; color: #38bdf8; margin-bottom: 6px; font-weight: 800; text-shadow: 0 2px 6px rgba(0,0,0,0.8); }
         p.subtitle { font-size: 13px; color: #34d399; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
+        /* شريط البحث والتصنيفات */
         .search-box {
             width: 100%;
             padding: 12px 16px;
@@ -104,6 +109,7 @@
             border-color: #0284c7;
         }
 
+        /* صندوق الوصف التوضيحي الديناميكي */
         .header-description {
             background-color: #1e293b;
             border: 1px solid #334155;
@@ -118,6 +124,7 @@
             margin-bottom: 20px;
         }
 
+        /* المنشور الترحيبي المثبت أعلى الواجهة */
         .pinned-welcome-card {
             background: linear-gradient(135deg, #1e293b, #0f172a);
             border: 1px solid rgba(56, 189, 248, 0.4);
@@ -142,6 +149,7 @@
         .pinned-welcome-card h2 { font-size: 18px; color: #38bdf8; margin-bottom: 12px; font-weight: 800; line-height: 1.4; }
         .pinned-welcome-card p { font-size: 14px; color: #f8fafc; line-height: 1.8; margin-bottom: 12px; }
 
+        /* كروت المقالات */
         .article-card {
             background-color: #1e293b;
             border: 1px solid #334155;
@@ -172,6 +180,7 @@
         }
         .article-card p { font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 15px; }
         
+        /* تنسيق محتوى المقال */
         .article-body {
             font-size: 15px;
             line-height: 1.8;
@@ -187,7 +196,12 @@
         .article-body div:not(.share-section) {
             color: #ffffff !important;
         }
-        .article-body h1, .article-body h2, .article-body h3, .article-body h4, .article-body h5, .article-body h6 {
+        .article-body h1, 
+        .article-body h2, 
+        .article-body h3, 
+        .article-body h4, 
+        .article-body h5, 
+        .article-body h6 {
             color: #38bdf8 !important;
             margin-top: 18px;
             margin-bottom: 10px;
@@ -226,6 +240,7 @@
         }
         .toggle-btn:hover { background-color: #0369a1; }
 
+        /* أزرار المشاركة والمتابعة المدمجة في صف أفقي واحد */
         .share-section {
             border-top: 1px solid #334155;
             padding-top: 12px;
@@ -262,6 +277,7 @@
         .btn-copy { background-color: #334155; color: #38bdf8; border: 1px solid #475569; }
         .btn-copy:hover { background-color: #0284c7; color: #fff; }
 
+        /* 💬 فقاعة التنبيه الجذابة باللون الأزرق الفاتح من زر النسخ */
         .copy-tooltip {
             position: absolute;
             bottom: 125%;
@@ -297,6 +313,7 @@
             transform: translateX(-50%) translateY(0);
         }
 
+        /* 🌐 كارت الشفافية الشفاف أسفل المقالات للانتقال للمنصة - بلون النص الأخضر الجذاب */
         .platform-glass-card {
             display: block;
             background: rgba(30, 41, 59, 0.6);
@@ -322,6 +339,7 @@
             box-shadow: 0 6px 20px rgba(52, 211, 153, 0.3);
         }
 
+        /* الفوتر */
         footer {
             background-color: #0f172a;
             border-top: 1px solid #334155;
@@ -380,8 +398,10 @@
         </div>
     </header>
 
+    <!-- شريط البحث السريع -->
     <input type="text" id="searchInput" class="search-box" placeholder="🔍 ابحث في المقالات والأخبار التقنية..." oninput="filterArticles()">
 
+    <!-- شريط التصنيفات والفلترة المحدث بالترتيب المطلوب (أدوات ذكية بعد الطاقة الشمسية والبديلة) -->
     <div class="categories-bar">
         <button class="cat-btn active" onclick="filterByCategory('all', this)">الكل</button>
         <button class="cat-btn" onclick="filterByCategory('طاقة', this)">☀️ الطاقة الشمسية والبديلة</button>
@@ -391,8 +411,10 @@
         <button class="cat-btn" onclick="filterByCategory('بطاريات', this)">🔋 البطاريات</button>
     </div>
 
+    <!-- صندوق الوصف التوضيحي الديناميكي الآمن ضد الكاش -->
     <div class="header-description" id="descBox"></div>
 
+    <!-- المنشور الترحيبي المثبت أعلى الواجهة -->
     <div class="pinned-welcome-card" id="pinnedWelcomePost">
         <span class="pinned-badge">📌 منشور ترحيبي مثبت</span>
         <h2>أهلاً بكم أصدقائي ومتابعي المدونة الأعزاء 👋</h2>
@@ -407,10 +429,12 @@
         <div class="loading">جاري تحميل المقالات... ⏳</div>
     </main>
 
+    <!-- 🌐 الإطار الزجاجي الشفاف بالنص الأخضر المشرق للانتقال للمنصة -->
     <a href="https://solartoolspro.com" target="_blank" class="platform-glass-card">
         منصة أدوات الطاقة الشمسية الإحترافية
     </a>
 
+    <!-- الفوتر -->
     <footer>
         <div class="footer-nav">
             <a href="privacy.html">سياسة الخصوصية</a> |
@@ -428,43 +452,38 @@
     <script>
         let allArticles = [];
 
+        // حقن النص الوصفي برمجياً لتجاوز مشكلة الكاش في السيرفر نهائياً
         document.getElementById('descBox').innerText = "دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.";
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(registrations => {
-                for (let registration of registrations) { registration.unregister(); }
-            }).catch(() => {});
+            navigator.serviceWorker.register('sw.js').catch(() => {});
         }
 
         async function fetchArticles() {
             try {
-                const res = await fetch('articles.json?t=' + Date.now() + '&cb=' + Math.random(), { 
-                    cache: 'no-store',
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
-                    }
-                });
+                const res = await fetch('articles.json?t=' + Date.now());
+                if (!res.ok) throw new Error('تعذر تحميل المقالات');
+                allArticles = await res.json();
                 
-                if (!res.ok) throw new Error('رمز الاستجابة: ' + res.status);
-                
-                const textData = await res.text();
-                allArticles = JSON.parse(textData);
-                
+                // 🌟 التقاط المعرف سواء كان عبر ?id= أو عبر الـ Hash #
                 const urlParams = new URLSearchParams(window.location.search);
-                let targetId = urlParams.get('id') || (window.location.hash ? window.location.hash.replace('#', '') : null);
+                let targetId = urlParams.get('id');
+                
+                if (!targetId && window.location.hash) {
+                    targetId = window.location.hash.replace('#', '');
+                }
 
-                if (targetId && Array.isArray(allArticles)) {
+                if (targetId) {
                     const currentArt = allArticles.find(a => a.id == targetId);
                     if (currentArt) {
                         const currentUrl = window.location.href;
                         document.getElementById('metaTitle').innerText = currentArt.title + ' - SolarToolsPro';
-                        document.getElementById('metaDesc').setAttribute('content', currentArt.description || '');
+                        document.getElementById('metaDesc').setAttribute('content', currentArt.description);
+                        
                         document.getElementById('canonicalUrl').setAttribute('href', currentUrl);
                         document.getElementById('ogUrl').setAttribute('content', currentUrl);
                         document.getElementById('ogTitle').setAttribute('content', currentArt.title);
-                        document.getElementById('ogDesc').setAttribute('content', currentArt.description || '');
+                        document.getElementById('ogDesc').setAttribute('content', currentArt.description);
 
                         if (currentArt.body) {
                             const imgMatch = currentArt.body.match(/<img[^>]+src=["']([^"']+)["']/i);
@@ -487,19 +506,15 @@
                             bodyDiv.style.display = 'block';
                             if (btn) btn.innerText = 'إخفاء المقال ✖';
                         }
-                        if (card) { card.scrollIntoView({ behavior: 'smooth' }); }
+                        if (card) {
+                            card.scrollIntoView({ behavior: 'smooth' });
+                        }
                     }, 300);
                 }
             } catch (err) {
-                document.getElementById('articlesContainer').innerHTML = `<div class="error-msg">❌ تعذر تحميل المقالات: ${err.message}</div>`;
+                document.getElementById('articlesContainer').innerHTML = `<div class="error-msg">❌ لا توجد مقالات منشورة حالياً أو تعذر الاتصال بالسيرفر.</div>`;
             }
         }
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                fetchArticles();
-            }
-        });
 
         function calculateReadingTime(text) {
             const words = text.replace(/<[^>]*>/g, '').split(/\s+/).length;
@@ -519,6 +534,7 @@
                 const readTime = calculateReadingTime(art.body || '');
                 const articleDate = art.date || 'وقت غير محدد';
                 
+                // 🌟 معالجة وتحديث التصنيفات القديمة تلقائياً لتظهر أيقونة المصباح المضيء 💡
                 let categoryTag = art.category ? art.category : 'عام';
                 if (categoryTag === '☀️ الطاقة الشمسية' || categoryTag === 'الطاقة الشمسية') {
                     categoryTag = '☀️ الطاقة الشمسية والبديلة';
@@ -530,7 +546,7 @@
                 html += `
                     <div class="article-card" id="card-${art.id}">
                         <div class="article-meta">
-                            <span>⏱️ ${readTime} دقائق</span>
+                            <span>⏱️ ${readTime} دقائق قراءة</span>
                             <span>📅 ${articleDate}</span>
                             <span class="article-category-tag">${categoryTag}</span>
                         </div>
@@ -540,6 +556,7 @@
                         <div class="article-body" id="body-${art.id}">
                             ${art.body}
                             
+                            <!-- 🌟 التوقيع الدائم التلقائي أسفل كل مقال -->
                             <div style="margin-top: 22px; padding-top: 15px; border-top: 1px dashed #334155; text-align: center; line-height: 1.6;">
                                 <div style="color: #facc15; font-size: 14px; font-weight: bold; margin-bottom: 6px;">
                                     💛 فضلاً .. شارك المنشور ليستفيد غيرك.
@@ -605,7 +622,10 @@
             );
             
             const welcomePost = document.getElementById('pinnedWelcomePost');
-            if (welcomePost) { welcomePost.style.display = query.length > 0 ? 'none' : 'block'; }
+            if (welcomePost) {
+                welcomePost.style.display = query.length > 0 ? 'none' : 'block';
+            }
+            
             displayArticles(filtered);
         }
 
@@ -622,7 +642,9 @@
                 if (welcomePost) welcomePost.style.display = 'none';
                 const filtered = allArticles.filter(art => {
                     let cat = (art.category || '').toLowerCase();
-                    if (cat === '☀️ الطاقة الشمسية' || cat === 'الطاقة الشمسية') { cat = '☀️ الطاقة الشمسية والبديلة'; }
+                    if (cat === '☀️ الطاقة الشمسية' || cat === 'الطاقة الشمسية') {
+                        cat = '☀️ الطاقة الشمسية والبديلة';
+                    }
                     const title = art.title.toLowerCase();
                     const desc = art.description.toLowerCase();
                     return cat.includes(category) || title.includes(category) || desc.includes(category);
@@ -659,16 +681,21 @@
             const art = allArticles.find(a => a.id == id);
             if (!art) return;
             const url = `https://blog.solartoolspro.com/?id=${art.id}`;
+            
             navigator.clipboard.writeText(url).then(() => {
                 const tooltip = document.getElementById(`tooltip-${id}`);
                 if (tooltip) {
                     tooltip.classList.add('show');
-                    setTimeout(() => { tooltip.classList.remove('show'); }, 2000);
+                    setTimeout(() => {
+                        tooltip.classList.remove('show');
+                    }, 2000);
                 }
             });
         }
 
-        function openApp(baseUrl) { window.open(baseUrl, '_blank'); }
+        function openApp(baseUrl) {
+            window.open(baseUrl, '_blank');
+        }
 
         fetchArticles();
     </script>
