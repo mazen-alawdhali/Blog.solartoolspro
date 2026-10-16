@@ -6,217 +6,452 @@
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="مدونة الطاقة والتقنية">
+    <meta name="apple-mobile-web-app-title" content="مدونة التقنية والطاقة">
     
-    <!-- ربط ملف الـ Manifest لتثبيت التطبيق PWA -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-
-    <title>مدونة منصة أدوات الطاقة الشمسية والتقنية</title>
+    <!-- وسوم الأيقونات الشاملة المعتمدة رسمياً من favicon.zip -->
+    <link rel="icon" type="image/png" href="favicon-96x96.png?v=3" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3" />
+    <link rel="shortcut icon" href="favicon.ico?v=3" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=3" />
+    <link rel="manifest" href="site.webmanifest" />
+    
+    <title id="metaTitle">مدونة منصة أدوات الطاقة الشمسية والتقنية - SolarToolsPro</title>
+    <meta name="description" id="metaDesc" content="دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب[span_0](start_span)[span_0](end_span).">
+    
+    <!-- 🌟 الـ Canonical المحدث ديناميكياً لتجنب توجيه فيسبوك للرئيسية -->
+    <link id="canonicalUrl" rel="canonical" href="https://blog.solartoolspro.com/">
+    
+    <!-- وسوم الـ OpenGraph المحدثة ديناميكياً لفيسبوك -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" id="ogUrl" content="https://blog.solartoolspro.com/">
+    <meta property="og:title" id="ogTitle" content="مدونة منصة أدوات الطاقة الشمسية والتقنية - SolarToolsPro">
+    <meta property="og:description" id="ogDesc" content="دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب[span_1](start_span)[span_1](end_span).">
+    <meta property="og:image" id="ogImage" content="https://blog.solartoolspro.com/images/header_balanced_sky_600w.webp">
+    
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #0f172a;
-            color: #f8fafc;
+            color: #ffffff;
             padding: 16px;
-            max-width: 650px;
+            max-width: 700px;
             margin: 0 auto;
             padding-bottom: 50px;
+            line-height: 1.7;
         }
+        
+        /* الهيدر بخلفية الصورة النقية ومحجم بشكل مدمج */
         header {
-            text-align: center;
-            padding: 25px 15px;
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            border: 1px solid #334155;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.25), rgba(30, 41, 59, 0.35)), url('images/header_balanced_sky_600w.webp') center/cover no-repeat;
+            border-bottom: 1px solid #334155;
             border-radius: 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        }
-        header h1 { font-size: 20px; color: #38bdf8; margin-bottom: 8px; line-height: 1.4; }
-        header p { font-size: 13px; color: #94a3b8; }
-
-        /* شريط البحث */
-        .search-box {
+            padding: 16px 12px;
+            text-align: center;
             position: relative;
-            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            margin-bottom: 16px;
         }
-        .search-box input {
+        
+        /* بانر الإطار الزجاجي الشفاف الأنيق للعنوان الرئيسي والفرعي */
+        .hero-banner {
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            padding: 16px 14px;
+            text-align: center;
+            margin: 0 auto;
+            max-width: 600px;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        h1 { font-size: 19px; color: #38bdf8; margin-bottom: 6px; font-weight: 800; text-shadow: 0 2px 6px rgba(0,0,0,0.8); }
+        p.subtitle { font-size: 13px; color: #34d399; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+
+        /* شريط البحث والتصنيفات */
+        .search-box {
             width: 100%;
             padding: 12px 16px;
-            padding-right: 40px;
             background-color: #1e293b;
             border: 1px solid #334155;
-            border-radius: 12px;
+            border-radius: 10px;
             color: #fff;
             font-size: 14px;
+            margin-bottom: 12px;
             outline: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-        .search-box input:focus { border-color: #38bdf8; }
-        .search-icon {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #64748b;
-            font-size: 16px;
-        }
+        .search-box:focus { border-color: #38bdf8; }
 
-        /* أزرار التصنيفات والفلترة */
         .categories-bar {
             display: flex;
             gap: 8px;
             overflow-x: auto;
-            padding-bottom: 8px;
-            margin-bottom: 20px;
-            scrollbar-width: none; /* إخفاء شريط التمرير */
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+            scrollbar-width: none;
         }
         .categories-bar::-webkit-scrollbar { display: none; }
         .cat-btn {
             background-color: #1e293b;
-            color: #cbd5e1;
+            color: #94a3b8;
             border: 1px solid #334155;
-            padding: 8px 14px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 13px;
             font-weight: bold;
-            white-space: nowrap;
             cursor: pointer;
+            white-space: nowrap;
             transition: 0.2s;
         }
-        .cat-btn:hover, .cat-btn.active {
+        .cat-btn.active, .cat-btn:hover {
             background-color: #0284c7;
             color: #fff;
-            border-color: #38bdf8;
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+            border-color: #0284c7;
         }
 
-        /* كارت المقال */
+        /* صندوق الوصف التوضيحي بالنص المعتمد الجديد */
+        .header-description {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 14px 18px;
+            text-align: center;
+            font-size: 13.5px;
+            color: #38bdf8;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* المنشور الترحيبي المثبت أعلى الواجهة */
+        .pinned-welcome-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 22px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+            position: relative;
+        }
+        .pinned-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background-color: #0284c7;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        .pinned-welcome-card h2 { font-size: 18px; color: #38bdf8; margin-bottom: 12px; font-weight: 800; line-height: 1.4; }
+        .pinned-welcome-card p { font-size: 14px; color: #f8fafc; line-height: 1.8; margin-bottom: 12px; }
+
+        /* كروت المقالات */
         .article-card {
             background-color: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 16px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            scroll-margin-top: 20px;
         }
-        .article-card:hover { border-color: #475569; }
+        .article-card h2 { font-size: 18px; color: #f8fafc; margin-bottom: 8px; line-height: 1.4; }
         .article-meta {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 8px;
+            color: #38bdf8;
+            margin-bottom: 10px;
         }
-        .article-category {
-            background: #0f172a;
+        .article-category-tag {
+            background-color: #334155;
             color: #34d399;
-            padding: 3px 10px;
+            padding: 2px 8px;
             border-radius: 6px;
-            border: 1px solid #334155;
+            font-size: 11px;
             font-weight: bold;
         }
-        .article-title {
-            font-size: 17px;
-            font-weight: bold;
-            color: #f8fafc;
-            margin-bottom: 8px;
-            line-height: 1.5;
+        .article-card p { font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 15px; }
+        
+        /* تنسيق محتوى المقال */
+        .article-body {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #ffffff;
+            border-top: 1px solid #334155;
+            padding-top: 15px;
+            margin-top: 15px;
+            display: none;
         }
-        .article-desc {
-            font-size: 14px;
-            color: #94a3b8;
-            margin-bottom: 15px;
-            line-height: 1.6;
+        .article-body p, 
+        .article-body li, 
+        .article-body span, 
+        .article-body div:not(.share-section) {
+            color: #ffffff !important;
         }
-        .read-btn {
+        .article-body h1, 
+        .article-body h2, 
+        .article-body h3, 
+        .article-body h4, 
+        .article-body h5, 
+        .article-body h6 {
+            color: #38bdf8 !important;
+            margin-top: 18px;
+            margin-bottom: 10px;
+            font-weight: 800;
+            line-height: 1.4;
+        }
+        
+        .article-body img {
+            max-width: 100% !important;
+            height: auto !important;
+            border-radius: 10px;
+            margin: 12px 0;
             display: block;
-            width: 100%;
-            text-align: center;
+            border: 1px solid #334155;
+        }
+        .article-body blockquote {
+            border-right: 3px solid #38bdf8;
+            padding-right: 12px;
+            color: #cbd5e1 !important;
+            margin: 12px 0;
+            font-style: italic;
+        }
+
+        .toggle-btn {
             background-color: #0284c7;
             color: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: bold;
-            transition: 0.2s;
-        }
-        .read-btn:hover { background-color: #0369a1; }
-
-        /* عرض المقال الفردي (عند الضغط وقراءة المقال كاملاً) */
-        #singleArticleView {
-            display: none;
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .back-btn {
-            background-color: #334155;
-            color: #fff;
             border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 10px 16px;
+            border-radius: 10px;
             font-size: 13px;
             font-weight: bold;
             cursor: pointer;
-            margin-bottom: 15px;
+            width: 100%;
+            transition: 0.2s;
+            margin-top: 15px;
         }
-        .back-btn:hover { background-color: #475569; }
-        .single-title { font-size: 22px; color: #f8fafc; margin-bottom: 12px; line-height: 1.4; }
-        .single-body { font-size: 15px; line-height: 1.8; color: #e2e8f0; margin-top: 15px; border-top: 1px solid #334155; padding-top: 15px; }
-        .single-body img { max-width: 100% !important; height: auto !important; border-radius: 10px; margin: 12px 0; border: 1px solid #334155; display: block; }
-        .single-body a { color: #38bdf8; text-decoration: underline; }
-        .single-body blockquote { border-right: 3px solid #38bdf8; padding-right: 10px; color: #cbd5e1; margin: 12px 0; font-style: italic; }
+        .toggle-btn:hover { background-color: #0369a1; }
+
+        /* أزرار المشاركة والمتابعة المدمجة في صف أفقي واحد */
+        .share-section {
+            border-top: 1px solid #334155;
+            padding-top: 12px;
+            margin-top: 16px;
+            display: flex;
+            gap: 5px;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+        .share-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            padding: 6px 4px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            flex: 1;
+            white-space: nowrap;
+        }
+        .share-btn:active { transform: scale(0.95); }
+        .share-btn svg { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
+        .btn-whatsapp { background-color: #25d366; }
+        .btn-telegram { background-color: #229ed9; }
+        .btn-facebook { background-color: #1877f2; }
+        .btn-twitter { background-color: #000000; border: 1px solid #334155; }
+        .btn-copy { background-color: #334155; color: #38bdf8; border: 1px solid #475569; }
+        .btn-copy:hover { background-color: #0284c7; color: #fff; }
+
+        /* 💬 فقاعة التنبيه الجذابة باللون الأزرق الفاتح من زر النسخ */
+        .copy-tooltip {
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%) translateY(5px);
+            background: #38bdf8;
+            color: #0f172a;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            z-index: 100;
+        }
+        .copy-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #38bdf8 transparent transparent transparent;
+        }
+        .copy-tooltip.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 🌐 كارت الشفافية الشفاف أسفل المقالات للانتقال للمنصة - بلون النص الأخضر الجذاب */
+        .platform-glass-card {
+            display: block;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            border-radius: 14px;
+            padding: 16px 20px;
+            text-align: center;
+            color: #34d399;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+        .platform-glass-card:hover {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: #34d399;
+            color: #ffffff;
+            box-shadow: 0 6px 20px rgba(52, 211, 153, 0.3);
+        }
+
+        /* الفوتر */
+        footer {
+            background-color: #0f172a;
+            border-top: 1px solid #334155;
+            text-align: center;
+            padding: 35px 20px;
+            font-size: 14px;
+            color: #ffffff;
+            margin-top: 30px;
+        }
+
+        .footer-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 18px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .footer-nav a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+
+        .footer-nav a:hover { color: #34d399; }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 14px;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .footer-links a:hover { color: #10b981; }
 
         .loading, .error-msg { text-align: center; padding: 30px; color: #94a3b8; font-size: 14px; }
     </style>
 </head>
 <body>
 
-    <!-- الهيدر الرئيسي -->
-    <header id="mainHeader">
-        <h1>مدونة منصة أدوات الطاقة الشمسية والتقنية</h1>
-        <p>دليلك لبناء حياة ذكية ومستدامة بأحدث الأجهزة والتقنيات.</p>
+    <header>
+        <div class="hero-banner">
+            <h1>مدونة منصة أدوات الطاقة الشمسية والتقنية</h1>
+            <p class="subtitle">دليلكم لبناء حياة ذكية ومستدامة بأحدث الأجهزة.</p>
+        </div>
     </header>
 
-    <!-- شريط البحث -->
-    <div class="search-box" id="searchBoxContainer">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="ابحث في المقالات والأخبار التقنية..." oninput="filterArticles()">
-    </div>
+    <!-- شريط البحث السريع -->
+    <input type="text" id="searchInput" class="search-box" placeholder="🔍 ابحث في المقالات والأخبار التقنية..." oninput="filterArticles()">
 
-    <!-- شريط أزرار التصنيفات -->
-    <div class="categories-bar" id="categoriesBar">
-        <button class="cat-btn active" onclick="filterByCategory('الكل', this)">الكل</button>
-        <button class="cat-btn" onclick="filterByCategory('الطاقة الشمسية', this)">☀️ الطاقة الشمسية والبديلة</button>
+    <!-- شريط التصنيفات والفلترة المحدث بالترتيب المطلوب (أدوات ذكية بعد الطاقة الشمسية والبديلة) -->
+    <div class="categories-bar">
+        <button class="cat-btn active" onclick="filterByCategory('all', this)">الكل</button>
+        <button class="cat-btn" onclick="filterByCategory('طاقة', this)">☀️ الطاقة الشمسية والبديلة</button>
         <button class="cat-btn" onclick="filterByCategory('أدوات', this)">💡 أدوات ذكية</button>
-        <button class="cat-btn" onclick="filterByCategory('الهواتف', this)">📱 الهواتف الذكية</button>
-        <button class="cat-btn" onclick="filterByCategory('الحواسيب', this)">💻 الحواسيب والتقنية</button>
-        <button class="cat-btn" onclick="filterByCategory('البطاريات', this)">🔋 البطاريات</button>
+        <button class="cat-btn" onclick="filterByCategory('هواتف', this)">📱 الهواتف الذكية</button>
+        <button class="cat-btn" onclick="filterByCategory('حواسيب', this)">💻 الحواسيب والتقنية</button>
+        <button class="cat-btn" onclick="filterByCategory('بطاريات', this)">🔋 البطاريات</button>
     </div>
 
-    <!-- قائمة المقالات -->
-    <div id="articlesContainer">
+    <!-- صندوق الوصف التوضيحي بالنص المعتمد الجديد -->
+    <div class="header-description">
+        دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب[span_2](start_span)[span_2](end_span).
+    </div>
+
+    <!-- المنشور الترحيبي المثبت أعلى الواجهة -->
+    <div class="pinned-welcome-card" id="pinnedWelcomePost">
+        <span class="pinned-badge">📌 منشور ترحيبي مثبت</span>
+        <h2>أهلاً بكم أصدقائي ومتابعي المدونة الأعزاء 👋</h2>
+        <p>منذ أن أطلقنا مدونة منصة أدوات الطاقة الشمسية، كان هدفنا دائماً أن نكون مرجعكم الأول لكل ما يخص الطاقة النظيفة وبطاريات الليثيوم وحساب الأحمال. لكن، لو تأملنا قليلاً، سنجد أن الطاقة الشمسية ليست مجرد ألواح وكابلات فوق الأسطح، بل هي خطوة نحو <strong>"نمط حياة ذكي ومستدام"</strong>.</p>
+        <p>ولأن هذه الحياة الذكية لا تكتمل بدون الأدوات التي نستخدمها في يومنا؛ من هواتف محمولة نتابع عبرها إنتاجية منظوماتنا، وحواسيب نعتمد عليها في أعمالنا وحياتنا، فقد قررنا توسيع آفاق المدونة!</p>
+        <p style="color:#38bdf8; font-weight:bold;">يسعدني أن أعلن لكم عن إطلاق أقسامنا الجديدة: الهواتف الذكية والحواسيب والتقنية.</p>
+        <p>من الآن فصاعداً، لن تجدوا هنا حلول الطاقة فحسب، بل سنشارككم أيضاً مراجعات شخصية وصريحة لأحدث الهواتف، نصائح لتطوير بيئة عملكم على الكمبيوتر، وأحدث تقنيات العصر الذكية.</p>
+        <p style="color:#34d399; font-weight:bold; margin-top:10px;">شعارنا الجديد يلخص رؤيتنا القادمة: "دليلكم لبناء حياة ذكية ومستدامة بأحدث الأجهزة". شكراً لثقتكم المستمرة، ونتمنى أن تنال الأقسام الجديدة إعجابكم!</p>
+    </div>
+
+    <main id="articlesContainer">
         <div class="loading">جاري تحميل المقالات... ⏳</div>
-    </div>
+    </main>
 
-    <!-- عرض المقال المنفرد -->
-    <div id="singleArticleView">
-        <button class="button back-btn" onclick="goBackToList()">⬅️ العودة إلى قائمة المقالات</button>
-        <div id="singleArticleContent"></div>
-    </div>
+    <!-- 🌐 الإطار الزجاجي الشفاف بالنص الأخضر المشرق للانتقال للمنصة -->
+    <a href="https://solartoolspro.com" target="_blank" class="platform-glass-card">
+        منصة أدوات الطاقة الشمسية الإحترافية
+    </a>
+
+    <!-- الفوتر -->
+    <footer>
+        <div class="footer-nav">
+            <a href="privacy.html">سياسة الخصوصية</a> |
+            <a href="about.html">نبذة عنا</a> |
+            <a href="contact.html">اتصل بنا</a>
+        </div>
+        <p>جميع الحقوق محفوظة لمدونة منصة أدوات الطاقة الشمسية الاحترافية &copy; 2026</p>
+        <div class="footer-links">
+            <a onclick="openApp('https://calc.solartoolspro.com')">الحاسبة الذكية</a> |
+            <a onclick="openApp('https://panels.solartoolspro.com')">حاسبة الألواح</a> |
+            <a onclick="openApp('https://battery.solartoolspro.com')">حاسبة البطارية</a>
+        </div>
+    </footer>
 
     <script>
         let allArticles = [];
-        let currentCategory = 'الكل';
 
-        // تسجيل الـ Service Worker لتفعيل وضع الـ PWA دون انقطاع
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
@@ -224,146 +459,239 @@
         async function fetchArticles() {
             try {
                 const res = await fetch('articles.json?t=' + Date.now());
-                if (!res.ok) throw new Error('تعذر جلب المقالات');
+                if (!res.ok) throw new Error('تعذر تحميل المقالات');
                 allArticles = await res.json();
                 
-                // التحقق هل الرابط يحتوي على معرّف مقال ?id= لعرضه مباشرة
+                // 🌟 التقاط المعرف سواء كان عبر ?id= أو عبر الـ Hash #
                 const urlParams = new URLSearchParams(window.location.search);
-                const articleId = urlParams.get('id');
+                let targetId = urlParams.get('id');
+                
+                if (!targetId && window.location.hash) {
+                    targetId = window.location.hash.replace('#', '');
+                }
 
-                if (articleId) {
-                    showSingleArticle(articleId);
-                } else {
-                    renderArticles(allArticles);
+                if (targetId) {
+                    const currentArt = allArticles.find(a => a.id == targetId);
+                    if (currentArt) {
+                        const currentUrl = window.location.href;
+                        document.getElementById('metaTitle').innerText = currentArt.title + ' - SolarToolsPro';
+                        document.getElementById('metaDesc').setAttribute('content', currentArt.description);
+                        
+                        document.getElementById('canonicalUrl').setAttribute('href', currentUrl);
+                        document.getElementById('ogUrl').setAttribute('content', currentUrl);
+                        document.getElementById('ogTitle').setAttribute('content', currentArt.title);
+                        document.getElementById('ogDesc').setAttribute('content', currentArt.description);
+
+                        if (currentArt.body) {
+                            const imgMatch = currentArt.body.match(/<img[^>]+src=["']([^"']+)["']/i);
+                            if (imgMatch && imgMatch[1]) {
+                                document.getElementById('ogImage').setAttribute('content', imgMatch[1]);
+                            }
+                        }
+                    }
+                }
+
+                displayArticles(allArticles);
+
+                if (targetId) {
+                    setTimeout(() => {
+                        const bodyDiv = document.getElementById(`body-${targetId}`);
+                        const btn = document.getElementById(`btn-${targetId}`);
+                        const card = document.getElementById(`card-${targetId}`);
+                        
+                        if (bodyDiv && bodyDiv.style.display !== 'block') {
+                            bodyDiv.style.display = 'block';
+                            if (btn) btn.innerText = 'إخفاء المقال ✖';
+                        }
+                        if (card) {
+                            card.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }, 300);
                 }
             } catch (err) {
-                document.getElementById('articlesContainer').innerHTML = `
-                    <div class="error-msg">⚠️ تعذر تحميل المقالات حالياً. يرجى التحقق من اتصالك بالإنترنت.</div>
-                `;
+                document.getElementById('articlesContainer').innerHTML = `<div class="error-msg">❌ لا توجد مقالات منشورة حالياً أو تعذر الاتصال بالسيرفر.</div>`;
             }
         }
 
-        function renderArticles(articles) {
+        function calculateReadingTime(text) {
+            const words = text.replace(/<[^>]*>/g, '').split(/\s+/).length;
+            const minutes = Math.ceil(words / 150);
+            return minutes < 1 ? 1 : minutes;
+        }
+
+        function displayArticles(articles) {
             const container = document.getElementById('articlesContainer');
-            if (!articles || articles.length === 0) {
-                container.innerHTML = '<div class="error-msg">لا توجد مقالات مطابقة للبحث أو التصنيف.</div>';
+            if (articles.length === 0) {
+                container.innerHTML = `<div class="error-msg">📭 لا توجد مقالات مطابقة لبحثك.</div>`;
                 return;
             }
 
             let html = '';
             articles.forEach(art => {
-                // معالجة مرنة للتصنيف لضمان توافق الأيقونات القديمة والجديدة
-                let catDisplay = art.category || '☀️ الطاقة الشمسية والبديلة';
-                if (catDisplay.includes('أدوات')) {
-                    catDisplay = '💡 أدوات ذكية';
+                const readTime = calculateReadingTime(art.body || '');
+                
+                // 🌟 معالجة وتحديث التصنيفات القديمة تلقائياً لتظهر أيقونة المصباح المضيء 💡
+                let categoryTag = art.category ? art.category : 'عام';
+                if (categoryTag === '☀️ الطاقة الشمسية' || categoryTag === 'الطاقة الشمسية') {
+                    categoryTag = '☀️ الطاقة الشمسية والبديلة';
+                }
+                if (categoryTag.includes('أدوات') || categoryTag.includes('⚙️')) {
+                    categoryTag = '💡 أدوات ذكية';
                 }
 
                 html += `
-                    <div class="article-card">
+                    <div class="article-card" id="card-${art.id}">
                         <div class="article-meta">
-                            <span class="article-category">${catDisplay}</span>
-                            <span>⏱️ مقال تقني</span>
+                            <span>⏱️ ${readTime} دقائق قراءة</span>
+                            <span class="article-category-tag">${categoryTag}</span>
                         </div>
-                        <h2 class="article-title">${art.title}</h2>
-                        <p class="article-desc">${art.description}</p>
-                        <a href="?id=${art.id}" class="read-btn" onclick="openArticle(event, ${art.id})">قراءة المقال كاملاً 📖</a>
+                        <h2>${art.title}</h2>
+                        <p>${art.description}</p>
+                        
+                        <div class="article-body" id="body-${art.id}">
+                            ${art.body}
+                            
+                            <!-- 🌟 التوقيع الدائم التلقائي أسفل كل مقال -->
+                            <div style="margin-top: 22px; padding-top: 15px; border-top: 1px dashed #334155; text-align: center; line-height: 1.6;">
+                                <div style="color: #facc15; font-size: 14px; font-weight: bold; margin-bottom: 6px;">
+                                    💛 فضلاً .. شارك المنشور ليستفيد غيرك.
+                                </div>
+                                <div style="color: #94a3b8; font-size: 13px;">
+                                    للمزيد من المقالات التقنية حول عالم الطاقة والتقنية تابعنا دائماً على منصة أدوات الطاقة الشمسية الاحترافية.
+                                </div>
+                            </div>
+                            
+                            <div class="share-section">
+                                <button class="share-btn btn-whatsapp" onclick="shareToWhatsApp(${art.id})" title="واتساب">
+                                    <svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.764.459 3.487 1.332 5.006l-1.417 5.176 5.297-1.388c1.464.798 3.112 1.218 4.773 1.219h.005c5.507 0 9.99-4.478 9.99-9.985 0-2.667-1.038-5.174-2.925-7.062a9.92 9.92 0 0 0-7.059-2.952zm5.72 13.911c-.237.667-1.378 1.275-1.928 1.331-.502.053-1.156.076-3.342-.828-2.793-1.154-4.595-4.004-4.735-4.189-.138-.186-1.134-1.509-1.134-2.879 0-1.37.718-2.044.973-2.321.255-.278.556-.347.741-.347.185 0 .37.002.532.01.173.008.405-.066.635.486.237.568.81 1.972.88 2.112.07.139.116.301.023.486-.093.185-.139.301-.278.463-.139.162-.292.361-.417.486-.139.139-.283.295-.122.572.162.277.718 1.184 1.542 1.918 1.058.942 1.95 1.233 2.228 1.372.278.139.44.116.602-.07.162-.185.695-.81.88-1.088.185-.278.37-.231.625-.139.255.093 1.62.764 1.898.903.278.139.463.208.532.324.07.116.07.671-.167 1.338z"/></svg>
+                                    واتساب
+                                </button>
+                                <button class="share-btn btn-telegram" onclick="shareToTelegram(${art.id})" title="تلجرام">
+                                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+                                    تلجرام
+                                </button>
+                                <button class="share-btn btn-facebook" onclick="window.open('https://www.facebook.com/profile.php?id=61595054055544', '_blank')" title="فيسبوك">
+                                    <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                    فيسبوك
+                                </button>
+                                <button class="share-btn btn-twitter" onclick="shareToTwitter(${art.id})" title="تويتر / X">
+                                    <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                                    تويتر / X
+                                </button>
+                                <button class="share-btn btn-copy" id="copyBtn-${art.id}" onclick="copyArticleLink(${art.id}, this)" title="نسخ الرابط">
+                                    <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                                    نسخ
+                                    <span class="copy-tooltip" id="tooltip-${art.id}">تم النسخ ✓</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button class="toggle-btn" id="btn-${art.id}" onclick="toggleArticle(${art.id})">قراءة المقال كاملاً 📖</button>
                     </div>
                 `;
             });
             container.innerHTML = html;
         }
 
-        function openArticle(event, id) {
-            event.preventDefault();
-            window.history.pushState({ id: id }, '', `?id=${id}`);
-            showSingleArticle(id);
-        }
+        function toggleArticle(id) {
+            const bodyDiv = document.getElementById(`body-${id}`);
+            const btn = document.getElementById(`btn-${id}`);
 
-        function showSingleArticle(id) {
-            const art = allArticles.find(a => a.id == id);
-            if (!art) {
-                document.getElementById('articlesContainer').innerHTML = '<div class="error-msg">المقال المطلوب غير موجود أو تم حذفه.</div>';
-                return;
-            }
-
-            document.getElementById('mainHeader').style.display = 'none';
-            document.getElementById('searchBoxContainer').style.display = 'none';
-            document.getElementById('categoriesBar').style.display = 'none';
-            document.getElementById('articlesContainer').style.display = 'none';
-
-            let catDisplay = art.category || '☀️ الطاقة الشمسية والبديلة';
-            if (catDisplay.includes('أدوات')) {
-                catDisplay = '💡 أدوات ذكية';
-            }
-
-            const singleView = document.getElementById('singleArticleView');
-            document.getElementById('singleArticleContent').innerHTML = `
-                <div class="article-meta" style="margin-bottom: 12px;">
-                    <span class="article-category">${catDisplay}</span>
-                </div>
-                <h1 class="single-title">${art.title}</h1>
-                <p style="color: #94a3b8; font-size: 14px; margin-bottom: 15px; font-style: italic;">${art.description}</p>
-                <div class="single-body">${art.body}</div>
-            `;
-            singleView.style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function goBackToList() {
-            window.history.pushState({}, '', window.location.pathname);
-            document.getElementById('singleArticleView').style.display = 'none';
-            document.getElementById('mainHeader').style.display = 'block';
-            document.getElementById('searchBoxContainer').style.display = 'block';
-            document.getElementById('categoriesBar').style.display = 'flex';
-            document.getElementById('articlesContainer').style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        window.addEventListener('popstate', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const articleId = urlParams.get('id');
-            if (!articleId) {
-                goBackToList();
+            if (bodyDiv.style.display === 'block') {
+                bodyDiv.style.display = 'none';
+                btn.innerText = 'قراءة المقال كاملاً 📖';
+                document.getElementById(`card-${id}`).scrollIntoView({ behavior: 'smooth' });
             } else {
-                showSingleArticle(articleId);
+                bodyDiv.style.display = 'block';
+                btn.innerText = 'إخفاء المقال ✖';
             }
-        });
-
-        function filterByCategory(categoryKey, btnElement) {
-            currentCategory = categoryKey;
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
-            filterArticles();
         }
 
         function filterArticles() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filtered = allArticles.filter(art => 
+                art.title.toLowerCase().includes(query) || 
+                art.description.toLowerCase().includes(query) ||
+                art.body.toLowerCase().includes(query) ||
+                (art.category && art.category.toLowerCase().includes(query))
+            );
             
-            const filtered = allArticles.filter(art => {
-                const matchesSearch = art.title.toLowerCase().includes(query) || art.description.toLowerCase().includes(query);
-                
-                let matchesCat = true;
-                if (currentCategory !== 'الكل') {
-                    const cat = art.category || '';
-                    if (currentCategory === 'أدوات') {
-                        matchesCat = cat.includes('أدوات') || cat.includes('💡');
-                    } else if (currentCategory === 'الطاقة الشمسية') {
-                        matchesCat = cat.includes('الطاقة الشمسية');
-                    } else if (currentCategory === 'الهواتف') {
-                        matchesCat = cat.includes('الهواتف');
-                    } else if (currentCategory === 'الحواسيب') {
-                        matchesCat = cat.includes('الحواسيب');
-                    } else if (currentCategory === 'البطاريات') {
-                        matchesCat = cat.includes('البطاريات');
-                    }
-                }
-                return matchesSearch && matchesCat;
-            });
-
-            renderArticles(filtered);
+            const welcomePost = document.getElementById('pinnedWelcomePost');
+            if (welcomePost) {
+                welcomePost.style.display = query.length > 0 ? 'none' : 'block';
+            }
+            
+            displayArticles(filtered);
         }
 
-        // بدء التشغيل وجلب المقالات عند تحميل الصفحة
+        function filterByCategory(category, btnElement) {
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            const welcomePost = document.getElementById('pinnedWelcomePost');
+
+            if (category === 'all') {
+                if (welcomePost) welcomePost.style.display = 'block';
+                displayArticles(allArticles);
+            } else {
+                if (welcomePost) welcomePost.style.display = 'none';
+                const filtered = allArticles.filter(art => {
+                    let cat = (art.category || '').toLowerCase();
+                    if (cat === '☀️ الطاقة الشمسية' || cat === 'الطاقة الشمسية') {
+                        cat = '☀️ الطاقة الشمسية والبديلة';
+                    }
+                    const title = art.title.toLowerCase();
+                    const desc = art.description.toLowerCase();
+                    return cat.includes(category) || title.includes(category) || desc.includes(category);
+                });
+                displayArticles(filtered);
+            }
+        }
+
+        function shareToWhatsApp(id) {
+            const art = allArticles.find(a => a.id == id);
+            if (!art) return;
+            const url = `https://blog.solartoolspro.com/?id=${art.id}`;
+            const text = `📌 ${art.title}\n\n${art.description}\n\nاقرأ المقال كاملاً:\n${url}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function shareToTelegram(id) {
+            const art = allArticles.find(a => a.id == id);
+            if (!art) return;
+            const url = `https://blog.solartoolspro.com/?id=${art.id}`;
+            const text = `📌 ${art.title}\n\n${art.description}`;
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function shareToTwitter(id) {
+            const art = allArticles.find(a => a.id == id);
+            if (!art) return;
+            const url = `https://blog.solartoolspro.com/?id=${art.id}`;
+            const text = `📌 ${art.title}\n\n${art.description}`;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        }
+
+        function copyArticleLink(id, btnElement) {
+            const art = allArticles.find(a => a.id == id);
+            if (!art) return;
+            const url = `https://blog.solartoolspro.com/?id=${art.id}`;
+            
+            navigator.clipboard.writeText(url).then(() => {
+                const tooltip = document.getElementById(`tooltip-${id}`);
+                if (tooltip) {
+                    tooltip.classList.add('show');
+                    setTimeout(() => {
+                        tooltip.classList.remove('show');
+                    }, 2000);
+                }
+            });
+        }
+
+        function openApp(baseUrl) {
+            window.open(baseUrl, '_blank');
+        }
+
         fetchArticles();
     </script>
 </body>
