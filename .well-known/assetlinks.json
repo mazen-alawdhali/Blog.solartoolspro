@@ -1,1 +1,8 @@
-
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.solartoolspro.blog.twa",
+        "sha256_cert_fingerprints": ["F9:55:E5:02:8B:C4:23:F4:02:F1:F2:9C:ED:3B:76:F6:BF:1F:98:85:62:C6:44:FE:BA:C4:AF:2B:BF:C4:61:79"]
+      }
+    }]
