@@ -352,20 +352,27 @@
 
         async function fetchArticles() {
             try {
-                // 🌟 الجلب المباشر من رابط GitHub Raw لتفادي كاش صفحات المدونة وضمان التحديث اللحظي الفوري
-                const rawUrl = 'https://raw.githubusercontent.com/mazen-alawdhali/blog.solartoolspro.com/main/articles.json';
-                const res = await fetch(rawUrl + '?t=' + Date.now() + '&cb=' + Math.random(), { 
+                // تنظيف أي تخزين محلي سابق
+                if (window.localStorage) {
+                    localStorage.removeItem('cached_articles');
+                    localStorage.removeItem('articles');
+                }
+
+                // الجلب المباشر عبر GitHub API لضمان التزامن الفوري المطابق للمستودع 100%
+                const apiUrl = 'https://api.github.com/repos/mazen-alawdhali/blog.solartoolspro.com/contents/articles.json?cb=' + Date.now();
+                const res = await fetch(apiUrl, { 
+                    method: 'GET',
                     cache: 'no-store',
                     headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate'
                     }
                 });
                 
                 if (!res.ok) throw new Error('رمز الاستجابة من السيرفر: ' + res.status);
                 
-                const textData = await res.text();
+                const data = await res.json();
+                const textData = decodeURIComponent(escape(window.atob(data.content.replace(/\s/g, ''))));
                 allArticles = JSON.parse(textData);
                 
                 const urlParams = new URLSearchParams(window.location.search);
@@ -404,7 +411,7 @@
             }
         }
 
-        // 🌟 إعادة الجلب التلقائي عند العودة للصفحة لتفادي كاش الخلفية في الجوال
+        // إعادة الجلب التلقائي عند العودة للصفحة
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 fetchArticles();
