@@ -352,8 +352,8 @@
 
         async function fetchArticles() {
             try {
-                // الجلب المباشر المضمون لملف articles.json مع بارامتر فريد لمنع التخزين المؤقت
-                const res = await fetch('articles.json?t=' + Date.now(), { cache: 'no-store' });
+                // 🌟 الجلب المباشر مع منع التخزين المؤقت (Cache-Busting صارم) لضمان ظهور التحديثات فوراً
+                const res = await fetch('articles.json?t=' + Date.now() + '&cb=' + Math.random(), { cache: 'no-store' });
                 if (!res.ok) throw new Error('رمز الاستجابة من السيرفر: ' + res.status);
                 
                 const textData = await res.text();

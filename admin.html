@@ -614,7 +614,6 @@
             }
         });
 
-        // 🌟 دالة فتح نافذة المدخلات المخصصة بدلاً من prompt()
         let promptCallback = null;
         function showCustomPrompt(title, subtitle, defaultValue, placeholder, callback) {
             document.getElementById('promptTitle').innerText = title;
@@ -641,7 +640,6 @@
             closePromptModal();
         };
 
-        // 🔗 إدراج الرابط بدون خط تحت النص نهائياً وبشكل نظيف
         function insertLink() {
             showCustomPrompt('🔗 إدراج رابط تشعبي', 'أدخل رابط الـ URL المطلوب:', 'https://', 'https://solartoolspro.com', function(url) {
                 if (!url || url === 'https://') return;
@@ -816,7 +814,6 @@
             scheduleAutoSave();
         }
 
-        // --- نظام الحفظ التلقائي الذكي المنضبط تماماً ---
         function getSavedDrafts() {
             try {
                 const drafts = localStorage.getItem('blog_all_drafts');
@@ -1142,7 +1139,6 @@
             }
         }
 
-        // 🔑 كلمة المرور المعتمدة
         const MASTER_PASS = "771005555#"; 
 
         if (localStorage.getItem('admin_authenticated') === 'true') {
@@ -1227,11 +1223,12 @@
         const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
         const rssApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/rss.xml`;
 
-        // 🌟 دالة جلب الملف الأصلية السلسة والمباشرة عبر API مع استرجاع الـ SHA والمحتوى معاً
+        // 🌟 دالة جلب مع منع التخزين المؤقت (Cache-Busting صارم)
         async function fetchFileFromGithub(token) {
             try {
-                const response = await fetch(apiUrl + '?cache_bust=' + Math.random(), { 
+                const response = await fetch(apiUrl + '?cache_bust=' + Date.now() + '&cb=' + Math.random(), { 
                     method: 'GET',
+                    cache: 'no-store',
                     headers: { 
                         'Authorization': `token ${token}`,
                         'Accept': 'application/vnd.github.v3+json'
@@ -1259,7 +1256,6 @@
             throw new Error('تعذر جلب المقالات. تحقق من اتصال الإنترنت أو رمز الـ Token.');
         }
 
-        // 🌟 دالة الحفظ مع جلب أحدث SHA مباشر وبشكل تلقائي في كل محاولة لمنع خطأ does not match
         async function saveToGithubWithRetry(token, updateCallback, commitMessage, maxRetries = 3) {
             for (let attempt = 0; attempt < maxRetries; attempt++) {
                 try {
