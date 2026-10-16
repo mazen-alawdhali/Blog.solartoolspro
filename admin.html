@@ -189,6 +189,7 @@
         .preview-content .preview-desc { font-size: 14px; color: #94a3b8; border-right: 3px solid #38bdf8; padding-right: 10px; margin-bottom: 20px; font-style: italic; }
         .preview-body { font-size: 15px; line-height: 1.8; color: #e2e8f0; border-top: 1px solid #334155; padding-top: 15px; }
         .preview-body img { max-width: 100% !important; height: auto !important; border-radius: 8px; margin: 12px 0; border: 1px solid #334155; }
+        .preview-body a { color: #38bdf8; text-decoration: underline; }
 
         /* شريط أزرار التنسيق المرئي */
         .toolbar {
@@ -287,6 +288,10 @@
             border: 1px solid #334155;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             cursor: pointer;
+        }
+        .editor-box a {
+            color: #38bdf8;
+            text-decoration: underline;
         }
         .editor-box blockquote {
             border-right: 3px solid #38bdf8;
@@ -439,6 +444,9 @@
             <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<blockquote>')" title="اقتباس">❞</button>
             <button type="button" class="tool-btn" onclick="execCmd('insertHorizontalRule')" title="خط فاصل">―</button>
 
+            <!-- زر إدراج رابط تشعبي 🔗 -->
+            <button type="button" class="tool-btn" onclick="insertLink()" title="إدراج رابط" style="background-color: #0284c7; color: #fff;">🔗</button>
+
             <!-- زر إدراج فيديو يوتيوب -->
             <button type="button" class="tool-btn" onclick="insertYoutubeVideo()" title="إدراج فيديو يوتيوب" style="background-color: #8b5cf6; color: #fff;">🎬</button>
 
@@ -544,6 +552,29 @@
                 }
             }
         });
+
+        // 🔗 دالة إدراج الرابط في المحرر
+        function insertLink() {
+            const url = prompt('أدخل رابط الـ URL (مثال: https://solartoolspro.com):');
+            if (!url || !url.trim()) return;
+
+            const editor = document.getElementById('postBody');
+            editor.focus();
+            restoreSelection();
+
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0 && !sel.getRangeAt(0).collapsed) {
+                // إذا كان المستخدم محددًا لنص معين، يتم تحويله إلى رابط
+                document.execCommand('createLink', false, url.trim());
+            } else {
+                // إذا لم يتم تحديد نص، يطلب نص الرابط أو يدرج الرابط مباشرة كنص
+                const linkText = prompt('أدخل نص الرابط (مثال: اضغط هنا):') || url.trim();
+                const linkHtml = `<a href="${url.trim()}" target="_blank" style="color: #38bdf8; text-decoration: underline;">${linkText}</a>`;
+                document.execCommand('insertHTML', false, linkHtml);
+            }
+            scheduleAutoSave();
+            showToast('🔗 تم إدراج الرابط بنجاح!', 'success');
+        }
 
         function insertYoutubeVideo() {
             const input = prompt('أدخل رابط فيديو يوتيوب (YouTube URL) أو كود التضمين:');
