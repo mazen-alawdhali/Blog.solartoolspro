@@ -1227,7 +1227,7 @@
         const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
         const rssApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/rss.xml`;
 
-        // 🌟 دالة جلب البيانات الأصلية السلسة والمباشرة عبر API مع حفظ الـ SHA والمحتوى معاً
+        // 🌟 دالة جلب الملف الأصلية السلسة والمباشرة عبر API مع استرجاع الـ SHA والمحتوى معاً
         async function fetchFileFromGithub(token) {
             try {
                 const response = await fetch(apiUrl + '?cache_bust=' + Math.random(), { 
@@ -1243,10 +1243,9 @@
                     return { sha: data.sha, articles: JSON.parse(content) };
                 }
             } catch (e) {
-                console.warn("فشل الاتصال المباشر بـ GitHub API، جاري المحاولة عبر السحابة...");
+                console.warn("فشل الاتصال بـ GitHub API، جاري الجلب من السحابة...");
             }
 
-            // نظام الطوارئ السحابي عبر Firebase إذا تعذر GitHub API
             try {
                 const doc = await db.collection("blogData").doc("articlesBackup").get();
                 if (doc.exists && doc.data().articles) {
@@ -1260,16 +1259,24 @@
             throw new Error('تعذر جلب المقالات. تحقق من اتصال الإنترنت أو رمز الـ Token.');
         }
 
+        // 🌟 دالة الحفظ مع جلب أحدث SHA مباشر وبشكل تلقائي في كل محاولة لمنع خطأ does not match
         async function saveToGithubWithRetry(token, updateCallback, commitMessage, maxRetries = 3) {
             for (let attempt = 0; attempt < maxRetries; attempt++) {
                 try {
-                    let sha = currentFileSha;
-                    let articles = loadedArticles;
+                    const fetched = await fetchFileFromGithub(token);
+                    let sha = fetched.sha;
+                    let articles = fetched.articles;
 
-                    if (!sha || !articles || articles.length === 0) {
-                        const fetched = await fetchFileFromGithub(token);
-                        sha = fetched.sha;
-                        articles = fetched.articles;
+                    if (!sha) {
+                        try {
+                            const shaRes = await fetch(apiUrl + '?cache_bust=' + Math.random(), {
+                                headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                            });
+                            if (shaRes.ok) {
+                                const shaData = await shaRes.json();
+                                sha = shaData.sha;
+                            }
+                        } catch (e) {}
                     }
 
                     const updatedArticles = await updateCallback(articles);
@@ -1291,9 +1298,6 @@
                         return updatedArticles;
                     } else if (putRes.status === 409 && attempt < maxRetries - 1) {
                         console.warn("SHA conflict detected, retrying...");
-                        const fetched = await fetchFileFromGithub(token);
-                        currentFileSha = fetched.sha;
-                        loadedArticles = fetched.articles;
                         continue;
                     } else {
                         const errJson = await putRes.json();
