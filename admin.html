@@ -1227,25 +1227,51 @@
         const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
         const rssApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/rss.xml`;
 
-        // 🌟 الدالة المستقرة لطلب الملف من GitHub دون مشاكل جلب أو كاش
+        // 🌟 دالة جلب ذكية ومحصنة (تجرب GitHub API أولاً، وإذا فشلت تجلب من النسخة الاحتياطية السحابية Firebase فوراً)
         async function fetchFileFromGithub(token) {
-            const response = await fetch(apiUrl, { 
-                method: 'GET',
-                headers: { 
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                } 
-            });
-            if (!response.ok) throw new Error('تعذر الاتصال بـ GitHub (رمز الاستجابة: ' + response.status + ')');
-            const data = await response.json();
-            const content = b64_to_utf8(data.content);
-            return { sha: data.sha, articles: JSON.parse(content) };
+            try {
+                const response = await fetch(apiUrl + '?cache_bust=' + Math.random(), { 
+                    method: 'GET',
+                    headers: { 
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    } 
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const content = b64_to_utf8(data.content);
+                    return { sha: data.sha, articles: JSON.parse(content) };
+                }
+            } catch (e) {
+                console.warn("فشل الاتصال المباشر بـ GitHub، جاري الجلب من السحابة البديلة...");
+            }
+
+            // نظام الطوارئ: الجلب من Firebase إذا تعذر GitHub API
+            try {
+                const doc = await db.collection("blogData").doc("articlesBackup").get();
+                if (doc.exists && doc.data().articles) {
+                    showToast('⚠️ تم جلب المقالات من النسخة الاحتياطية السحابية للطوارئ', 'success');
+                    return { sha: '', articles: doc.data().articles };
+                }
+            } catch (cloudErr) {
+                console.error("فشل الجلب السحابي أيضاً:", cloudErr);
+            }
+
+            throw new Error('تعذر جلب المقالات من GitHub ومن السحابة. تحقق من اتصال الإنترنت أو رمز الـ Token.');
         }
 
         async function saveToGithubWithRetry(token, updateCallback, commitMessage, maxRetries = 3) {
             for (let attempt = 0; attempt < maxRetries; attempt++) {
                 try {
-                    const { sha, articles } = await fetchFileFromGithub(token);
+                    let sha = currentFileSha;
+                    let articles = loadedArticles;
+
+                    if (!sha || !articles || articles.length === 0) {
+                        const fetched = await fetchFileFromGithub(token);
+                        sha = fetched.sha;
+                        articles = fetched.articles;
+                    }
+
                     const updatedArticles = await updateCallback(articles);
                     const updatedContent = utf8_to_b64(JSON.stringify(updatedArticles, null, 2));
 
@@ -1265,6 +1291,9 @@
                         return updatedArticles;
                     } else if (putRes.status === 409 && attempt < maxRetries - 1) {
                         console.warn("SHA conflict detected, retrying...");
+                        const fetched = await fetchFileFromGithub(token);
+                        currentFileSha = fetched.sha;
+                        loadedArticles = fetched.articles;
                         continue;
                     } else {
                         const errJson = await putRes.json();
