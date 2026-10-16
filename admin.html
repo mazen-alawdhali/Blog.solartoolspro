@@ -1227,9 +1227,8 @@
         const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
         const rssApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/rss.xml`;
 
-        // 🌟 دالة جلب ذكية ومحصنة تماماً (تجرب Raw العام أولاً لتجنب CORS، ثم API، ثم Firebase)
+        // 🌟 دالة جلب المقالات بذكاء وأمان تام
         async function fetchFileFromGithub(token) {
-            // الطريقة الأولى: الجلب عبر رابط Raw العام (سريع جداً، لا يحتاج توكن ولا يواجه قيود CORS)
             try {
                 const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${filePath}?cache_bust=` + Math.random();
                 const rawRes = await fetch(rawUrl);
@@ -1241,7 +1240,6 @@
                 console.warn("فشل الجلب عبر Raw، جاري المحاولة عبر API...");
             }
 
-            // الطريقة الثانية: عبر GitHub API الرسمي
             try {
                 const response = await fetch(apiUrl + '?cache_bust=' + Math.random(), { 
                     method: 'GET',
@@ -1259,7 +1257,6 @@
                 console.warn("فشل الاتصال بـ GitHub API مباشرة...");
             }
 
-            // الطريقة الثالثة (طوارئ سحابية): الجلب من Firebase
             try {
                 const doc = await db.collection("blogData").doc("articlesBackup").get();
                 if (doc.exists && doc.data().articles) {
@@ -1397,16 +1394,29 @@
             }
         }
 
+        // 🌟 دالة تحديث وجلب قائمة المقالات مع جلب الـ SHA الحقيقي للحذف والتعديل
         async function loadArticlesList() {
             const token = document.getElementById('ghToken').value.trim();
             const listDiv = document.getElementById('articlesList');
             if (!token) return showToast('يرجى إدخال رمز الـ Token أولاً!', 'error');
 
-            showTopBanner('جاري جلب المقالات...');
+            showTopBanner('جاري جلب المقالات وتحديث البيانات...');
             try {
                 const result = await fetchFileFromGithub(token);
                 loadedArticles = result.articles;
-                currentFileSha = result.sha;
+                
+                try {
+                    const apiRes = await fetch(apiUrl + '?cache_bust=' + Math.random(), {
+                        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                    });
+                    if (apiRes.ok) {
+                        const apiData = await apiRes.json();
+                        currentFileSha = apiData.sha;
+                    }
+                } catch(e) {
+                    if (result.sha) currentFileSha = result.sha;
+                }
+
                 hideTopBanner();
                 if (loadedArticles.length === 0) {
                     listDiv.innerText = 'لا توجد مقالات منشورة.';
@@ -1415,6 +1425,7 @@
 
                 backupArticlesToCloud(loadedArticles);
                 renderArticlesCards();
+                showToast('✅ تم تحديث المقالات وجاهزية الحذف والتعديل!', 'success');
             } catch (err) {
                 hideTopBanner();
                 listDiv.innerText = '❌ خطأ: ' + err.message;
