@@ -453,8 +453,13 @@
         // حقن النص الوصفي برمجياً لتجاوز مشكلة الكاش في السيرفر نهائياً
         document.getElementById('descBox').innerText = "دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.";
 
+        // 🛑 التخلص الآمن من الـ Service Worker القديم دون طلب ملف sw.js المحذوف
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                for (let registration of registrations) {
+                    registration.unregister();
+                }
+            }).catch(() => {});
         }
 
         async function fetchArticles() {
@@ -683,7 +688,7 @@
                 if (tooltip) {
                     tooltip.classList.add('show');
                     setTimeout(() => {
-                        tooltip.classList.remove('show');
+                        tooltip.classList.0 ? tooltip.classList.remove('show') : tooltip.classList.remove('show');
                     }, 2000);
                 }
             });
