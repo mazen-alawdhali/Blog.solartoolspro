@@ -453,7 +453,7 @@
         // حقن النص الوصفي برمجياً لتجاوز مشكلة الكاش في السيرفر نهائياً
         document.getElementById('descBox').innerText = "دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.";
 
-        // 🛑 التخلص الآمن من الـ Service Worker القديم دون طلب ملف sw.js المحذوف
+        // 🛑 التخلص الآمن من أي Service Worker قديم أو مخلفات كاش
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(registrations => {
                 for (let registration of registrations) {
@@ -464,8 +464,8 @@
 
         async function fetchArticles() {
             try {
-                // 🌟 منع التخزين المؤقت (Cache) تماماً بوضع وقت عشوائي للتحديث الفوري عند جلب articles.json
-                const res = await fetch('articles.json?v=' + Date.now() + '&cache_bust=' + Math.random());
+                // 🌟 إجبار المتصفح على جلب أحدث نسخة حصرياً وتخطي الكاش نهائياً
+                const res = await fetch('articles.json?v=' + Date.now() + '&cb=' + Math.random(), { cache: 'no-store' });
                 if (!res.ok) throw new Error('رمز الاستجابة من السيرفر: ' + res.status);
                 
                 const textData = await res.text();
