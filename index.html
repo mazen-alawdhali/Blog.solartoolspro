@@ -352,9 +352,8 @@
 
         async function fetchArticles() {
             try {
-                // 🌟 جلب ملف articles.json مع منع الكاش تماماً ببراميترات عشوائية وزمن دقيق
-                const res = await fetch('articles.json?v=' + Date.now() + '&cb=' + Math.random() + '&reload=true', { 
-                    method: 'GET',
+                // 🌟 الجلب المباشر بالمسار النسبي وتجاوز الكاش السحابي ومحركات المتصفح
+                const res = await fetch('articles.json?v=' + Date.now() + '_' + Math.floor(Math.random() * 1000), { 
                     cache: 'reload',
                     headers: {
                         'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -404,7 +403,7 @@
             }
         }
 
-        // 🌟 إعادة الجلب التلقائي الفوري عند العودة للصفحة لتفادي كاش الجوال
+        // 🌟 إعادة الجلب التلقائي عند العودة للصفحة لتفادي كاش الخلفية في الجوال
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 fetchArticles();
