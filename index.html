@@ -352,9 +352,10 @@
 
         async function fetchArticles() {
             try {
-                // 🌟 الجلب من المسار الجذري المطلق مع منع الكاش تماماً لتجاوز ذاكرة الجوال
-                const res = await fetch('/articles.json?t=' + Date.now() + '&cb=' + Math.random(), { 
-                    cache: 'no-store',
+                // 🌟 جلب ملف articles.json مع منع الكاش تماماً ببراميترات عشوائية وزمن دقيق
+                const res = await fetch('articles.json?v=' + Date.now() + '&cb=' + Math.random() + '&reload=true', { 
+                    method: 'GET',
+                    cache: 'reload',
                     headers: {
                         'Cache-Control': 'no-cache, no-store, must-revalidate',
                         'Pragma': 'no-cache',
@@ -403,7 +404,7 @@
             }
         }
 
-        // 🌟 إعادة الجلب التلقائي عند العودة للصفحة لتفادي كاش الخلفية في الجوال
+        // 🌟 إعادة الجلب التلقائي الفوري عند العودة للصفحة لتفادي كاش الجوال
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 fetchArticles();
@@ -411,6 +412,7 @@
         });
 
         function calculateReadingTime(text) {
+            if (!text) return 1;
             const words = text.replace(/<[^>]*>/g, '').split(/\s+/).length;
             const minutes = Math.ceil(words / 150);
             return minutes < 1 ? 1 : minutes;
@@ -418,7 +420,7 @@
 
         function displayArticles(articles) {
             const container = document.getElementById('articlesContainer');
-            if (articles.length === 0) {
+            if (!Array.isArray(articles) || articles.length === 0) {
                 container.innerHTML = `<div class="error-msg">📭 لا توجد مقالات مطابقة لبحثك.</div>`;
                 return;
             }
@@ -444,7 +446,7 @@
                         <p>${art.description}</p>
                         
                         <div class="article-body" id="body-${art.id}">
-                            ${art.body}
+                            ${art.body || ''}
                             
                             <div style="margin-top: 22px; padding-top: 15px; border-top: 1px dashed #334155; text-align: center; line-height: 1.6;">
                                 <div style="color: #facc15; font-size: 14px; font-weight: bold; margin-bottom: 6px;">
@@ -491,9 +493,9 @@
         function filterArticles() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const filtered = allArticles.filter(art => 
-                art.title.toLowerCase().includes(query) || 
-                art.description.toLowerCase().includes(query) ||
-                art.body.toLowerCase().includes(query) ||
+                (art.title && art.title.toLowerCase().includes(query)) || 
+                (art.description && art.description.toLowerCase().includes(query)) ||
+                (art.body && art.body.toLowerCase().includes(query)) ||
                 (art.category && art.category.toLowerCase().includes(query))
             );
             
@@ -516,8 +518,8 @@
                 const filtered = allArticles.filter(art => {
                     let cat = (art.category || '').toLowerCase();
                     if (cat === '☀️ الطاقة الشمسية' || cat === 'الطاقة الشمسية') { cat = '☀️ الطاقة الشمسية والبديلة'; }
-                    const title = art.title.toLowerCase();
-                    const desc = art.description.toLowerCase();
+                    const title = (art.title || '').toLowerCase();
+                    const desc = (art.description || '').toLowerCase();
                     return cat.includes(category) || title.includes(category) || desc.includes(category);
                 });
                 displayArticles(filtered);
