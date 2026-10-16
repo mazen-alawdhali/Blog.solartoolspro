@@ -464,29 +464,29 @@
 
         async function fetchArticles() {
             try {
-                const res = await fetch('articles.json?t=' + Date.now());
-                if (!res.ok) throw new Error('تعذر تحميل المقالات');
-                allArticles = await res.json();
+                const res = await fetch('articles.json?cache_bust=' + Math.random());
+                if (!res.ok) throw new Error('رمز الاستجابة من السيرفر: ' + res.status);
                 
-                // 🌟 التقاط المعرف سواء كان عبر ?id= أو عبر الـ Hash #
-                const urlParams = new URLSearchParams(window.location.search);
-                let targetId = urlParams.get('id');
-                
-                if (!targetId && window.location.hash) {
-                    targetId = window.location.hash.replace('#', '');
+                const textData = await res.text();
+                try {
+                    allArticles = JSON.parse(textData);
+                } catch (jsonErr) {
+                    throw new Error('خطأ في تنسيق ملف articles.json: ' + jsonErr.message);
                 }
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                let targetId = urlParams.get('id') || (window.location.hash ? window.location.hash.replace('#', '') : null);
 
-                if (targetId) {
+                if (targetId && Array.isArray(allArticles)) {
                     const currentArt = allArticles.find(a => a.id == targetId);
                     if (currentArt) {
                         const currentUrl = window.location.href;
                         document.getElementById('metaTitle').innerText = currentArt.title + ' - SolarToolsPro';
-                        document.getElementById('metaDesc').setAttribute('content', currentArt.description);
-                        
+                        document.getElementById('metaDesc').setAttribute('content', currentArt.description || '');
                         document.getElementById('canonicalUrl').setAttribute('href', currentUrl);
                         document.getElementById('ogUrl').setAttribute('content', currentUrl);
                         document.getElementById('ogTitle').setAttribute('content', currentArt.title);
-                        document.getElementById('ogDesc').setAttribute('content', currentArt.description);
+                        document.getElementById('ogDesc').setAttribute('content', currentArt.description || '');
 
                         if (currentArt.body) {
                             const imgMatch = currentArt.body.match(/<img[^>]+src=["']([^"']+)["']/i);
@@ -515,7 +515,7 @@
                     }, 300);
                 }
             } catch (err) {
-                document.getElementById('articlesContainer').innerHTML = `<div class="error-msg">❌ لا توجد مقالات منشورة حالياً أو تعذر الاتصال بالسيرفر.</div>`;
+                document.getElementById('articlesContainer').innerHTML = `<div class="error-msg">❌ تعذر تحميل المقالات: ${err.message}</div>`;
             }
         }
 
