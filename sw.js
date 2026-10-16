@@ -1,8 +1,8 @@
-const CACHE_NAME = 'solar-blog-v2';
+const CACHE_NAME = 'solar-blog-v1';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
-    './articles.json',
+    // تم حذف './articles.json' من هنا تماماً لضمان عدم تخزينه مؤقتاً
     './site.webmanifest',
     './favicon-96x96.png',
     './favicon.ico',
@@ -10,7 +10,7 @@ const ASSETS_TO_CACHE = [
     './apple-touch-icon.png'
 ];
 
-// تثبيت الخدمة وتخزين الملفات الأساسية مؤقتاً
+// تثبيت الخدمة وتخزين الملفات الأساسية مؤقتاً[span_2](start_span)[span_2](end_span)
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -20,7 +20,7 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// تفعيل الخدمة وتنظيف الكاش القديم إن وجد
+// تفعيل الخدمة وتنظيف الكاش القديم إن وجد[span_3](start_span)[span_3](end_span)
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((keys) => {
@@ -36,12 +36,18 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// استراتيجية الجلب: محاولة جلب التحديث من الشبكة أولاً، وإن فشل (انقطع النت) يتم جلب النسخة المخزنة
+// استراتيجية الجلب المخصصة لملف articles.json[span_4](start_span)[span_4](end_span)
 self.addEventListener('fetch', (event) => {
+    // 🌟 إذا كان الطلب يخص ملف articles.json، يتم جلبه من الشبكة حصرياً لتظهر التحديثات والحذف فوراً
+    if (event.request.url.includes('articles.json')) {
+        event.respondWith(fetch(event.request));
+        return;
+    }
+
+    // باقي ملفات الموقع تعمل بالطريقة العادية
     event.respondWith(
         fetch(event.request)
             .then((response) => {
-                // إذا كانت الاستجابة سليمة، نقوم بتحديث الكاش الخاص بها اختيارياً
                 return response;
             })
             .catch(() => {
