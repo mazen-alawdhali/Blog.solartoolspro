@@ -1518,7 +1518,6 @@
                 let articleId = editId ? editId : Date.now();
 
                 const updatedArticles = await saveToGithubWithRetry(token, async (articles) => {
-                    const currentDate = new Date().toLocaleString('ar-SA', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
                     if (editId) {
                         const index = articles.findIndex(a => a.id == editId);
                         if (index !== -1) {
@@ -1526,17 +1525,9 @@
                             articles[index].description = desc;
                             articles[index].body = bodyHtml;
                             articles[index].category = category;
-                            articles[index].date = articles[index].date || currentDate;
                         }
                     } else {
-                        articles.unshift({ 
-                            id: articleId, 
-                            title, 
-                            description: desc, 
-                            body: bodyHtml, 
-                            category,
-                            date: currentDate
-                        });
+                        articles.unshift({ id: articleId, title, description: desc, body: bodyHtml, category });
                     }
                     return articles;
                 }, editId ? `تعديل مقال: ${title}` : `إضافة مقال جديد: ${title}`);
