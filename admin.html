@@ -914,14 +914,15 @@
             if (targetIndex > -1) {
                 drafts[targetIndex] = draftData;
                 document.getElementById('draftEditIndex').value = targetIndex;
-                showToast('✅ تم تحديث المسودة بنجاح دون تكرار!', 'success');
+                showToast('✅ تم تحديث المسودة بنجاح وتجهيز الحقول لمنشور جديد!', 'success');
             } else {
                 drafts.unshift(draftData);
                 document.getElementById('draftEditIndex').value = 0;
-                showToast('📁 تمت إضافة المسودة لقائمة المسودات!', 'success');
+                showToast('📁 تمت إضافة المسودة وتجهيز الحقول لمنشور جديد!', 'success');
             }
 
             saveDraftsToStorage(drafts);
+            clearEditorForm();
         }
 
         function renderDraftsList() {
@@ -1666,7 +1667,7 @@
                     }
                 }
 
-                showToast('🚀 تم نشر المقال وتحديث الـ RSS بنجاح!', 'success');
+                showToast('🚀 تم نشر المقال وتحديث الـ RSS وتجهيز الحقول بنجاح!', 'success');
                 clearEditorForm();
                 cancelEdit();
                 loadArticlesList();
