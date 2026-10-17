@@ -121,33 +121,62 @@
             font-weight: 700;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             line-height: 1.6;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
-        /* المنشور الترحيبي المثبت أعلى الواجهة */
-        .pinned-welcome-card {
+        /* حاوية زر الترحيب المنسدل (Popover) */
+        .welcome-dropdown-container {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .welcome-toggle-btn {
+            background-color: #1e293b;
+            color: #38bdf8;
+            border: 1px solid #334155;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .welcome-toggle-btn:hover {
+            background-color: #334155;
+            border-color: #38bdf8;
+        }
+
+        .welcome-popover-content {
+            position: absolute;
+            top: 115%;
+            right: 0;
+            left: 0;
             background: linear-gradient(135deg, #1e293b, #0f172a);
             border: 1px solid rgba(56, 189, 248, 0.4);
             border-radius: 14px;
             padding: 20px;
-            margin-bottom: 22px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px) scale(0.98);
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+            text-align: right;
         }
-        .pinned-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background-color: #0284c7;
-            color: #ffffff;
-            font-size: 11px;
-            font-weight: bold;
-            padding: 3px 8px;
-            border-radius: 6px;
-            margin-bottom: 12px;
+
+        .welcome-popover-content.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
         }
-        .pinned-welcome-card h2 { font-size: 18px; color: #38bdf8; margin-bottom: 12px; font-weight: 800; line-height: 1.4; }
-        .pinned-welcome-card p { font-size: 14px; color: #f8fafc; line-height: 1.8; margin-bottom: 12px; }
+
+        .welcome-popover-content h2 { font-size: 17px; color: #38bdf8; margin-bottom: 12px; font-weight: 800; line-height: 1.4; }
+        .welcome-popover-content p { font-size: 13.5px; color: #f8fafc; line-height: 1.8; margin-bottom: 12px; }
 
         /* كروت المقالات */
         .article-card {
@@ -375,6 +404,36 @@
             transform: translateX(-50%) translateY(0);
         }
 
+        /* تنسيق أزرار التنقل بين الصفحات (Pagination) */
+        #paginationContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin: 30px 0 20px 0;
+            flex-wrap: wrap;
+        }
+        .page-btn {
+            background-color: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .page-btn:hover {
+            background-color: #334155;
+            color: #fff;
+        }
+        .page-btn.active {
+            background-color: #0284c7;
+            color: #fff;
+            border-color: #0284c7;
+        }
+
         /* 🌐 كارت الشفافية الشفاف أسفل المقالات للانتقال للمنصة - بلون النص الأخضر الجذاب */
         .platform-glass-card {
             display: block;
@@ -476,20 +535,28 @@
     <!-- صندوق الوصف التوضيحي الديناميكي الآمن ضد الكاش -->
     <div class="header-description" id="descBox"></div>
 
-    <!-- المنشور الترحيبي المثبت أعلى الواجهة -->
-    <div class="pinned-welcome-card" id="pinnedWelcomePost">
-        <span class="pinned-badge">📌 منشور ترحيبي مثبت</span>
-        <h2>أهلاً بكم أصدقائي ومتابعي المدونة الأعزاء 👋</h2>
-        <p>منذ أن أطلقنا <strong>مدونة أدوات الطاقة والتقنية</strong>، كان هدفنا دائماً أن نكون مرجعكم الأول لكل ما يخص الطاقة النظيفة وبطاريات الليثيوم وحساب الأحمال. لكن، لو تأملنا قليلاً، سنجد أن الطاقة الشمسية ليست مجرد ألواح وكابلات فوق الأسطح، بل هي خطوة نحو <strong>"نمط حياة ذكي ومستدام"</strong>.</p>
-        <p>ولأن هذه الحياة الذكية لا تكتمل بدون الأدوات التي نستخدمها في يومنا؛ من هواتف محمولة نتابع عبرها إنتاجية منظوماتنا، وحواسيب نعتمد عليها في أعمالنا وحياتنا، فقد قررنا توسيع آفاق المدونة!</p>
-        <p style="color:#38bdf8; font-weight:bold;">يسعدني أن أعلن لكم عن إطلاق أقسامنا الجديدة: الهواتف الذكية والحواسيب والتقنية.</p>
-        <p>من الآن فصاعداً، لن تجدوا هنا حلول الطاقة فحسب، بل سنشارككم أيضاً مراجعات شخصية وصريحة لأحدث الهواتف، نصائح لتطوير بيئة عملكم على الكمبيوتر، وأحدث تقنيات العصر الذكية.</p>
-        <p style="color:#34d399; font-weight:bold; margin-top:10px;">شعارنا الجديد يلخص رؤيتنا القادمة: "دليلكم لبناء حياة ذكية ومستدامة بأحدث الأجهزة". شكراً لثقتكم المستمرة، ونتمنى أن تنال الأقسام الجديدة إعجابكم!</p>
+    <!-- زر القائمة المنسدلة التفاعلية "رسالة ترحيبية لزوارنا" -->
+    <div class="welcome-dropdown-container">
+        <button class="welcome-toggle-btn" onclick="toggleWelcomePopover(event)">
+            رسالة ترحيبية لزوارنا
+        </button>
+        
+        <div class="welcome-popover-content" id="welcomePopover">
+            <h2>أهلاً بكم أصدقائي ومتابعي المدونة الأعزاء 👋</h2>
+            <p>منذ أن أطلقنا <strong>مدونة أدوات الطاقة والتقنية</strong>، كان هدفنا دائماً أن نكون مرجعكم الأول لكل ما يخص الطاقة النظيفة وبطاريات الليثيوم وحساب الأحمال. لكن، لو تأملنا قليلاً، سنجد أن الطاقة الشمسية ليست مجرد ألواح وكابلات فوق الأسطح، بل هي خطوة نحو <strong>"نمط حياة ذكي ومستدام"</strong>.</p>
+            <p>ولأن هذه الحياة الذكية لا تكتمل بدون الأدوات التي نستخدمها في يومنا؛ من هواتف محمولة نتابع عبرها إنتاجية منظوماتنا، وحواسيب نعتمد عليها في أعمالنا وحياتنا، فقد قررنا توسيع آفاق المدونة!</p>
+            <p style="color:#38bdf8; font-weight:bold;">يسعدني أن أعلن لكم عن إطلاق أقسامنا الجديدة: الهواتف الذكية والحواسيب والتقنية.</p>
+            <p>من الآن فصاعداً، لن تجدوا هنا حلول الطاقة فحسب، بل سنشارككم أيضاً مراجعات شخصية وصريحة لأحدث الهواتف، نصائح لتطوير بيئة عملكم على الكمبيوتر، وأحدث تقنيات العصر الذكية.</p>
+            <p style="color:#34d399; font-weight:bold; margin-top:10px;">شعارنا الجديد يلخص رؤيتنا القادمة: "دليلكم لبناء حياة ذكية ومستدامة بأحدث الأجهزة". شكراً لثقتكم المستمرة، ونتمنى أن تنال الأقسام الجديدة إعجابكم!</p>
+        </div>
     </div>
 
     <main id="articlesContainer">
         <div class="loading">جاري تحميل المقالات... ⏳</div>
     </main>
+
+    <!-- أزرار التقسيم والتنقل بين الصفحات (Pagination) -->
+    <div id="paginationContainer"></div>
 
     <!-- 🌐 الإطار الزجاجي الشفاف بالنص الأخضر المشرق للانتقال للمنصة -->
     <a href="https://solartoolspro.com" target="_blank" class="platform-glass-card">
@@ -513,6 +580,9 @@
 
     <script>
         let allArticles = [];
+        let filteredArticles = [];
+        let currentPage = 1;
+        const articlesPerPage = 10; // 🌟 10 مقالات في الصفحة الواحدة
 
         // حقن النص الوصفي برمجياً لتجاوز مشكلة الكاش في السيرفر نهائياً
         document.getElementById('descBox').innerText = "دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.";
@@ -526,6 +596,7 @@
                 const res = await fetch('articles.json?t=' + Date.now());
                 if (!res.ok) throw new Error('تعذر تحميل المقالات');
                 allArticles = await res.json();
+                filteredArticles = [...allArticles];
                 
                 // 🌟 التقاط المعرف سواء كان عبر ?id= أو عبر الـ Hash #
                 const urlParams = new URLSearchParams(window.location.search);
@@ -556,7 +627,7 @@
                     }
                 }
 
-                displayArticles(allArticles);
+                displayArticles();
 
                 if (targetId) {
                     setTimeout(() => {
@@ -584,18 +655,24 @@
             return minutes < 1 ? 1 : minutes;
         }
 
-        function displayArticles(articles) {
+        function displayArticles() {
             const container = document.getElementById('articlesContainer');
-            if (articles.length === 0) {
+            const paginationContainer = document.getElementById('paginationContainer');
+
+            if (filteredArticles.length === 0) {
                 container.innerHTML = `<div class="error-msg">📭 لا توجد مقالات مطابقة لبحثك.</div>`;
+                paginationContainer.innerHTML = '';
                 return;
             }
 
+            const startIndex = (currentPage - 1) * articlesPerPage;
+            const endIndex = startIndex + articlesPerPage;
+            const paginatedArticles = filteredArticles.slice(startIndex, endIndex);
+
             let html = '';
-            articles.forEach(art => {
+            paginatedArticles.forEach(art => {
                 const readTime = calculateReadingTime(art.body || '');
                 
-                // 🌟 توليد التاريخ والوقت تلقائياً من الـ id (الـ Timestamp) أو الاعتماد على حقل date القديم إن وُجد
                 let articleDate = 'وقت غير محدد';
                 if (art.date) {
                     articleDate = art.date;
@@ -610,7 +687,6 @@
                     });
                 }
                 
-                // 🌟 معالجة وتحديث التصنيفات القديمة تلقائياً لتظهر أيقونة المصباح المضيء 💡
                 let categoryTag = art.category ? art.category : 'عام';
                 if (categoryTag === '☀️ الطاقة الشمسية' || categoryTag === 'الطاقة الشمسية') {
                     categoryTag = '☀️ الطاقة الشمسية والبديلة';
@@ -632,7 +708,6 @@
                         <div class="article-body" id="body-${art.id}">
                             ${art.body}
                             
-                            <!-- 🌟 التوقيع الدائم التلقائي أسفل كل مقال -->
                             <div style="margin-top: 22px; padding-top: 15px; border-top: 1px dashed #334155; text-align: center; line-height: 1.6;">
                                 <div style="color: #facc15; font-size: 14px; font-weight: bold; margin-bottom: 6px;">
                                     💛 فضلاً .. شارك المنشور ليستفيد غيرك.
@@ -643,20 +718,17 @@
                             </div>
                             
                             <div class="share-section">
-                                <!-- الزر الأول: متابعة صفحة الفيس بوك -->
                                 <a href="https://www.facebook.com/profile.php?id=61595054055544" target="_blank" class="main-action-btn btn-fb-follow" title="تابعنا على فيسبوك">
                                     <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                                     تابعنا
                                 </a>
 
-                                <!-- الزر الثاني: مشاركة مع الأيقونة جهة الشمال والفقاعة العصرية -->
                                 <div style="flex: 1; position: relative;">
                                     <button class="main-action-btn btn-share-menu-toggle" onclick="toggleShareBubble(${art.id})" style="width: 100%;">
                                         مشاركة
                                         <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
                                     </button>
 
-                                    <!-- الفقاعة المستطيلة الحاوية للأيقونات الدائرية -->
                                     <div class="modern-share-bubble" id="shareBubble-${art.id}">
                                         <button class="circle-icon-btn circle-wa" onclick="shareToWhatsApp(${art.id})" title="واتساب">
                                             <svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.764.459 3.487 1.332 5.006l-1.417 5.176 5.297-1.388c1.464.798 3.112 1.218 4.773 1.219h.005c5.507 0 9.99-4.478 9.99-9.985 0-2.667-1.038-5.174-2.925-7.062a9.92 9.92 0 0 0-7.059-2.952zm5.72 13.911c-.237.667-1.378 1.275-1.928 1.331-.502.053-1.156.076-3.342-.828-2.793-1.154-4.595-4.004-4.735-4.189-.138-.186-1.134-1.509-1.134-2.879 0-1.37.718-2.044.973-2.321.255-.278.556-.347.741-.347.185 0 .37.002.532.01.173.008.405-.066.635.486.237.568.81 1.972.88 2.112.07.139.116.301.023.486-.093.185-.139.301-.278.463-.139.162-.292.361-.417.486-.139.139-.283.295-.122.572.162.277.718 1.184 1.542 1.918 1.058.942 1.95 1.233 2.228 1.372.278.139.44.116.602-.07.162-.185.695-.81.88-1.088.185-.278.37-.231.625-.139.255.093 1.62.764 1.898.903.278.139.463.208.532.324.07.116.07.671-.167 1.338z"/></svg>
@@ -673,7 +745,6 @@
                                     </div>
                                 </div>
 
-                                <!-- الزر الثالث: نسخ الرابط -->
                                 <button class="main-action-btn btn-copy-main" id="copyBtn-${art.id}" onclick="copyArticleLink(${art.id}, this)">
                                     <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                                     نسخ
@@ -687,7 +758,54 @@
                 `;
             });
             container.innerHTML = html;
+            renderPaginationControls();
         }
+
+        function renderPaginationControls() {
+            const paginationContainer = document.getElementById('paginationContainer');
+            const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
+
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+
+            let paginationHtml = '';
+            if (currentPage > 1) {
+                paginationHtml += `<button class="page-btn" onclick="changePage(${currentPage - 1})">« السابق</button>`;
+            }
+            for (let i = 1; i <= totalPages; i++) {
+                const activeClass = i === currentPage ? 'active' : '';
+                paginationHtml += `<button class="page-btn ${activeClass}" onclick="changePage(${i})">${i}</button>`;
+            }
+            if (currentPage < totalPages) {
+                paginationHtml += `<button class="page-btn" onclick="changePage(${currentPage + 1})">التالي »</button>`;
+            }
+
+            paginationContainer.innerHTML = paginationHtml;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            displayArticles();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // دالة التحكم بفتح وإغلاق صندوق الترحيب المنسدل
+        function toggleWelcomePopover(e) {
+            e.stopPropagation();
+            const popover = document.getElementById('welcomePopover');
+            popover.classList.toggle('show');
+        }
+
+        // إغلاق الصندوق المنسدل عند النقر في أي مكان خارج القائمة
+        document.addEventListener('click', function(e) {
+            const popover = document.getElementById('welcomePopover');
+            const container = document.querySelector('.welcome-dropdown-container');
+            if (popover && container && !container.contains(e.target)) {
+                popover.classList.remove('show');
+            }
+        });
 
         function toggleArticle(id) {
             const bodyDiv = document.getElementById(`body-${id}`);
@@ -705,33 +823,25 @@
 
         function filterArticles() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            const filtered = allArticles.filter(art => 
+            filteredArticles = allArticles.filter(art => 
                 art.title.toLowerCase().includes(query) || 
                 art.description.toLowerCase().includes(query) ||
                 art.body.toLowerCase().includes(query) ||
                 (art.category && art.category.toLowerCase().includes(query))
             );
             
-            const welcomePost = document.getElementById('pinnedWelcomePost');
-            if (welcomePost) {
-                welcomePost.style.display = query.length > 0 ? 'none' : 'block';
-            }
-            
-            displayArticles(filtered);
+            currentPage = 1;
+            displayArticles();
         }
 
         function filterByCategory(category, btnElement) {
             document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
             btnElement.classList.add('active');
 
-            const welcomePost = document.getElementById('pinnedWelcomePost');
-
             if (category === 'all') {
-                if (welcomePost) welcomePost.style.display = 'block';
-                displayArticles(allArticles);
+                filteredArticles = [...allArticles];
             } else {
-                if (welcomePost) welcomePost.style.display = 'none';
-                const filtered = allArticles.filter(art => {
+                filteredArticles = allArticles.filter(art => {
                     let cat = (art.category || '').toLowerCase();
                     if (cat === '☀️ الطاقة الشمسية' || cat === 'الطاقة الشمسية') {
                         cat = '☀️ الطاقة الشمسية والبديلة';
@@ -740,8 +850,10 @@
                     const desc = art.description.toLowerCase();
                     return cat.includes(category) || title.includes(category) || desc.includes(category);
                 });
-                displayArticles(filtered);
             }
+            
+            currentPage = 1;
+            displayArticles();
         }
 
         function toggleShareBubble(id) {
