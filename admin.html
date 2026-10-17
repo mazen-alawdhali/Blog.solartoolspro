@@ -614,7 +614,6 @@
             }
         });
 
-        // 🌟 دالة فتح نافذة المدخلات المخصصة بدلاً من prompt()
         let promptCallback = null;
         function showCustomPrompt(title, subtitle, defaultValue, placeholder, callback) {
             document.getElementById('promptTitle').innerText = title;
@@ -641,7 +640,6 @@
             closePromptModal();
         };
 
-        // 🔗 إدراج الرابط بدون خط تحت النص نهائياً وبشكل نظيف
         function insertLink() {
             showCustomPrompt('🔗 إدراج رابط تشعبي', 'أدخل رابط الـ URL المطلوب:', 'https://', 'https://solartoolspro.com', function(url) {
                 if (!url || url === 'https://') return;
@@ -723,10 +721,14 @@
 
         let currentModalAction = null;
         document.getElementById('confirmDeleteBtn').onclick = function() {
-            if (currentModalAction === 'deleteArticle' && articleToDeleteId) {
+            if (currentModalAction === 'deleteArticle' && articleToDeleteId !== null) {
                 deleteArticle(articleToDeleteId);
+            } else if (currentModalAction === 'bulkDeleteArticles') {
+                executeBulkDeleteArticles();
             } else if (currentModalAction === 'deleteDraft' && draftToDeleteIndex !== null) {
                 executeDeleteDraft(draftToDeleteIndex);
+            } else if (currentModalAction === 'bulkDeleteDrafts') {
+                executeBulkDeleteDrafts();
             } else if (currentModalAction === 'deleteImages') {
                 if (selectedImageElements.length > 0) {
                     const imagesToDelete = [...selectedImageElements];
@@ -816,7 +818,6 @@
             scheduleAutoSave();
         }
 
-        // --- نظام الحفظ التلقائي الذكي المنضبط تماماً ---
         function getSavedDrafts() {
             try {
                 const drafts = localStorage.getItem('blog_all_drafts');
@@ -933,26 +934,77 @@
                 return;
             }
 
-            let html = `<div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">`;
+            let html = `
+                <div style="background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 10px 14px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #38bdf8; font-weight: bold; margin-bottom: 0;">
+                        <input type="checkbox" id="selectAllDraftsCheckbox" onclick="toggleSelectAllDrafts(this)" style="width: 18px; height: 18px; cursor: pointer;"> تحديد الكل
+                    </label>
+                    <button class="btn-red" onclick="confirmBulkDeleteDrafts()" style="padding: 6px 12px; font-size: 12px;">حذف المحدد 🗑️</button>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+            `;
+
             drafts.forEach((draft, index) => {
                 const badge = draft.isAutoSave ? ' <span style="background:#0284c7; font-size:10px; padding:2px 6px; border-radius:4px;">حفظ تلقائي</span>' : '';
                 const catBadge = draft.category ? ` <span style="background:#334155; color:#34d399; font-size:10px; padding:2px 6px; border-radius:4px;">${draft.category}</span>` : '';
                 html += `
                     <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-                        <div style="font-size: 15px; font-weight: bold; color: #38bdf8; margin-bottom: 6px; word-break: break-word;">
-                            📄 ${draft.title} ${badge} ${catBadge}
+                        <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px;">
+                            <input type="checkbox" class="draft-checkbox" value="${index}" onclick="updateSelectAllDraftsState()" style="width: 18px; height: 18px; margin-top: 3px; cursor: pointer;">
+                            <div style="font-size: 15px; font-weight: bold; color: #38bdf8; word-break: break-word; flex: 1;">
+                                📄 ${draft.title} ${badge} ${catBadge}
+                            </div>
                         </div>
-                        <div style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">آخر تعديل: ${draft.updatedAt}</div>
-                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                            <button class="btn-green" onclick="publishDraftDirect(${index})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 80px;">🚀 نشر مباشر</button>
-                            <button class="btn-edit" onclick="loadDraftToEditor(${index})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">✏️ تعديل</button>
-                            <button class="btn-red" onclick="confirmDeleteDraft(${index})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">🗑️ حذف</button>
+                        <div style="font-size: 12px; color: #94a3b8; margin-bottom: 12px; margin-right: 28px;">آخر تعديل: ${draft.updatedAt}</div>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-right: 28px;">
+                            <button class="btn-green" onclick="publishDraftDirect(${index})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 80px; white-space: nowrap;">🚀 نشر مباشر</button>
+                            <button class="btn-edit" onclick="loadDraftToEditor(${index})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px; white-space: nowrap;">✏️ تعديل</button>
+                            <button class="btn-red" onclick="confirmDeleteDraft(${index})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px; white-space: nowrap;">🗑️ حذف</button>
                         </div>
                     </div>
                 `;
             });
             html += `</div>`;
             container.innerHTML = html;
+        }
+
+        function toggleSelectAllDrafts(masterCheckbox) {
+            const checkboxes = document.querySelectorAll('.draft-checkbox');
+            checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
+        }
+
+        function updateSelectAllDraftsState() {
+            const checkboxes = document.querySelectorAll('.draft-checkbox');
+            const masterCheckbox = document.getElementById('selectAllDraftsCheckbox');
+            if (masterCheckbox) {
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                const someChecked = Array.from(checkboxes).some(cb => cb.checked);
+                masterCheckbox.checked = allChecked;
+                masterCheckbox.indeterminate = someChecked && !allChecked;
+            }
+        }
+
+        function confirmBulkDeleteDrafts() {
+            const checkboxes = document.querySelectorAll('.draft-checkbox:checked');
+            if (checkboxes.length === 0) {
+                return showToast('⚠️ يرجى تحديد مسودة واحدة على الأقل للحذف!', 'error');
+            }
+            document.getElementById('confirmModalText').innerText = `هل أنت متأكد من رغبة حذف (${checkboxes.length}) مسودة محددة نهائياً؟`;
+            currentModalAction = 'bulkDeleteDrafts';
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        function executeBulkDeleteDrafts() {
+            const checkboxes = document.querySelectorAll('.draft-checkbox:checked');
+            const indicesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.value)).sort((a, b) => b - a);
+            
+            let drafts = getSavedDrafts();
+            indicesToDelete.forEach(index => {
+                drafts.splice(index, 1);
+            });
+            saveDraftsToStorage(drafts);
+            showToast(`🗑️ تم حذف ${indicesToDelete.length} مسودة بنجاح!`, 'success');
+            document.getElementById('draftEditIndex').value = '';
         }
 
         function loadDraftToEditor(index) {
@@ -1142,7 +1194,6 @@
             }
         }
 
-        // 🔑 كلمة المرور المعتمدة
         const MASTER_PASS = "771005555#"; 
 
         if (localStorage.getItem('admin_authenticated') === 'true') {
@@ -1227,7 +1278,6 @@
         const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
         const rssApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/rss.xml`;
 
-        // 🌟 دالة جلب الملف الأصلية السلسة والمباشرة عبر API مع استرجاع الـ SHA والمحتوى معاً
         async function fetchFileFromGithub(token) {
             try {
                 const response = await fetch(apiUrl + '?cache_bust=' + Math.random(), { 
@@ -1259,7 +1309,6 @@
             throw new Error('تعذر جلب المقالات. تحقق من اتصال الإنترنت أو رمز الـ Token.');
         }
 
-        // 🌟 دالة الحفظ مع جلب أحدث SHA مباشر وبشكل تلقائي في كل محاولة لمنع خطأ does not match
         async function saveToGithubWithRetry(token, updateCallback, commitMessage, maxRetries = 3) {
             for (let attempt = 0; attempt < maxRetries; attempt++) {
                 try {
@@ -1416,20 +1465,36 @@
 
         function renderArticlesCards() {
             const listDiv = document.getElementById('articlesList');
-            let cardsHtml = `<div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">`;
+            if (loadedArticles.length === 0) {
+                listDiv.innerText = 'لا توجد مقالات منشورة.';
+                return;
+            }
+
+            let cardsHtml = `
+                <div style="background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 10px 14px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #38bdf8; font-weight: bold; margin-bottom: 0;">
+                        <input type="checkbox" id="selectAllArticlesCheckbox" onclick="toggleSelectAllArticles(this)" style="width: 18px; height: 18px; cursor: pointer;"> تحديد الكل
+                    </label>
+                    <button class="btn-red" onclick="confirmBulkDeleteArticles()" style="padding: 6px 12px; font-size: 12px; white-space: nowrap;">حذف المحدد 🗑️</button>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+            `;
 
             loadedArticles.forEach((art, index) => {
                 const categoryTag = art.category ? `[${art.category}]` : '';
                 cardsHtml += `
                     <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-                        <div style="font-size: 15px; font-weight: bold; color: #f8fafc; margin-bottom: 12px; line-height: 1.5; word-break: break-word;">
-                            ${index + 1}. ${art.title} <span style="font-size: 11px; color: #34d399;">${categoryTag}</span>
+                        <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
+                            <input type="checkbox" class="article-checkbox" value="${art.id}" onclick="updateSelectAllArticlesState()" style="width: 18px; height: 18px; margin-top: 3px; cursor: pointer;">
+                            <div style="font-size: 15px; font-weight: bold; color: #f8fafc; line-height: 1.5; word-break: break-word; flex: 1;">
+                                ${index + 1}. ${art.title} <span style="font-size: 11px; color: #34d399;">${categoryTag}</span>
+                            </div>
                         </div>
-                        <div style="display: flex; gap: 6px; justify-content: flex-start; align-items: center; flex-wrap: wrap;">
-                            <button class="btn-gray" onclick="moveArticle(${index}, -1)" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">⬆️ أعلى</button>
-                            <button class="btn-gray" onclick="moveArticle(${index}, 1)" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">⬇️ أسفل</button>
-                            <button class="btn-edit" onclick="prepareEdit(${art.id})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">✏️ تعديل</button>
-                            <button class="btn-red" onclick="openConfirmModal(${art.id})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px;">🗑️ حذف</button>
+                        <div style="display: flex; gap: 6px; justify-content: flex-start; align-items: center; flex-wrap: nowrap; margin-right: 28px;">
+                            <button class="btn-gray" onclick="moveArticle(${index}, -1)" style="padding: 7px 8px; font-size: 12px; flex: 1; min-width: 55px; white-space: nowrap;">⬆️ أعلى</button>
+                            <button class="btn-gray" onclick="moveArticle(${index}, 1)" style="padding: 7px 8px; font-size: 12px; flex: 1; min-width: 55px; white-space: nowrap;">⬇️ أسفل</button>
+                            <button class="btn-edit" onclick="prepareEdit(${art.id})" style="padding: 7px 8px; font-size: 12px; flex: 1; min-width: 55px; white-space: nowrap;">✏️ تعديل</button>
+                            <button class="btn-red" onclick="openConfirmModal(${art.id})" style="padding: 7px 8px; font-size: 12px; flex: 1; min-width: 55px; white-space: nowrap;">🗑️ حذف</button>
                         </div>
                     </div>
                 `;
@@ -1438,6 +1503,56 @@
             cardsHtml += `</div>`;
             cardsHtml += `<button class="btn-green" style="margin-top: 15px; font-size: 14px; padding: 12px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`;
             listDiv.innerHTML = cardsHtml;
+        }
+
+        function toggleSelectAllArticles(masterCheckbox) {
+            const checkboxes = document.querySelectorAll('.article-checkbox');
+            checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
+        }
+
+        function updateSelectAllArticlesState() {
+            const checkboxes = document.querySelectorAll('.article-checkbox');
+            const masterCheckbox = document.getElementById('selectAllArticlesCheckbox');
+            if (masterCheckbox) {
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                const someChecked = Array.from(checkboxes).some(cb => cb.checked);
+                masterCheckbox.checked = allChecked;
+                masterCheckbox.indeterminate = someChecked && !allChecked;
+            }
+        }
+
+        function confirmBulkDeleteArticles() {
+            const checkboxes = document.querySelectorAll('.article-checkbox:checked');
+            if (checkboxes.length === 0) {
+                return showToast('⚠️ يرجى تحديد مقال واحد على الأقل للحذف!', 'error');
+            }
+            document.getElementById('confirmModalText').innerText = `هل أنت متأكد من رغبة حذف (${checkboxes.length}) مقال محدد نهائياً وتحديث السيرفر؟`;
+            currentModalAction = 'bulkDeleteArticles';
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        async function executeBulkDeleteArticles() {
+            const checkboxes = document.querySelectorAll('.article-checkbox:checked');
+            const idsToDelete = Array.from(checkboxes).map(cb => String(cb.value));
+            const token = document.getElementById('ghToken').value.trim();
+
+            showTopBanner(`جاري حذف ${idsToDelete.length} مقال وتحديث السيرفر والـ RSS...`);
+
+            try {
+                const updatedArticles = await saveToGithubWithRetry(token, async (articles) => {
+                    return articles.filter(a => !idsToDelete.includes(String(a.id)));
+                }, `حذف جماعي لعدد ${idsToDelete.length} مقال`);
+
+                backupArticlesToCloud(updatedArticles);
+                await updateRssFeedOnGithub(token, updatedArticles);
+
+                hideTopBanner();
+                showToast(`🗑️ تم حذف ${idsToDelete.length} مقال بنجاح وتحديث السيرفر والـ RSS!`, 'success');
+                loadArticlesList();
+            } catch (err) {
+                hideTopBanner();
+                showToast('❌ خطأ: ' + err.message, 'error');
+            }
         }
 
         async function uploadAndInsertImages() {
