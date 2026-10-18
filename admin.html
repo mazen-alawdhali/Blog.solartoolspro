@@ -8,6 +8,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="إدارة المدونة">
     
+    <!-- استدعاء الخطوط العربية الاحترافية من Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&family=Almarai:wght@400;700&family=Readex+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- ربط ملف الـ Manifest الرسمي للتثبيت -->
     <link rel="manifest" href="manifest.json">
 
@@ -296,7 +299,7 @@
             border-radius: 10px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
             z-index: 1000;
-            min-width: 110px;
+            min-width: 130px;
             overflow: hidden;
         }
         .dropdown-item {
@@ -478,6 +481,18 @@
                     <div class="dropdown-item" onclick="setFontSize('3')">عادي</div>
                     <div class="dropdown-item" onclick="setFontSize('5')">كبير</div>
                     <div class="dropdown-item" onclick="setFontSize('6')">كبير جداً</div>
+                </div>
+            </div>
+
+            <!-- القائمة المنسدلة المخصصة لنوع الخط (Font Family) -->
+            <div class="custom-dropdown">
+                <button type="button" class="tool-btn" onclick="toggleMenu('fontFamilyDropdown', event)" title="نوع الخط">🖋️ الخط ▼</button>
+                <div id="fontFamilyDropdown" class="dropdown-menu" style="min-width: 140px;">
+                    <div class="dropdown-item" onclick="setFontFamily('Cairo, sans-serif')" style="font-family: 'Cairo'">خط كاييرو (Cairo)</div>
+                    <div class="dropdown-item" onclick="setFontFamily('Tajawal, sans-serif')" style="font-family: 'Tajawal'">خط تجوال (Tajawal)</div>
+                    <div class="dropdown-item" onclick="setFontFamily('Amiri, serif')" style="font-family: 'Amiri'">خط أميري (Amiri)</div>
+                    <div class="dropdown-item" onclick="setFontFamily('Almarai, sans-serif')" style="font-family: 'Almarai'">خط المراعي (Almarai)</div>
+                    <div class="dropdown-item" onclick="setFontFamily('Readex Pro, sans-serif')" style="font-family: 'Readex Pro'">خط ريديックス (Readex)</div>
                 </div>
             </div>
 
@@ -798,7 +813,7 @@
             
             document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
             scheduleAutoSave();
-            showToast('✨ تم تطبيق التنسيق بنجاح!', 'success');
+            showToast('✨ تم تطبيق الخط بنجاح!', 'success');
         }
 
         function setTextColor(color) {
@@ -808,6 +823,10 @@
         function setFontSize(sizeKey) {
             const sizeMap = { '2': '13px', '3': '15px', '5': '20px', '6': '26px' };
             applyStyleToSelection('fontSize', sizeMap[sizeKey] || '15px');
+        }
+
+        function setFontFamily(fontFamily) {
+            applyStyleToSelection('fontFamily', fontFamily);
         }
 
         function execCmd(command, value = null) {
