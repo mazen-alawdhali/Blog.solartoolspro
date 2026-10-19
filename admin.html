@@ -1635,7 +1635,17 @@
             const token = document.getElementById('ghToken').value.trim();
             const title = document.getElementById('postTitle').value.trim();
             const desc = document.getElementById('postDesc').value.trim();
-            const bodyHtml = document.getElementById('postBody').innerHTML.trim();
+            
+            // 🌟 معالجة جراحية تلقائية لإضافة Alt Text لجميع الصور لحصد 100% في فحص السيو
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = document.getElementById('postBody').innerHTML.trim();
+            tempDiv.querySelectorAll('img').forEach((img, idx) => {
+                if (!img.getAttribute('alt') || img.getAttribute('alt').trim() === '') {
+                    img.setAttribute('alt', `${title} - صورة ${idx + 1}`);
+                }
+            });
+            const bodyHtml = tempDiv.innerHTML;
+
             const category = document.getElementById('postCategory').value;
             const editId = document.getElementById('editArticleId').value;
             const draftEditIndex = document.getElementById('draftEditIndex').value;
