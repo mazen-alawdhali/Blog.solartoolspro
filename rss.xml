@@ -6,6 +6,13 @@
     <description>دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية والحواسيب.</description>
     <language>ar</language>
     <item>
+        <title>أسرار معايرة التيارات وحماية SOH عند ربط بطاريات الليثيوم بالتوازي</title>
+        <link>https://blog.solartoolspro.com/?id=1792524275865</link>
+        <description>مقال تقني وهندسي عميق يتناول توزيع الأحمال، كابلات التوصيل، فرق الجهد اللحظي، التيارات المتبادلة، حماية نسبة صحة البطارية (SOH)، وتجنب مشكلات ربط البطاريات القديمة بالجديدة.</description>
+        <guid>https://blog.solartoolspro.com/?id=1792524275865</guid>
+        <enclosure url="https://raw.githubusercontent.com/mazen-alawdhali/blog.solartoolspro.com/main/images/1792520408038_0_1792520386272.jpg" type="image/jpeg" />
+    </item>
+    <item>
         <title>هل الأفضل بطارية ليثيوم واحدة (10 كيلوواط) أم بطاريتان (5 كيلوواط) بالتوازي؟ (مقارنة هندسية وميدانية)</title>
         <link>https://blog.solartoolspro.com/?id=1792512930241</link>
         <description>تحليل علمي وميداني يقارن بين استخدام بطارية ليثيوم واحدة بسعة 10 كيلوواط أو بطاريتين بسعة 5 كيلوواط مربوطة بالتوازي في منظومات الطاقة الشمسية، من حيث الاعتمادية، القدرة، والتكلفة.</description>
