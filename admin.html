@@ -431,21 +431,36 @@
     <input type="hidden" id="editArticleId" value="">
     <input type="hidden" id="draftEditIndex" value="">
 
-    <!-- قائمة اختيار تصنيف المقال المنسدلة المخصصة بأيقونة المصباح المضيء 💡 اللامعة -->
+    <!-- قائمة اختيار تصنيف المقال المنسدلة المتعددة بدعم مربعات الاختيار Checkboxes -->
     <div class="form-group">
-        <label>تصنيف المقال:</label>
+        <label>تصنيف المقال (يمكنك اختيار قسمين أو أكثر):</label>
         <input type="hidden" id="postCategory" value="☀️ الطاقة الشمسية والبديلة">
         <div class="custom-dropdown" style="width: 100%;">
             <button type="button" id="categoryDropdownBtn" class="category-select-btn" onclick="toggleMenu('categoryDropdown', event)">
-                <span id="selectedCategoryText">☀️ الطاقة الشمسية والبديلة</span>
+                <span id="selectedCategoryText" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 90%;">☀️ الطاقة الشمسية والبديلة</span>
                 <span style="font-size: 11px; color: #38bdf8;">▼</span>
             </button>
-            <div id="categoryDropdown" class="dropdown-menu" style="width: 100%;">
-                <div class="dropdown-item" onclick="selectCategory('☀️ الطاقة الشمسية والبديلة')">☀️ الطاقة الشمسية والبديلة</div>
-                <div class="dropdown-item" onclick="selectCategory('💡 أدوات ذكية')">💡 أدوات ذكية</div>
-                <div class="dropdown-item" onclick="selectCategory('📱 الهواتف الذكية')">📱 الهواتف الذكية</div>
-                <div class="dropdown-item" onclick="selectCategory('💻 الحواسيب والتقنية')">💻 الحواسيب والتقنية</div>
-                <div class="dropdown-item" onclick="selectCategory('🔋 البطاريات')">🔋 البطاريات</div>
+            <div id="categoryDropdown" class="dropdown-menu" style="width: 100%; padding: 6px 0;">
+                <label class="dropdown-item" style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;">
+                    <input type="checkbox" class="cat-checkbox" value="☀️ الطاقة الشمسية والبديلة" checked onchange="updateSelectedCategories()" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span>☀️ الطاقة الشمسية والبديلة</span>
+                </label>
+                <label class="dropdown-item" style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;">
+                    <input type="checkbox" class="cat-checkbox" value="💡 أدوات ذكية" onchange="updateSelectedCategories()" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span>💡 أدوات ذكية</span>
+                </label>
+                <label class="dropdown-item" style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;">
+                    <input type="checkbox" class="cat-checkbox" value="📱 الهواتف الذكية" onchange="updateSelectedCategories()" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span>📱 الهواتف الذكية</span>
+                </label>
+                <label class="dropdown-item" style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;">
+                    <input type="checkbox" class="cat-checkbox" value="💻 الحواسيب والتقنية" onchange="updateSelectedCategories()" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span>💻 الحواسيب والتقنية</span>
+                </label>
+                <label class="dropdown-item" style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;">
+                    <input type="checkbox" class="cat-checkbox" value="🔋 البطاريات" onchange="updateSelectedCategories()" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span>🔋 البطاريات</span>
+                </label>
             </div>
         </div>
     </div>
@@ -484,10 +499,11 @@
                 </div>
             </div>
 
-            <!-- القائمة المنسدلة المخصصة لنوع الخط (Font Family) -->
+            <!-- القائمة المنسدلة المخصصة لنوع الخط (Font Family) مع الخط الأساسي كخيار مستقل تماماً -->
             <div class="custom-dropdown">
                 <button type="button" class="tool-btn" onclick="toggleMenu('fontFamilyDropdown', event)" title="نوع الخط">🖋️ الخط ▼</button>
-                <div id="fontFamilyDropdown" class="dropdown-menu" style="min-width: 140px;">
+                <div id="fontFamilyDropdown" class="dropdown-menu" style="min-width: 160px;">
+                    <div class="dropdown-item" onclick="setFontFamily(`'Segoe UI', Tahoma, Geneva, Verdana, sans-serif`)" style="font-family: 'Segoe UI', sans-serif; color: #38bdf8;">الخط الأساسي (الافتراضي)</div>
                     <div class="dropdown-item" onclick="setFontFamily('Cairo, sans-serif')" style="font-family: 'Cairo'">خط كاييرو (Cairo)</div>
                     <div class="dropdown-item" onclick="setFontFamily('Tajawal, sans-serif')" style="font-family: 'Tajawal'">خط تجوال (Tajawal)</div>
                     <div class="dropdown-item" onclick="setFontFamily('Amiri, serif')" style="font-family: 'Amiri'">خط أميري (Amiri)</div>
@@ -769,11 +785,35 @@
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
-        function selectCategory(catName) {
-            document.getElementById('postCategory').value = catName;
-            document.getElementById('selectedCategoryText').innerText = catName;
-            document.getElementById('categoryDropdown').style.display = 'none';
+        function updateSelectedCategories() {
+            const checkedBoxes = document.querySelectorAll('.cat-checkbox:checked');
+            let selectedValues = [];
+            checkedBoxes.forEach(cb => selectedValues.push(cb.value));
+
+            if (selectedValues.length === 0) {
+                selectedValues = ['☀️ الطاقة الشمسية والبديلة'];
+                const defaultCb = document.querySelector('.cat-checkbox[value="☀️ الطاقة الشمسية والبديلة"]');
+                if (defaultCb) defaultCb.checked = true;
+            }
+
+            const categoriesString = selectedValues.join(' | ');
+            document.getElementById('postCategory').value = categoriesString;
+            document.getElementById('selectedCategoryText').innerText = categoriesString;
             scheduleAutoSave();
+        }
+
+        function setSelectedCategoriesInUI(categoriesStr) {
+            const categories = categoriesStr ? categoriesStr.split('|').map(c => c.trim()) : ['☀️ الطاقة الشمسية والبديلة'];
+            document.querySelectorAll('.cat-checkbox').forEach(cb => {
+                let isMatch = categories.some(cat => {
+                    let cleanedCat = cat;
+                    if (cleanedCat === '☀️ الطاقة الشمسية' || cleanedCat === 'الطاقة الشمسية') cleanedCat = '☀️ الطاقة الشمسية والبديلة';
+                    if (cleanedCat.includes('أدوات') || cleanedCat.includes('⚙️')) cleanedCat = '💡 أدوات ذكية';
+                    return cb.value === cleanedCat;
+                });
+                cb.checked = isMatch;
+            });
+            updateSelectedCategories();
         }
 
         document.addEventListener('click', function(e) {
@@ -809,6 +849,7 @@
                 document.execCommand('styleWithCSS', false, true);
                 if (styleProp === 'color') document.execCommand('foreColor', false, styleVal);
                 if (styleProp === 'fontSize') document.execCommand('fontSize', false, styleVal);
+                if (styleProp === 'fontFamily') document.execCommand('fontName', false, styleVal);
             }
             
             document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
@@ -1035,10 +1076,7 @@
                 document.getElementById('postDesc').value = draft.desc;
                 document.getElementById('postBody').innerHTML = draft.body;
                 if (draft.category) {
-                    let cat = draft.category;
-                    if (cat.includes('أدوات ذكية')) cat = '💡 أدوات ذكية';
-                    document.getElementById('postCategory').value = cat;
-                    document.getElementById('selectedCategoryText').innerText = cat;
+                    setSelectedCategoriesInUI(draft.category);
                 }
                 document.getElementById('draftEditIndex').value = index;
                 showToast('📂 تم تحميل المسودة في المحرر بنجاح!', 'success');
@@ -1072,10 +1110,7 @@
             document.getElementById('postDesc').value = draft.desc;
             document.getElementById('postBody').innerHTML = draft.body;
             if (draft.category) {
-                let cat = draft.category;
-                if (cat.includes('أدوات ذكية')) cat = '💡 أدوات ذكية';
-                document.getElementById('postCategory').value = cat;
-                document.getElementById('selectedCategoryText').innerText = cat;
+                setSelectedCategoriesInUI(draft.category);
             }
             document.getElementById('draftEditIndex').value = index;
 
@@ -1089,8 +1124,7 @@
             document.getElementById('editArticleId').value = '';
             document.getElementById('draftEditIndex').value = '';
             document.getElementById('draftStatus').innerText = '';
-            document.getElementById('postCategory').value = '☀️ الطاقة الشمسية والبديلة';
-            document.getElementById('selectedCategoryText').innerText = '☀️ الطاقة الشمسية والبديلة';
+            setSelectedCategoriesInUI('☀️ الطاقة الشمسية والبديلة');
             selectedImageElements = [];
         }
 
@@ -1397,7 +1431,7 @@
 <channel>
     <title>مدونة منصة أدوات الطاقة الشمسية والتقنية</title>
     <link>https://blog.solartoolspro.com</link>
-    <description>دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.</description>
+    <description>دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية والحواسيب.</description>
     <language>ar</language>`;
 
                 if (Array.isArray(articles)) {
@@ -1721,10 +1755,7 @@
                     document.getElementById('postDesc').value = art.description;
                     document.getElementById('postBody').innerHTML = art.body;
                     if (art.category) {
-                        let cat = art.category;
-                        if (cat.includes('أدوات ذكية')) cat = '💡 أدوات ذكية';
-                        document.getElementById('postCategory').value = cat;
-                        document.getElementById('selectedCategoryText').innerText = cat;
+                        setSelectedCategoriesInUI(art.category);
                     }
                     
                     document.getElementById('formTitle').innerText = '✏️ تعديل المقال المنشور';

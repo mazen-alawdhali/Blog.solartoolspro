@@ -15,7 +15,7 @@
       "@type": "Blog",
       "name": "مدونة أدوات الطاقة والتقنية",
       "url": "https://blog.solartoolspro.com/",
-      "description": "دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.",
+      "description": "دليلك إلى أحدث المقالات التقنية وأنظمة الطاقة الشمسية والبديلة والهواتف الذكية والحواسيب.",
       "inLanguage": "ar"
     }
     </script>
@@ -31,7 +31,7 @@
     <link rel="manifest" href="site.webmanifest" />
     
     <title id="metaTitle">مدونة أدوات الطاقة والتقنية - SolarToolsPro</title>
-    <meta name="description" id="metaDesc" content="دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب." cite="6">
+    <meta name="description" id="metaDesc" content="دليلك إلى أحدث المقالات التقنية وأنظمة الطاقة الشمسية والبديلة والهواتف الذكية والحواسيب." cite="6">
     
     <!-- 🌟 الـ Canonical المحدث ديناميكياً لتجنب توجيه فيسبوك للرئيسية -->
     <link id="canonicalUrl" rel="canonical" href="https://blog.solartoolspro.com/">
@@ -40,7 +40,7 @@
     <meta property="og:type" content="article">
     <meta property="og:url" id="ogUrl" content="https://blog.solartoolspro.com/">
     <meta property="og:title" id="ogTitle" content="مدونة أدوات الطاقة والتقنية - SolarToolsPro">
-    <meta property="og:description" id="ogDesc" content="دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب." cite="6">
+    <meta property="og:description" id="ogDesc" content="دليلك إلى أحدث المقالات التقنية وأنظمة الطاقة الشمسية والبديلة والهواتف الذكية والحواسيب." cite="6">
     <meta property="og:image" id="ogImage" content="https://blog.solartoolspro.com/images/header_balanced_sky_600w.webp">
     
     <style>
@@ -599,7 +599,7 @@
         const articlesPerPage = 10; // 🌟 10 مقالات في الصفحة الواحدة
 
         // حقن النص الوصفي برمجياً لتجاوز مشكلة الكاش في السيرفر نهائياً
-        document.getElementById('descBox').innerText = "دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية، والحواسيب.";
+        document.getElementById('descBox').innerText = "دليلك إلى أحدث المقالات التقنية وأنظمة الطاقة الشمسية والبديلة والهواتف الذكية والحواسيب.";
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
@@ -701,20 +701,28 @@
                     });
                 }
                 
-                let categoryTag = art.category ? art.category : 'عام';
-                if (categoryTag === '☀️ الطاقة الشمسية' || categoryTag === 'الطاقة الشمسية') {
-                    categoryTag = '☀️ الطاقة الشمسية والبديلة';
-                }
-                if (categoryTag.includes('أدوات') || categoryTag.includes('⚙️')) {
-                    categoryTag = '💡 أدوات ذكية';
-                }
+                let rawCategories = art.category ? art.category.split('|').map(c => c.trim()) : ['عام'];
+                let tagsHtml = '';
+                
+                rawCategories.forEach(cat => {
+                    let cleanedCat = cat;
+                    if (cleanedCat === '☀️ الطاقة الشمسية' || cleanedCat === 'الطاقة الشمسية') {
+                        cleanedCat = '☀️ الطاقة الشمسية والبديلة';
+                    }
+                    if (cleanedCat.includes('أدوات') || cleanedCat.includes('⚙️')) {
+                        cleanedCat = '💡 أدوات ذكية';
+                    }
+                    tagsHtml += `<span class="article-category-tag">${cleanedCat}</span> `;
+                });
 
                 html += `
                     <div class="article-card" id="card-${art.id}">
                         <div class="article-meta">
                             <span>⏱️ ${readTime} دقائق</span>
                             <span>📅 ${articleDate}</span>
-                            <span class="article-category-tag">${categoryTag}</span>
+                            <div style="display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end;">
+                                ${tagsHtml}
+                            </div>
                         </div>
                         <h2>${art.title}</h2>
                         <p>${art.description}</p>
@@ -857,12 +865,12 @@
             } else {
                 filteredArticles = allArticles.filter(art => {
                     let cat = (art.category || '').toLowerCase();
-                    if (cat === '☀️ الطاقة الشمسية' || cat === 'الطاقة الشمسية') {
-                        cat = '☀️ الطاقة الشمسية والبديلة';
+                    if (cat.includes('☀️ الطاقة الشمسية') || cat.includes('الطاقة الشمسية')) {
+                        cat += ' ☀️ الطاقة الشمسية والبديلة';
                     }
                     const title = art.title.toLowerCase();
                     const desc = art.description.toLowerCase();
-                    return cat.includes(category) || title.includes(category) || desc.includes(category);
+                    return cat.includes(category.toLowerCase()) || title.includes(category.toLowerCase()) || desc.includes(category.toLowerCase());
                 });
             }
             
