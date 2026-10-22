@@ -6,6 +6,13 @@
     <description>دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية والحواسيب.</description>
     <language>ar</language>
     <item>
+        <title>التوصيل على التوالي مقابل التوازي للألواح الشمسية: القواعد الهندسية وحماية حدود الـ MPPT</title>
+        <link>https://blog.solartoolspro.com/?id=1792627605920</link>
+        <description>مقال هندسي يوضح الفرق بين التوصيل على التوالي والتوازي للألواح الشمسية، وكيفية حساب الجهود (Voc) والتيارات (Isc) لحماية حدود الـ MPPT في الإنفرتر.</description>
+        <guid>https://blog.solartoolspro.com/?id=1792627605920</guid>
+        <enclosure url="https://raw.githubusercontent.com/mazen-alawdhali/blog.solartoolspro.com/main/images/1792627498264_0_1792627071724.jpg" type="image/jpeg" />
+    </item>
+    <item>
         <title>أسرار معايرة التيارات وحماية SOH عند ربط بطاريات الليثيوم بالتوازي</title>
         <link>https://blog.solartoolspro.com/?id=1792524275865</link>
         <description>مقال تقني وهندسي عميق يتناول توزيع الأحمال، كابلات التوصيل، فرق الجهد اللحظي، التيارات المتبادلة، حماية نسبة صحة البطارية (SOH)، وتجنب مشكلات ربط البطاريات القديمة بالجديدة.</description>
