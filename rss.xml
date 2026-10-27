@@ -6,6 +6,13 @@
     <description>دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية والحواسيب.</description>
     <language>ar</language>
     <item>
+        <title>موازنة خلايا بطاريات الليثيوم (Cell Balancing): الفرق بين الموازنة النشطة (Active) والسالبة (Passive) وكيف تحمي بنك البطاريات؟</title>
+        <link>https://blog.solartoolspro.com/?id=1793060602825</link>
+        <description>مقال هندسي يوضح أهمية موازنة خلايا بطاريات الليثيوم (LiFePO4) عبر نظام BMS، والمقارنة بين الموازنة النشطة والسالبة لحماية بنك البطاريات وزيادة عمره الافتراضي.</description>
+        <guid>https://blog.solartoolspro.com/?id=1793060602825</guid>
+        <enclosure url="https://raw.githubusercontent.com/mazen-alawdhali/blog.solartoolspro.com/main/images/1793060523543_0_1793060482042.jpg" type="image/jpeg" />
+    </item>
+    <item>
         <title>أجهزة المراقبة والمقابس الذكية (Smart Plugs): كيف تتبع استهلاك أجهزتك المنزلية وتحميها من تذبذب التيار؟</title>
         <link>https://blog.solartoolspro.com/?id=1792771681165</link>
         <description>مقال عملي حول استخدام المقابس الذكية وأجهزة قياس الطاقة المتقدمة لتتبع استهلاك الأجهزة المنزلية لحظياً، وحمايتها من ارتفاع وانخفاض الجهد الكهربائي عبر الأتمتة.</description>
