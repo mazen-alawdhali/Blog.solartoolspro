@@ -6,6 +6,13 @@
     <description>دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية والحواسيب.</description>
     <language>ar</language>
     <item>
+        <title>ضبط أولوية الشحن والتفريغ في الإنفرتر الهجين: استراتيجيات الأتمتة لتقليل الاعتماد على الشبكة والمولد</title>
+        <link>https://blog.solartoolspro.com/?id=1793067874507</link>
+        <description>مقال هندسي يوضح كيفية ضبط أوضاع وأولويات الطاقة (SBU / SUB / USB) في الإنفرترات الهجينة، واستراتيجيات الأتمتة لحماية البطاريات وتقليل التكاليف.</description>
+        <guid>https://blog.solartoolspro.com/?id=1793067874507</guid>
+        <enclosure url="https://raw.githubusercontent.com/mazen-alawdhali/blog.solartoolspro.com/main/images/1793062612494_0_1793062569794.jpg" type="image/jpeg" />
+    </item>
+    <item>
         <title>موازنة خلايا بطاريات الليثيوم (Cell Balancing): الفرق بين الموازنة النشطة (Active) والسالبة (Passive) وكيف تحمي بنك البطاريات؟</title>
         <link>https://blog.solartoolspro.com/?id=1793060602825</link>
         <description>مقال هندسي يوضح أهمية موازنة خلايا بطاريات الليثيوم (LiFePO4) عبر نظام BMS، والمقارنة بين الموازنة النشطة والسالبة لحماية بنك البطاريات وزيادة عمره الافتراضي.</description>
