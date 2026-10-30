@@ -529,7 +529,7 @@
     <header>
         <div class="hero-banner">
             <h1>مدونة أدوات الطاقة والتقنية</h1>
-            <p class="subtitle">دليلكم لبناء حياة ذكية ومستدامة بأحدث الأجهزة.</p>
+            <p class="subtitle">دليلكم لبناء حياة ذكية ومستدامة بأحدث الأجهزة</p>
         </div>
     </header>
 
@@ -728,7 +728,7 @@
                         <p>${art.description}</p>
                         
                         <div class="article-body" id="body-${art.id}">
-                            ${art.body ? art.body.replace(/<img([^>]+)>/gi, (m, p) => p.includes('alt=') ? m : `<img${p} alt="${art.title}">`) : ''}
+                            ${(() => { if(!art.body) return ''; let d = document.createElement('div'); d.innerHTML = art.body; d.querySelectorAll('img:not([alt]), img[alt=""]').forEach(i => i.setAttribute('alt', art.title)); return d.innerHTML; })()}
                             
                             <div style="margin-top: 22px; padding-top: 15px; border-top: 1px dashed #334155; text-align: center; line-height: 1.6;">
                                 <div style="color: #facc15; font-size: 14px; font-weight: bold; margin-bottom: 6px;">
