@@ -728,7 +728,7 @@
                         <p>${art.description}</p>
                         
                         <div class="article-body" id="body-${art.id}">
-                            ${art.body}
+                            ${art.body ? art.body.replace(/<img([^>]+)>/gi, (m, p) => p.includes('alt=') ? m : `<img${p} alt="${art.title}">`) : ''}
                             
                             <div style="margin-top: 22px; padding-top: 15px; border-top: 1px dashed #334155; text-align: center; line-height: 1.6;">
                                 <div style="color: #facc15; font-size: 14px; font-weight: bold; margin-bottom: 6px;">
