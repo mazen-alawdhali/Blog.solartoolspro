@@ -633,7 +633,7 @@
                         document.getElementById('ogDesc').setAttribute('content', currentArt.description);
 
                         if (currentArt.body) {
-                            const imgMatch = currentArt.body.match(/<img[^>]+src=["']([^"']+)["']/i);
+                            const imgMatch = currentArt.body.match(/\x3Cimg[^>]+src=["']([^"']+)["']/i);
                             if (imgMatch && imgMatch[1]) {
                                 document.getElementById('ogImage').setAttribute('content', imgMatch[1]);
                             }
