@@ -30,6 +30,16 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=3" />
     <link rel="manifest" href="site.webmanifest" />
     
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: { fontCache: 'global' }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <title id="metaTitle">مدونة أدوات الطاقة والتقنية - SolarToolsPro</title>
     <meta name="description" id="metaDesc" content="دليلك إلى أحدث المقالات التقنية وأنظمة الطاقة الشمسية والبديلة والهواتف الذكية والحواسيب." cite="6">
     
@@ -658,6 +668,9 @@
                         }
                     }, 300);
                 }
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise([document.getElementById('articlesContainer')]);
+                }
             } catch (err) {
                 document.getElementById('articlesContainer').innerHTML = `<div class="error-msg">❌ لا توجد مقالات منشورة حالياً أو تعذر الاتصال بالسيرفر.</div>`;
             }
@@ -840,6 +853,9 @@
             } else {
                 bodyDiv.style.display = 'block';
                 btn.innerText = 'إخفاء المقال ✖';
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise([bodyDiv]);
+                }
             }
         }
 
