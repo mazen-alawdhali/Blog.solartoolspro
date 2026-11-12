@@ -631,7 +631,7 @@
                     targetId = window.location.hash.replace('#', '');
                 }
 
-                if (targetId) {
+                if (targetId) {                     const articleIndex = filteredArticles.findIndex(a => a.id == targetId);                     if (articleIndex !== -1) {                         currentPage = Math.floor(articleIndex / articlesPerPage) + 1;                     }
                     const currentArt = allArticles.find(a => a.id == targetId);
                     if (currentArt) {
                         const currentUrl = window.location.href;
