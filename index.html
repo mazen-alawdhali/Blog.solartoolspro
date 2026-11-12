@@ -29,6 +29,7 @@
     <link rel="shortcut icon" href="favicon.ico?v=3" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=3" />
     <link rel="manifest" href="site.webmanifest" />
+    <link rel="alternate" type="application/rss+xml" title="مدونة أدوات الطاقة والتقنية - RSS" href="https://blog.solartoolspro.com/rss.xml" />
     
     <script>
       window.MathJax = {
@@ -737,7 +738,7 @@
                                 ${tagsHtml}
                             </div>
                         </div>
-                        <h2>${art.title}</h2>
+                        <h2><a href="?id=${art.id}" onclick="event.preventDefault(); toggleArticle(${art.id});" style="color: inherit; text-decoration: none;">${art.title}</a></h2>
                         <p>${art.description}</p>
                         
                         <div class="article-body" id="body-${art.id}">
