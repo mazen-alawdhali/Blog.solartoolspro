@@ -386,14 +386,14 @@
     <div id="topBanner">جاري المعالجة...</div>
     <div id="toastContainer"></div>
 
-    <!-- نافذة تأكيد الحذف المنبثقة المخصصة للمقال -->
+    <!-- نافذة تأكيد الحذف والخروج وإلغاء التعديل المنبثقة المخصصة -->
     <div id="confirmModal">
         <div class="confirm-card">
-            <h3>⚠️ تأكيد الحذف</h3>
+            <h3 id="confirmModalTitle">⚠️ تأكيد الحذف</h3>
             <p id="confirmModalText">هل أنت متأكد من رغبتك في الحذف نهائياً؟</p>
             <div class="confirm-btns">
                 <button class="btn-red" id="confirmDeleteBtn">حذف 🗑️</button>
-                <button class="btn-gray" onclick="closeConfirmModal()">إلغاء ❌</button>
+                <button class="btn-gray" id="confirmCancelBtn" onclick="closeConfirmModal()">إلغاء ❌</button>
             </div>
         </div>
     </div>
@@ -430,7 +430,7 @@
 
     <!-- زر قفل وتسجيل الخروج -->
     <div style="text-align: center; margin-bottom: 20px;">
-        <button onclick="lockAdminPanel()" style="background: #334155; color: #f87171; border: 1px solid #475569; padding: 7px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: bold;">قفل لوحة التحكم (تسجيل خروج) 🔒</button>
+        <button onclick="confirmLockAdminPanel()" style="background: #334155; color: #f87171; border: 1px solid #475569; padding: 7px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: bold;">قفل لوحة التحكم (تسجيل خروج) 🔒</button>
     </div>
 
     <div class="form-group">
@@ -645,7 +645,7 @@
                     selectedImageElements.splice(index, 1);
                     img.style.border = '1px solid #334155';
                     img.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
-                    showToast(`إلغاء تحديد الصورة (${selectedImageElements.length} محددة)`, 'success');
+                    showToast(`إللغاء تحديد الصورة (${selectedImageElements.length} محددة)`, 'success');
                 } else {
                     selectedImageElements.push(img);
                     img.style.border = '3px solid #ef4444';
@@ -750,16 +750,28 @@
                 return showToast('⚠️ يرجى النقر على صورة واحدة أو أكثر داخل المقال لتحديدها!', 'error');
             }
             const countText = selectedImageElements.length === 1 ? 'هذه الصورة المحددة' : `الـ (${selectedImageElements.length}) صور المحددة`;
-            document.getElementById('confirmModalText').innerText = `هل تريد حقاً حذف ${countText} من المقال؟`;
-            currentModalAction = 'deleteImages';
+            openCustomConfirmModal('⚠️ تأكيد الحذف', `هل تريد حقاً حذف ${countText} من المقال؟`, 'حذف 🗑️', 'إلغاء ❌', 'deleteImages');
+        }
+
+        function openCustomConfirmModal(title, text, confirmBtnText, cancelBtnText, actionType) {
+            document.getElementById('confirmModalTitle').innerText = title;
+            document.getElementById('confirmModalText').innerText = text;
+            document.getElementById('confirmDeleteBtn').innerText = confirmBtnText;
+            document.getElementById('confirmCancelBtn').innerText = cancelBtnText;
+            currentModalAction = actionType;
             document.getElementById('confirmModal').style.display = 'flex';
         }
 
         function closeConfirmModal() {
             document.getElementById('confirmModal').style.display = 'none';
+            document.getElementById('confirmModalTitle').innerText = '⚠️ تأكيد الحذف';
+            document.getElementById('confirmDeleteBtn').innerText = 'حذف 🗑️';
+            document.getElementById('confirmCancelBtn').innerText = 'إلغاء ❌';
             currentModalAction = null;
         }
 
+        let allowPageExit = false;
+        let exitUnlockTimestamp = 0;
         let currentModalAction = null;
         document.getElementById('confirmDeleteBtn').onclick = function() {
             if (currentModalAction === 'deleteArticle' && articleToDeleteId !== null) {
@@ -781,6 +793,23 @@
                     showToast(`🗑️ تم حذف ${count} صورة من المقال بنجاح!`, 'success');
                     scheduleAutoSave();
                 }
+            } else if (currentModalAction === 'lockPanel') {
+                flushAutoSaveNow();
+                lockAdminPanel();
+            } else if (currentModalAction === 'exitPage') {
+                flushAutoSaveNow();
+                allowPageExit = true;
+                exitUnlockTimestamp = Date.now();
+                closeConfirmModal();
+                if (history.length > 2) {
+                    history.go(-2);
+                } else {
+                    history.back();
+                }
+                setTimeout(() => { window.close(); }, 150);
+                return;
+            } else if (currentModalAction === 'cancelEdit') {
+                executeCancelEdit();
             }
             closeConfirmModal();
         };
@@ -900,6 +929,65 @@
             renderDraftsList();
         }
 
+        function performAutoSave() {
+            const statusEl = document.getElementById('draftStatus');
+            const title = document.getElementById('postTitle').value.trim();
+            const desc = document.getElementById('postDesc').value.trim();
+            const body = document.getElementById('postBody').innerHTML.trim();
+            const category = document.getElementById('postCategory').value;
+            const editId = document.getElementById('editArticleId').value;
+            const draftEditIndex = document.getElementById('draftEditIndex').value;
+
+            if (title || desc || body) {
+                let drafts = getSavedDrafts();
+                const draftTitle = title || (editId ? 'مسودة تعديل بدون عنوان' : 'مسودة سريعة بدون عنوان');
+                
+                const draftData = {
+                    title: draftTitle,
+                    desc,
+                    body,
+                    category,
+                    updatedAt: new Date().toLocaleString('ar-SA'),
+                    isAutoSave: true,
+                    editArticleId: editId || null,
+                    isEditBackup: !!editId
+                };
+
+                let targetIndex = -1;
+                if (draftEditIndex !== '' && drafts[draftEditIndex]) {
+                    targetIndex = parseInt(draftEditIndex);
+                } else if (editId) {
+                    targetIndex = drafts.findIndex(d => d.editArticleId && String(d.editArticleId) === String(editId));
+                } else {
+                    targetIndex = drafts.findIndex(d => !d.editArticleId && d.title === draftTitle);
+                }
+
+                if (targetIndex > -1) {
+                    drafts[targetIndex] = draftData;
+                    document.getElementById('draftEditIndex').value = targetIndex;
+                } else {
+                    drafts.unshift(draftData);
+                    document.getElementById('draftEditIndex').value = 0;
+                }
+
+                localStorage.setItem('blog_all_drafts', JSON.stringify(drafts));
+                renderDraftsList();
+                statusEl.innerText = editId
+                    ? `🛡️ تم حفظ نسخة احتياطية للتعديل (${new Date().toLocaleTimeString('ar-SA')})`
+                    : `💾 تم الحفظ التلقائي (${new Date().toLocaleTimeString('ar-SA')})`;
+            } else {
+                statusEl.innerText = '';
+            }
+        }
+
+        function flushAutoSaveNow() {
+            if (autoSaveTimer) {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = null;
+            }
+            performAutoSave();
+        }
+
         let autoSaveTimer = null;
         function scheduleAutoSave() {
             const statusEl = document.getElementById('draftStatus');
@@ -907,49 +995,7 @@
             
             clearTimeout(autoSaveTimer);
             autoSaveTimer = setTimeout(() => {
-                const title = document.getElementById('postTitle').value.trim();
-                const desc = document.getElementById('postDesc').value.trim();
-                const body = document.getElementById('postBody').innerHTML.trim();
-                const category = document.getElementById('postCategory').value;
-                const editId = document.getElementById('editArticleId').value;
-                const draftEditIndex = document.getElementById('draftEditIndex').value;
-
-                if (!editId && (title || desc || body)) {
-                    let drafts = getSavedDrafts();
-                    const draftTitle = title || 'مسودة سريعة بدون عنوان';
-                    
-                    const draftData = {
-                        title: draftTitle,
-                        desc,
-                        body,
-                        category,
-                        updatedAt: new Date().toLocaleString('ar-SA'),
-                        isAutoSave: true
-                    };
-
-                    let targetIndex = -1;
-                    if (draftEditIndex !== '' && drafts[draftEditIndex]) {
-                        targetIndex = parseInt(draftEditIndex);
-                    } else {
-                        targetIndex = drafts.findIndex(d => d.title === draftTitle);
-                    }
-
-                    if (targetIndex > -1) {
-                        drafts[targetIndex] = draftData;
-                        document.getElementById('draftEditIndex').value = targetIndex;
-                    } else {
-                        drafts.unshift(draftData);
-                        document.getElementById('draftEditIndex').value = 0;
-                    }
-
-                    localStorage.setItem('blog_all_drafts', JSON.stringify(drafts));
-                    renderDraftsList();
-                    statusEl.innerText = `💾 تم الحفظ التلقائي (${new Date().toLocaleTimeString('ar-SA')})`;
-                } else if (!title && !desc && !body) {
-                    statusEl.innerText = '';
-                } else {
-                    statusEl.innerText = '💾 التعديلات جاهزة';
-                }
+                performAutoSave();
             }, 1000);
         }
 
@@ -958,6 +1004,7 @@
             const desc = document.getElementById('postDesc').value.trim();
             const body = document.getElementById('postBody').innerHTML.trim();
             const category = document.getElementById('postCategory').value;
+            const editId = document.getElementById('editArticleId').value;
             const draftEditIndex = document.getElementById('draftEditIndex').value;
 
             if (!title && !desc && !body) {
@@ -971,14 +1018,18 @@
                 body,
                 category,
                 updatedAt: new Date().toLocaleString('ar-SA'),
-                isAutoSave: false
+                isAutoSave: false,
+                editArticleId: editId || null,
+                isEditBackup: !!editId
             };
 
             let targetIndex = -1;
             if (draftEditIndex !== '' && drafts[draftEditIndex]) {
                 targetIndex = parseInt(draftEditIndex);
+            } else if (editId) {
+                targetIndex = drafts.findIndex(d => d.editArticleId && String(d.editArticleId) === String(editId));
             } else {
-                targetIndex = drafts.findIndex(d => d.title === title);
+                targetIndex = drafts.findIndex(d => !d.editArticleId && d.title === title);
             }
 
             if (targetIndex > -1) {
@@ -992,7 +1043,7 @@
             }
 
             saveDraftsToStorage(drafts);
-            clearEditorForm();
+            resetEditModeUI();
         }
 
         function renderDraftsList() {
@@ -1016,19 +1067,21 @@
             `;
 
             drafts.forEach((draft, index) => {
+                const editBadge = draft.editArticleId ? ' <span style="background:#f59e0b; color:#0f172a; font-size:10px; padding:2px 6px; border-radius:4px; font-weight:bold;">✏️ مسودة تعديل</span>' : '';
                 const badge = draft.isAutoSave ? ' <span style="background:#0284c7; font-size:10px; padding:2px 6px; border-radius:4px;">حفظ تلقائي</span>' : '';
                 const catBadge = draft.category ? ` <span style="background:#334155; color:#34d399; font-size:10px; padding:2px 6px; border-radius:4px;">${draft.category}</span>` : '';
+                const publishBtnLabel = draft.editArticleId ? '✅ اعتماد التعديل' : '🚀 نشر مباشر';
                 html += `
                     <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
                         <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px;">
                             <input type="checkbox" class="draft-checkbox" value="${index}" onclick="updateSelectAllDraftsState()" style="width: 18px; height: 18px; margin-top: 3px; cursor: pointer;">
                             <div style="font-size: 15px; font-weight: bold; color: #38bdf8; word-break: break-word; flex: 1;">
-                                📄 ${draft.title} ${badge} ${catBadge}
+                                📄 ${draft.title} ${editBadge} ${badge} ${catBadge}
                             </div>
                         </div>
                         <div style="font-size: 12px; color: #94a3b8; margin-bottom: 12px; margin-right: 28px;">آخر تعديل: ${draft.updatedAt}</div>
                         <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-right: 28px;">
-                            <button class="btn-green" onclick="publishDraftDirect(${index})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 80px; white-space: nowrap;">🚀 نشر مباشر</button>
+                            <button class="btn-green" onclick="publishDraftDirect(${index})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 80px; white-space: nowrap;">${publishBtnLabel}</button>
                             <button class="btn-edit" onclick="loadDraftToEditor(${index})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px; white-space: nowrap;">✏️ تعديل</button>
                             <button class="btn-red" onclick="confirmDeleteDraft(${index})" style="padding: 7px 12px; font-size: 12px; flex: 1; min-width: 65px; white-space: nowrap;">🗑️ حذف</button>
                         </div>
@@ -1060,9 +1113,7 @@
             if (checkboxes.length === 0) {
                 return showToast('⚠️ يرجى تحديد مسودة واحدة على الأقل للحذف!', 'error');
             }
-            document.getElementById('confirmModalText').innerText = `هل أنت متأكد من رغبة حذف (${checkboxes.length}) مسودة محددة نهائياً؟`;
-            currentModalAction = 'bulkDeleteDrafts';
-            document.getElementById('confirmModal').style.display = 'flex';
+            openCustomConfirmModal('⚠️ تأكيد الحذف', `هل أنت متأكد من رغبة حذف (${checkboxes.length}) مسودة محددة نهائياً؟`, 'حذف 🗑️', 'إلغاء ❌', 'bulkDeleteDrafts');
         }
 
         function executeBulkDeleteDrafts() {
@@ -1089,26 +1140,51 @@
                     setSelectedCategoriesInUI(draft.category);
                 }
                 document.getElementById('draftEditIndex').value = index;
-                showToast('📂 تم تحميل المسودة في المحرر بنجاح!', 'success');
+
+                if (draft.editArticleId) {
+                    document.getElementById('editArticleId').value = draft.editArticleId;
+                    document.getElementById('formTitle').innerText = '✏️ تعديل المقال المنشور';
+                    document.getElementById('publishBtn').innerText = 'اعتماد التعديل 💾';
+                    document.getElementById('cancelEditBtn').style.display = 'block';
+                    showToast('🛡️ تم استعادة مسودة التعديل في المحرر بنجاح!', 'success');
+                } else {
+                    document.getElementById('editArticleId').value = '';
+                    document.getElementById('formTitle').innerText = '🚀 لوحة تحكم المدونة (PWA)';
+                    document.getElementById('publishBtn').innerText = 'نشر المقال فوراً 🚀';
+                    document.getElementById('cancelEditBtn').style.display = 'none';
+                    showToast('📂 تم تحميل المسودة في المحرر بنجاح!', 'success');
+                }
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function autoRestorePendingEditDraft() {
+            if (localStorage.getItem('admin_authenticated') !== 'true') return;
+            if (document.getElementById('editArticleId').value) return;
+            const drafts = getSavedDrafts();
+            const pendingEditIndex = drafts.findIndex(d => d.editArticleId);
+            if (pendingEditIndex > -1) {
+                loadDraftToEditor(pendingEditIndex);
             }
         }
 
         let draftToDeleteIndex = null;
         function confirmDeleteDraft(index) {
             draftToDeleteIndex = index;
-            document.getElementById('confirmModalText').innerText = 'هل أنت متأكد من رغبتك في حذف هذه المسودة نهائياً؟';
-            currentModalAction = 'deleteDraft';
-            document.getElementById('confirmModal').style.display = 'flex';
+            openCustomConfirmModal('⚠️ تأكيد الحذف', 'هل أنت متأكد من رغبتك في حذف هذه المسودة نهائياً؟', 'حذف 🗑️', 'إلغاء ❌', 'deleteDraft');
         }
 
         function executeDeleteDraft(index) {
             let drafts = getSavedDrafts();
+            const deletedDraft = drafts[index];
             drafts.splice(index, 1);
             saveDraftsToStorage(drafts);
             showToast('🗑️ تم حذف المسودة بنجاح!', 'success');
             const editIdx = document.getElementById('draftEditIndex').value;
-            if (editIdx == index) clearEditorForm();
+            const currentEditId = document.getElementById('editArticleId').value;
+            if (editIdx == index || (deletedDraft && deletedDraft.editArticleId && String(deletedDraft.editArticleId) === String(currentEditId))) {
+                resetEditModeUI();
+            }
         }
 
         async function publishDraftDirect(index) {
@@ -1116,6 +1192,7 @@
             const draft = drafts[index];
             if (!draft) return;
 
+            document.getElementById('editArticleId').value = draft.editArticleId || '';
             document.getElementById('postTitle').value = draft.title;
             document.getElementById('postDesc').value = draft.desc;
             document.getElementById('postBody').innerHTML = draft.body;
@@ -1136,6 +1213,13 @@
             document.getElementById('draftStatus').innerText = '';
             setSelectedCategoriesInUI('☀️ الطاقة الشمسية والبديلة');
             selectedImageElements = [];
+        }
+
+        function resetEditModeUI() {
+            clearEditorForm();
+            document.getElementById('formTitle').innerText = '🚀 لوحة تحكم المدونة (PWA)';
+            document.getElementById('publishBtn').innerText = 'نشر المقال فوراً 🚀';
+            document.getElementById('cancelEditBtn').style.display = 'none';
         }
 
         async function exportArticlesLocal() {
@@ -1260,8 +1344,53 @@
 
         const MASTER_PASS = "771005555#"; 
 
+        function initExitProtection() {
+            if (allowPageExit) {
+                if (Date.now() - exitUnlockTimestamp > 1200) {
+                    allowPageExit = false;
+                } else {
+                    return;
+                }
+            }
+            if (localStorage.getItem('admin_authenticated') !== 'true') return;
+            if (!history.state || !history.state.adminGuard) {
+                history.pushState({ adminGuard: true }, '', window.location.href);
+            }
+        }
+
+        ['pointerdown', 'touchstart', 'touchmove', 'keydown'].forEach(evt => {
+            document.addEventListener(evt, initExitProtection, { passive: true });
+        });
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') {
+                flushAutoSaveNow();
+                allowPageExit = false;
+            } else if (document.visibilityState === 'visible') {
+                allowPageExit = false;
+                initExitProtection();
+                autoRestorePendingEditDraft();
+            }
+        });
+
+        window.addEventListener('pagehide', function() {
+            flushAutoSaveNow();
+            allowPageExit = false;
+        });
+
+        window.addEventListener('pageshow', function() {
+            allowPageExit = false;
+            initExitProtection();
+        });
+
+        window.addEventListener('focus', function() {
+            allowPageExit = false;
+            initExitProtection();
+        });
+
         if (localStorage.getItem('admin_authenticated') === 'true') {
             document.getElementById('authOverlay').style.display = 'none';
+            initExitProtection();
         }
 
         function checkMasterPassword() {
@@ -1269,11 +1398,23 @@
             if (inputPass === MASTER_PASS) {
                 localStorage.setItem('admin_authenticated', 'true');
                 document.getElementById('authOverlay').style.display = 'none';
+                initExitProtection();
                 showToast('تم تسجيل الدخول بنجاح! 👋', 'success');
                 renderDraftsList();
+                autoRestorePendingEditDraft();
             } else {
                 showToast('❌ كلمة المرور غير صحيحة!', 'error');
             }
+        }
+
+        function confirmLockAdminPanel() {
+            openCustomConfirmModal(
+                '🔒 تأكيد الخروج والقفل',
+                'هل أنت متأكد من رغبتك في قفل لوحة التحكم وتسجيل الخروج؟ (سيتم حفظ أي تعديلات حالية كمسودة تلقائياً)',
+                'نعم، خروج 🔒',
+                'البقاء في اللوحة ✅',
+                'lockPanel'
+            );
         }
 
         function lockAdminPanel() {
@@ -1282,6 +1423,42 @@
             document.getElementById('authOverlay').style.display = 'flex';
             showToast('🔒 تم قفل لوحة التحكم بنجاح', 'success');
         }
+
+        window.addEventListener('popstate', function() {
+            if (allowPageExit) {
+                if (history.length > 1) {
+                    history.back();
+                }
+                setTimeout(() => { window.close(); }, 100);
+                return;
+            }
+            if (localStorage.getItem('admin_authenticated') === 'true') {
+                history.pushState({ adminGuard: true }, '', window.location.href);
+                flushAutoSaveNow();
+                openCustomConfirmModal(
+                    '🚪 تأكيد الخروج من اللوحة',
+                    'هل تريد بالتأكيد الخروج من لوحة التحكم؟ تم حفظ عملك الحالي كمسودة احتياطية.',
+                    'نعم، خروج 🚪',
+                    'البقاء في اللوحة ✅',
+                    'exitPage'
+                );
+            }
+        });
+
+        window.addEventListener('beforeunload', function(e) {
+            if (allowPageExit) return;
+            if (localStorage.getItem('admin_authenticated') === 'true') {
+                const title = document.getElementById('postTitle').value.trim();
+                const desc = document.getElementById('postDesc').value.trim();
+                const body = document.getElementById('postBody').innerText.trim();
+                const editId = document.getElementById('editArticleId').value;
+                if (editId || title || desc || body) {
+                    flushAutoSaveNow();
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            }
+        });
 
         let articleToDeleteId = null;
         let loadedArticles = [];
@@ -1296,6 +1473,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('admin_authenticated') === 'true') {
                 renderDraftsList();
+                autoRestorePendingEditDraft();
             }
         });
 
@@ -1593,9 +1771,7 @@
             if (checkboxes.length === 0) {
                 return showToast('⚠️ يرجى تحديد مقال واحد على الأقل للحذف!', 'error');
             }
-            document.getElementById('confirmModalText').innerText = `هل أنت متأكد من رغبة حذف (${checkboxes.length}) مقال محدد نهائياً وتحديث السيرفر؟`;
-            currentModalAction = 'bulkDeleteArticles';
-            document.getElementById('confirmModal').style.display = 'flex';
+            openCustomConfirmModal('⚠️ تأكيد الحذف', `هل أنت متأكد من رغبة حذف (${checkboxes.length}) مقال محدد نهائياً وتحديث السيرفر؟`, 'حذف 🗑️', 'إلغاء ❌', 'bulkDeleteArticles');
         }
 
         async function executeBulkDeleteArticles() {
@@ -1730,22 +1906,26 @@
                 hideTopBanner();
                 btn.disabled = false;
 
-                if (draftEditIndex !== '') {
-                    let drafts = getSavedDrafts();
-                    drafts.splice(draftEditIndex, 1);
+                let drafts = getSavedDrafts();
+                if (draftEditIndex !== '' && drafts[draftEditIndex]) {
+                    drafts.splice(parseInt(draftEditIndex), 1);
                     saveDraftsToStorage(drafts);
+                } else if (editId) {
+                    const editDraftIdx = drafts.findIndex(d => d.editArticleId && String(d.editArticleId) === String(editId));
+                    if (editDraftIdx > -1) {
+                        drafts.splice(editDraftIdx, 1);
+                        saveDraftsToStorage(drafts);
+                    }
                 } else {
-                    let drafts = getSavedDrafts();
-                    const dIndex = drafts.findIndex(d => d.title === title);
+                    const dIndex = drafts.findIndex(d => !d.editArticleId && d.title === title);
                     if (dIndex > -1) {
                         drafts.splice(dIndex, 1);
                         saveDraftsToStorage(drafts);
                     }
                 }
 
-                showToast('🚀 تم نشر المقال وتحديث الـ RSS وتجهيز الحقول بنجاح!', 'success');
-                clearEditorForm();
-                cancelEdit();
+                showToast(editId ? '✅ تم اعتماد التعديلات ونشرها وحذف المسودة الاحتياطية!' : '🚀 تم نشر المقال وتحديث الـ RSS وتجهيز الحقول بنجاح!', 'success');
+                resetEditModeUI();
                 loadArticlesList();
 
             } catch (err) {
@@ -1763,16 +1943,33 @@
                 hideTopBanner();
                 const art = articles.find(a => a.id == id);
                 if (art) {
+                    const drafts = getSavedDrafts();
+                    const existingEditDraftIdx = drafts.findIndex(d => d.editArticleId && String(d.editArticleId) === String(art.id));
+
                     document.getElementById('editArticleId').value = art.id;
-                    document.getElementById('postTitle').value = art.title;
-                    document.getElementById('postDesc').value = art.description;
-                    document.getElementById('postBody').innerHTML = art.body;
-                    if (art.category) {
-                        setSelectedCategoriesInUI(art.category);
+                    if (existingEditDraftIdx > -1) {
+                        const savedDraft = drafts[existingEditDraftIdx];
+                        document.getElementById('postTitle').value = savedDraft.title;
+                        document.getElementById('postDesc').value = savedDraft.desc;
+                        document.getElementById('postBody').innerHTML = savedDraft.body;
+                        if (savedDraft.category) {
+                            setSelectedCategoriesInUI(savedDraft.category);
+                        }
+                        document.getElementById('draftEditIndex').value = existingEditDraftIdx;
+                        showToast('🛡️ تم استعادة المسودة الاحتياطية لتعديلاتك السابقة على هذا المقال!', 'success');
+                    } else {
+                        document.getElementById('postTitle').value = art.title;
+                        document.getElementById('postDesc').value = art.description;
+                        document.getElementById('postBody').innerHTML = art.body;
+                        if (art.category) {
+                            setSelectedCategoriesInUI(art.category);
+                        }
+                        document.getElementById('draftEditIndex').value = '';
+                        performAutoSave();
                     }
                     
                     document.getElementById('formTitle').innerText = '✏️ تعديل المقال المنشور';
-                    document.getElementById('publishBtn').innerText = 'حفظ التعديلات 💾';
+                    document.getElementById('publishBtn').innerText = 'اعتماد التعديل 💾';
                     document.getElementById('cancelEditBtn').style.display = 'block';
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
@@ -1783,10 +1980,33 @@
         }
 
         function cancelEdit() {
-            clearEditorForm();
-            document.getElementById('formTitle').innerText = '🚀 لوحة تحكم المدونة (PWA)';
-            document.getElementById('publishBtn').innerText = 'نشر المقال فوراً 🚀';
-            document.getElementById('cancelEditBtn').style.display = 'none';
+            openCustomConfirmModal(
+                '↩️ تأكيد إلغاء التعديل',
+                'هل أنت متأكد من إلغاء التعديل؟ سيتم حذف المسودة الاحتياطية واعتماد المنشور القديم كما هو.',
+                'نعم، إلغاء التعديل 🗑️',
+                'متابعة التعديل ✏️',
+                'cancelEdit'
+            );
+        }
+
+        function executeCancelEdit() {
+            const editId = document.getElementById('editArticleId').value;
+            const draftEditIndex = document.getElementById('draftEditIndex').value;
+            let drafts = getSavedDrafts();
+
+            if (draftEditIndex !== '' && drafts[draftEditIndex]) {
+                drafts.splice(parseInt(draftEditIndex), 1);
+                saveDraftsToStorage(drafts);
+            } else if (editId) {
+                const idx = drafts.findIndex(d => d.editArticleId && String(d.editArticleId) === String(editId));
+                if (idx > -1) {
+                    drafts.splice(idx, 1);
+                    saveDraftsToStorage(drafts);
+                }
+            }
+
+            resetEditModeUI();
+            showToast('↩️ تم إلغاء التعديل وحذف المسودة الاحتياطية واعتماد المنشور القديم.', 'success');
         }
 
         function moveArticle(index, direction) {
@@ -1820,9 +2040,7 @@
 
         function openConfirmModal(id) {
             articleToDeleteId = id;
-            document.getElementById('confirmModalText').innerText = 'هل أنت متأكد من رغبتك في حذف هذا المقال نهائياً وصوره المرفقة؟';
-            currentModalAction = 'deleteArticle';
-            document.getElementById('confirmModal').style.display = 'flex';
+            openCustomConfirmModal('⚠️ تأكيد الحذف', 'هل أنت متأكد من رغبتك في حذف هذا المقال نهائياً وصوره المرفقة؟', 'حذف 🗑️', 'إلغاء ❌', 'deleteArticle');
         }
 
         async function deleteArticle(id) {
