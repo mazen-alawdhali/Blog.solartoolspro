@@ -645,7 +645,7 @@
                     selectedImageElements.splice(index, 1);
                     img.style.border = '1px solid #334155';
                     img.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
-                    showToast(`إللغاء تحديد الصورة (${selectedImageElements.length} محددة)`, 'success');
+                    showToast(`إلغاء تحديد الصورة (${selectedImageElements.length} محددة)`, 'success');
                 } else {
                     selectedImageElements.push(img);
                     img.style.border = '3px solid #ef4444';
@@ -917,10 +917,30 @@
             scheduleAutoSave();
         }
 
+        const PENDING_EDIT_KEY = 'blog_pending_edit_backup';
+
+        function getPendingEditBackup() {
+            try {
+                const raw = localStorage.getItem(PENDING_EDIT_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function clearPendingEditBackup() {
+            localStorage.removeItem(PENDING_EDIT_KEY);
+        }
+
         function getSavedDrafts() {
             try {
-                const drafts = localStorage.getItem('blog_all_drafts');
-                return drafts ? JSON.parse(drafts) : [];
+                const raw = localStorage.getItem('blog_all_drafts');
+                const parsed = raw ? JSON.parse(raw) : [];
+                const cleaned = parsed.filter(d => !(d && d.isAutoSave && d.editArticleId));
+                if (cleaned.length !== parsed.length) {
+                    localStorage.setItem('blog_all_drafts', JSON.stringify(cleaned));
+                }
+                return cleaned;
             } catch(e) { return []; }
         }
 
@@ -938,9 +958,27 @@
             const editId = document.getElementById('editArticleId').value;
             const draftEditIndex = document.getElementById('draftEditIndex').value;
 
+            if (editId) {
+                if (title || desc || body) {
+                    const editBackupData = {
+                        editArticleId: editId,
+                        title,
+                        desc,
+                        body,
+                        category,
+                        updatedAt: new Date().toLocaleString('ar-SA')
+                    };
+                    localStorage.setItem(PENDING_EDIT_KEY, JSON.stringify(editBackupData));
+                    statusEl.innerText = `🛡️ تم حفظ نسخة التعديل في الذاكرة (${new Date().toLocaleTimeString('ar-SA')})`;
+                } else {
+                    statusEl.innerText = '';
+                }
+                return;
+            }
+
             if (title || desc || body) {
                 let drafts = getSavedDrafts();
-                const draftTitle = title || (editId ? 'مسودة تعديل بدون عنوان' : 'مسودة سريعة بدون عنوان');
+                const draftTitle = title || 'مسودة سريعة بدون عنوان';
                 
                 const draftData = {
                     title: draftTitle,
@@ -948,16 +986,12 @@
                     body,
                     category,
                     updatedAt: new Date().toLocaleString('ar-SA'),
-                    isAutoSave: true,
-                    editArticleId: editId || null,
-                    isEditBackup: !!editId
+                    isAutoSave: true
                 };
 
                 let targetIndex = -1;
                 if (draftEditIndex !== '' && drafts[draftEditIndex]) {
                     targetIndex = parseInt(draftEditIndex);
-                } else if (editId) {
-                    targetIndex = drafts.findIndex(d => d.editArticleId && String(d.editArticleId) === String(editId));
                 } else {
                     targetIndex = drafts.findIndex(d => !d.editArticleId && d.title === draftTitle);
                 }
@@ -972,9 +1006,7 @@
 
                 localStorage.setItem('blog_all_drafts', JSON.stringify(drafts));
                 renderDraftsList();
-                statusEl.innerText = editId
-                    ? `🛡️ تم حفظ نسخة احتياطية للتعديل (${new Date().toLocaleTimeString('ar-SA')})`
-                    : `💾 تم الحفظ التلقائي (${new Date().toLocaleTimeString('ar-SA')})`;
+                statusEl.innerText = `💾 تم الحفظ التلقائي (${new Date().toLocaleTimeString('ar-SA')})`;
             } else {
                 statusEl.innerText = '';
             }
@@ -1019,8 +1051,7 @@
                 category,
                 updatedAt: new Date().toLocaleString('ar-SA'),
                 isAutoSave: false,
-                editArticleId: editId || null,
-                isEditBackup: !!editId
+                editArticleId: editId || null
             };
 
             let targetIndex = -1;
@@ -1040,6 +1071,10 @@
                 drafts.unshift(draftData);
                 document.getElementById('draftEditIndex').value = 0;
                 showToast('📁 تمت إضافة المسودة وتجهيز الحقول لمنشور جديد!', 'success');
+            }
+
+            if (editId) {
+                clearPendingEditBackup();
             }
 
             saveDraftsToStorage(drafts);
@@ -1070,7 +1105,7 @@
                 const editBadge = draft.editArticleId ? ' <span style="background:#f59e0b; color:#0f172a; font-size:10px; padding:2px 6px; border-radius:4px; font-weight:bold;">✏️ مسودة تعديل</span>' : '';
                 const badge = draft.isAutoSave ? ' <span style="background:#0284c7; font-size:10px; padding:2px 6px; border-radius:4px;">حفظ تلقائي</span>' : '';
                 const catBadge = draft.category ? ` <span style="background:#334155; color:#34d399; font-size:10px; padding:2px 6px; border-radius:4px;">${draft.category}</span>` : '';
-                const publishBtnLabel = draft.editArticleId ? '✅ اعتماد التعديل' : '🚀 نشر مباشر';
+                const publishBtnLabel = draft.editArticleId ? '💾 حفظ التعديل' : '🚀 نشر مباشر';
                 html += `
                     <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
                         <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px;">
@@ -1144,7 +1179,7 @@
                 if (draft.editArticleId) {
                     document.getElementById('editArticleId').value = draft.editArticleId;
                     document.getElementById('formTitle').innerText = '✏️ تعديل المقال المنشور';
-                    document.getElementById('publishBtn').innerText = 'اعتماد التعديل 💾';
+                    document.getElementById('publishBtn').innerText = 'حفظ التعديل 💾';
                     document.getElementById('cancelEditBtn').style.display = 'block';
                     showToast('🛡️ تم استعادة مسودة التعديل في المحرر بنجاح!', 'success');
                 } else {
@@ -1161,10 +1196,22 @@
         function autoRestorePendingEditDraft() {
             if (localStorage.getItem('admin_authenticated') !== 'true') return;
             if (document.getElementById('editArticleId').value) return;
-            const drafts = getSavedDrafts();
-            const pendingEditIndex = drafts.findIndex(d => d.editArticleId);
-            if (pendingEditIndex > -1) {
-                loadDraftToEditor(pendingEditIndex);
+            const pendingEdit = getPendingEditBackup();
+            if (pendingEdit && pendingEdit.editArticleId) {
+                document.getElementById('editArticleId').value = pendingEdit.editArticleId;
+                document.getElementById('draftEditIndex').value = '';
+                document.getElementById('postTitle').value = pendingEdit.title || '';
+                document.getElementById('postDesc').value = pendingEdit.desc || '';
+                document.getElementById('postBody').innerHTML = pendingEdit.body || '';
+                if (pendingEdit.category) {
+                    setSelectedCategoriesInUI(pendingEdit.category);
+                }
+                document.getElementById('formTitle').innerText = '✏️ تعديل المقال المنشور';
+                document.getElementById('publishBtn').innerText = 'حفظ التعديل 💾';
+                document.getElementById('cancelEditBtn').style.display = 'block';
+                document.getElementById('draftStatus').innerText = `🛡️ نسخة محفوظة في المحرر (${pendingEdit.updatedAt || ''})`;
+                showToast('🛡️ تم استعادة نسخة التعديل المحفوظة في محرر النصوص!', 'success');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
@@ -1410,7 +1457,7 @@
         function confirmLockAdminPanel() {
             openCustomConfirmModal(
                 '🔒 تأكيد الخروج والقفل',
-                'هل أنت متأكد من رغبتك في قفل لوحة التحكم وتسجيل الخروج؟ (سيتم حفظ أي تعديلات حالية كمسودة تلقائياً)',
+                'هل أنت متأكد من رغبتك في قفل لوحة التحكم وتسجيل الخروج؟ (سيتم حفظ أي تعديلات حالية تلقائياً)',
                 'نعم، خروج 🔒',
                 'البقاء في اللوحة ✅',
                 'lockPanel'
@@ -1437,7 +1484,7 @@
                 flushAutoSaveNow();
                 openCustomConfirmModal(
                     '🚪 تأكيد الخروج من اللوحة',
-                    'هل تريد بالتأكيد الخروج من لوحة التحكم؟ تم حفظ عملك الحالي كمسودة احتياطية.',
+                    'هل تريد بالتأكيد الخروج من لوحة التحكم؟ تم حفظ عملك الحالي في الذاكرة.',
                     'نعم، خروج 🚪',
                     'البقاء في اللوحة ✅',
                     'exitPage'
@@ -1906,17 +1953,15 @@
                 hideTopBanner();
                 btn.disabled = false;
 
+                if (editId) {
+                    clearPendingEditBackup();
+                }
+
                 let drafts = getSavedDrafts();
                 if (draftEditIndex !== '' && drafts[draftEditIndex]) {
                     drafts.splice(parseInt(draftEditIndex), 1);
                     saveDraftsToStorage(drafts);
-                } else if (editId) {
-                    const editDraftIdx = drafts.findIndex(d => d.editArticleId && String(d.editArticleId) === String(editId));
-                    if (editDraftIdx > -1) {
-                        drafts.splice(editDraftIdx, 1);
-                        saveDraftsToStorage(drafts);
-                    }
-                } else {
+                } else if (!editId) {
                     const dIndex = drafts.findIndex(d => !d.editArticleId && d.title === title);
                     if (dIndex > -1) {
                         drafts.splice(dIndex, 1);
@@ -1924,7 +1969,7 @@
                     }
                 }
 
-                showToast(editId ? '✅ تم اعتماد التعديلات ونشرها وحذف المسودة الاحتياطية!' : '🚀 تم نشر المقال وتحديث الـ RSS وتجهيز الحقول بنجاح!', 'success');
+                showToast(editId ? '✅ تم حفظ التعديلات ونشرها بنجاح!' : '🚀 تم نشر المقال وتحديث الـ RSS وتجهيز الحقول بنجاح!', 'success');
                 resetEditModeUI();
                 loadArticlesList();
 
@@ -1943,20 +1988,18 @@
                 hideTopBanner();
                 const art = articles.find(a => a.id == id);
                 if (art) {
-                    const drafts = getSavedDrafts();
-                    const existingEditDraftIdx = drafts.findIndex(d => d.editArticleId && String(d.editArticleId) === String(art.id));
+                    const pendingEdit = getPendingEditBackup();
 
                     document.getElementById('editArticleId').value = art.id;
-                    if (existingEditDraftIdx > -1) {
-                        const savedDraft = drafts[existingEditDraftIdx];
-                        document.getElementById('postTitle').value = savedDraft.title;
-                        document.getElementById('postDesc').value = savedDraft.desc;
-                        document.getElementById('postBody').innerHTML = savedDraft.body;
-                        if (savedDraft.category) {
-                            setSelectedCategoriesInUI(savedDraft.category);
+                    document.getElementById('draftEditIndex').value = '';
+                    if (pendingEdit && String(pendingEdit.editArticleId) === String(art.id)) {
+                        document.getElementById('postTitle').value = pendingEdit.title || art.title;
+                        document.getElementById('postDesc').value = pendingEdit.desc || art.description;
+                        document.getElementById('postBody').innerHTML = pendingEdit.body || art.body;
+                        if (pendingEdit.category || art.category) {
+                            setSelectedCategoriesInUI(pendingEdit.category || art.category);
                         }
-                        document.getElementById('draftEditIndex').value = existingEditDraftIdx;
-                        showToast('🛡️ تم استعادة المسودة الاحتياطية لتعديلاتك السابقة على هذا المقال!', 'success');
+                        showToast('🛡️ تم استعادة نسخة التعديل المحفوظة في محرر النصوص!', 'success');
                     } else {
                         document.getElementById('postTitle').value = art.title;
                         document.getElementById('postDesc').value = art.description;
@@ -1964,12 +2007,11 @@
                         if (art.category) {
                             setSelectedCategoriesInUI(art.category);
                         }
-                        document.getElementById('draftEditIndex').value = '';
                         performAutoSave();
                     }
                     
                     document.getElementById('formTitle').innerText = '✏️ تعديل المقال المنشور';
-                    document.getElementById('publishBtn').innerText = 'اعتماد التعديل 💾';
+                    document.getElementById('publishBtn').innerText = 'حفظ التعديل 💾';
                     document.getElementById('cancelEditBtn').style.display = 'block';
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
@@ -1982,7 +2024,7 @@
         function cancelEdit() {
             openCustomConfirmModal(
                 '↩️ تأكيد إلغاء التعديل',
-                'هل أنت متأكد من إلغاء التعديل؟ سيتم حذف المسودة الاحتياطية واعتماد المنشور القديم كما هو.',
+                'هل أنت متأكد من إلغاء التعديل؟ سيتم حذف النسخة المؤقتة واعتماد المنشور القديم كما هو.',
                 'نعم، إلغاء التعديل 🗑️',
                 'متابعة التعديل ✏️',
                 'cancelEdit'
@@ -1990,23 +2032,19 @@
         }
 
         function executeCancelEdit() {
-            const editId = document.getElementById('editArticleId').value;
             const draftEditIndex = document.getElementById('draftEditIndex').value;
-            let drafts = getSavedDrafts();
+            clearPendingEditBackup();
 
-            if (draftEditIndex !== '' && drafts[draftEditIndex]) {
-                drafts.splice(parseInt(draftEditIndex), 1);
-                saveDraftsToStorage(drafts);
-            } else if (editId) {
-                const idx = drafts.findIndex(d => d.editArticleId && String(d.editArticleId) === String(editId));
-                if (idx > -1) {
-                    drafts.splice(idx, 1);
+            if (draftEditIndex !== '') {
+                let drafts = getSavedDrafts();
+                if (drafts[draftEditIndex]) {
+                    drafts.splice(parseInt(draftEditIndex), 1);
                     saveDraftsToStorage(drafts);
                 }
             }
 
             resetEditModeUI();
-            showToast('↩️ تم إلغاء التعديل وحذف المسودة الاحتياطية واعتماد المنشور القديم.', 'success');
+            showToast('↩️ تم إلغاء التعديل وحذف النسخة المؤقتة واعتماد المنشور القديم.', 'success');
         }
 
         function moveArticle(index, direction) {
