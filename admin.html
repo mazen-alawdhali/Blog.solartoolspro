@@ -579,7 +579,7 @@
     <h2>📂 المسودات المحفوظة (<span id="draftsCount">0</span>)</h2>
     <div id="draftsListContainer">لا توجد مسودات محفوظة حالياً.</div>
 
-    <h2>📚 المقالات المنشورة حالياً</h2>
+    <h2>📚 المقالات المنشورة حالياً (<span id="publishedCount">0</span>)</h2><input type="text" id="adminSearchInput" placeholder="🔍 ابحث في عناوين المقالات المنشورة..." oninput="renderArticlesCards()" style="margin-bottom: 12px;">
 
     <!-- شريط أزرار الطوارئ والنسخ الاحتياطي المحلي -->
     <div style="display: flex; gap: 10px; margin-bottom: 8px;">
@@ -1530,7 +1530,7 @@
             }
         }
 
-        function renderArticlesCards() {
+        function renderArticlesCards() { const countEl = document.getElementById('publishedCount'); if (countEl) countEl.innerText = loadedArticles.length; const searchInput = document.getElementById('adminSearchInput'); const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const listDiv = document.getElementById('articlesList');
             if (loadedArticles.length === 0) {
                 listDiv.innerText = 'لا توجد مقالات منشورة.';
@@ -1547,7 +1547,7 @@
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
             `;
 
-            loadedArticles.forEach((art, index) => {
+            const displayedArticles = loadedArticles.map((art, index) => ({ art, index })).filter(({ art }) => !searchQuery || (art.title && art.title.toLowerCase().includes(searchQuery))); if (displayedArticles.length === 0) { listDiv.innerHTML = '<div style="text-align:center; padding:16px; color:#94a3b8;">📭 لا توجد مقالات مطابقة لعنوان البحث.</div>'; return; } displayedArticles.forEach(({ art, index }) => {
                 const categoryTag = art.category ? `[${art.category}]` : '';
                 cardsHtml += `
                     <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
@@ -1568,7 +1568,7 @@
             });
 
             cardsHtml += `</div>`;
-            cardsHtml += `<button class="btn-green" style="margin-top: 15px; font-size: 14px; padding: 12px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`;
+            if (!searchQuery) cardsHtml += `<button class="btn-green" style="margin-top: 15px; font-size: 14px; padding: 12px;" onclick="saveArticlesOrder()">💾 حفظ الترتيب الجديد على GitHub</button>`;
             listDiv.innerHTML = cardsHtml;
         }
 
