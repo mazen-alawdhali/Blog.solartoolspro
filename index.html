@@ -442,7 +442,7 @@
             background-color: #1e293b;
             color: #94a3b8;
             border: 1px solid #334155;
-            padding: 8px 14px;
+            padding: 7px 10px;
             border-radius: 8px;
             font-size: 13px;
             font-weight: bold;
@@ -607,7 +607,7 @@
         let allArticles = [];
         let filteredArticles = [];
         let currentPage = 1;
-        const articlesPerPage = 10; // 🌟 10 مقالات في الصفحة الواحدة
+        const articlesPerPage = 5; // 🌟 5 مقالات في الصفحة الواحدة
 
         // حقن النص الوصفي برمجياً لتجاوز مشكلة الكاش في السيرفر نهائياً
         document.getElementById('descBox').innerText = "دليلك إلى أحدث المقالات التقنية وأنظمة الطاقة الشمسية والبديلة والهواتف الذكية والحواسيب.";
@@ -704,7 +704,7 @@
                 let articleDate = 'وقت غير محدد';
                 if (art.date) {
                     articleDate = art.date;
-                } else if (art.id && !isNaN(art.id)) {
+                } else if (art.id && !isNaN(art.id) && Number(art.id) > 1000000000000) {
                     const dateObj = new Date(Number(art.id));
                     articleDate = dateObj.toLocaleString('ar-SA', { 
                         year: 'numeric', 
@@ -733,7 +733,7 @@
                     <div class="article-card" id="card-${art.id}">
                         <div class="article-meta">
                             <span>⏱️ ${readTime} دقائق</span>
-                            <span>📅 ${articleDate}</span>
+                            ${articleDate !== 'وقت غير محدد' ? `<span>📅 ${articleDate}</span>` : ''}
                             <div style="display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end;">
                                 ${tagsHtml}
                             </div>
@@ -810,7 +810,7 @@
             if (currentPage > 1) {
                 paginationHtml += `<button class="page-btn" onclick="changePage(${currentPage - 1})">« السابق</button>`;
             }
-            for (let i = 1; i <= totalPages; i++) {
+            const maxVisible = 5; let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2)); let endPage = Math.min(totalPages, startPage + maxVisible - 1); if (endPage - startPage + 1 < maxVisible) { startPage = Math.max(1, endPage - maxVisible + 1); } for (let i = startPage; i <= endPage; i++) {
                 const activeClass = i === currentPage ? 'active' : '';
                 paginationHtml += `<button class="page-btn ${activeClass}" onclick="changePage(${i})">${i}</button>`;
             }
