@@ -6,22 +6,22 @@
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
-    <!-- الحاسبة الذكية -->
+    <!-- نبذة عنا -->
     <url>
-        <loc>https://calc.solartoolspro.com/</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
+        <loc>https://blog.solartoolspro.com/about.html</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
     </url>
-    <!-- حاسبة الألواح الشمسية -->
+    <!-- اتصل بنا -->
     <url>
-        <loc>https://panels.solartoolspro.com/</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
+        <loc>https://blog.solartoolspro.com/contact.html</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
     </url>
-    <!-- حاسبة ومراقب البطارية -->
+    <!-- سياسة الخصوصية -->
     <url>
-        <loc>https://battery.solartoolspro.com/</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
+        <loc>https://blog.solartoolspro.com/privacy.html</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.3</priority>
     </url>
 </urlset>
