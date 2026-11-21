@@ -1857,7 +1857,7 @@
 
             try {
                 for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
+                    const file = await (async (rawFile) => { if (rawFile.type === 'image/webp' && rawFile.size <= 102400) return rawFile; return new Promise((resolve) => { const img = new Image(); const url = URL.createObjectURL(rawFile); img.onload = async () => { URL.revokeObjectURL(url); let w = img.width, h = img.height; if (w > 1200) { h = Math.round(h * (1200 / w)); w = 1200; } const canvas = document.createElement('canvas'); let bestBlob = null; for (let step = 0; step < 4; step++) { canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); for (let q = 0.82; q >= 0.34; q -= 0.08) { const blob = await new Promise(r => canvas.toBlob(r, 'image/webp', +q.toFixed(2))); if (!blob) { resolve(rawFile); return; } bestBlob = blob; if (blob.size <= 102400) break; } if (bestBlob && bestBlob.size <= 102400) break; w = Math.round(w * 0.8); h = Math.round(h * 0.8); } const webpName = rawFile.name.replace(/\.[^.]+$/, '') + '.webp'; resolve(bestBlob ? new File([bestBlob], webpName, { type: 'image/webp' }) : rawFile); }; img.onerror = () => { URL.revokeObjectURL(url); resolve(rawFile); }; img.src = url; }); })(files[i]);
                     showTopBanner(`جاري رفع الصورة ${i + 1} من ${files.length}...`);
                     
                     const base64Content = await new Promise((resolve, reject) => {
