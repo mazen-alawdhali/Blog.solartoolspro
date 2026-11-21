@@ -787,7 +787,7 @@
                     const imagesToDelete = [...selectedImageElements];
                     const count = imagesToDelete.length;
                     imagesToDelete.forEach(img => {
-                        if (img && img.parentNode) img.remove();
+                        const src = img ? img.getAttribute('src') || '' : ''; if (img && img.parentNode) img.remove(); const m = src.match(/\/images\/([^?#]+)/); const tk = document.getElementById('ghToken').value.trim(); if (tk && m) { (async () => { const fUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/images/${m[1]}`; try { const g = await fetch(fUrl, { headers: { 'Authorization': `token ${tk}` } }); if (g.ok) { const d = await g.json(); await fetch(fUrl, { method: 'DELETE', headers: { 'Authorization': `token ${tk}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `حذف صورة: ${m[1]}`, sha: d.sha }) }); } } catch (e) {} })(); }
                     });
                     selectedImageElements = [];
                     showToast(`🗑️ تم حذف ${count} صورة من المقال بنجاح!`, 'success');
