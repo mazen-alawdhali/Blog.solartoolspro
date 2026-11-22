@@ -6,6 +6,13 @@
     <description>دليلك إلى أحدث المقالات التقنية، و أنظمة الطاقة الشمسية و البديلة، والهواتف الذكية والحواسيب.</description>
     <language>ar</language>
     <item>
+        <title>الدليل الهندسي الشامل لاختيار الألواح الشمسية وتحديد قدرتها بدقة لمنظومتك</title>
+        <link>https://blog.solartoolspro.com/?id=1795305974924</link>
+        <description>دراسة هندسية متعمقة تشرح خطوات حساب قدرة مصفوفة الألواح الشمسية، قراءة المواصفات الفنية (Voc, Vmp, Isc)، التوافق مع منظم الشحن MPPT والإنفرتر، وتأثير الحرارة وساعات الذروة الشمسية لضمان أعلى إنتاجية وكفاءة.</description>
+        <guid>https://blog.solartoolspro.com/?id=1795305974924</guid>
+        <enclosure url="https://raw.githubusercontent.com/mazen-alawdhali/blog.solartoolspro.com/main/images/1795305896396_0_1795305876026.webp" length="0" type="image/jpeg" />
+    </item>
+    <item>
         <title>تأثير زاوية الميلان (Tilt Angle) والاتجاه على إنتاجية الألواح الشمسية: الحساب الهندسي والضبط الفصلي</title>
         <link>https://blog.solartoolspro.com/?id=1795296858096</link>
         <description>مقال شامل لحساب زاوية ميلان الألواح الشمسية المثلى حسب خط العرض، ومعادلات الفاقد الناتج عن انحراف الزاوية والمسافة الآمنة لمنع التظليل الذاتي بين الصفوف.</description>
