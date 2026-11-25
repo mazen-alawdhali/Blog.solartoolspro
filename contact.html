@@ -173,7 +173,7 @@
 <body>
 
     <div class="header-nav">
-        <a href="index.html" class="back-btn">← العودة للرئيسية</a>
+        <a href="index.html" onclick="event.preventDefault(); try{window.close();}catch(e){} setTimeout(function(){if(!window.closed){if(window.history.length>1){window.history.back();}else{window.location.href='index.html';}}},120); return false;" class="back-btn">← العودة للرئيسية</a>
     </div>
 
     <div class="contact-card">
