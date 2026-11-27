@@ -799,7 +799,7 @@
             } else if (currentModalAction === 'exitPage') {
                 flushAutoSaveNow();
                 allowPageExit = true;
-                exitUnlockTimestamp = Date.now(); closeConfirmModal(); try { window.close(); } catch (e) {} window.history.back(); return;
+                exitUnlockTimestamp = Date.now();
                 closeConfirmModal();
                 if (history.length > 2) {
                     history.go(-2);
@@ -1473,7 +1473,7 @@
 
         window.addEventListener('popstate', function() {
             if (allowPageExit) {
-                window.history.back(); setTimeout(() => { try { window.close(); } catch (e) {} }, 100); return; if (history.length > 1) {
+                if (history.length > 1) {
                     history.back();
                 }
                 setTimeout(() => { window.close(); }, 100);
