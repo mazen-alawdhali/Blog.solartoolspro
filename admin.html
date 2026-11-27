@@ -799,7 +799,7 @@
             } else if (currentModalAction === 'exitPage') {
                 flushAutoSaveNow();
                 allowPageExit = true;
-                exitUnlockTimestamp = Date.now(); closeConfirmModal(); try { window.close(); } catch (e) {} setTimeout(function() { if (!window.closed) { if (window.history.length > 2) { window.history.go(-2); } else { window.location.href = 'index.html'; } } }, 150); return;
+                exitUnlockTimestamp = Date.now(); closeConfirmModal(); try { window.close(); } catch (e) {} window.history.back(); return;
                 closeConfirmModal();
                 if (history.length > 2) {
                     history.go(-2);
@@ -1473,7 +1473,7 @@
 
         window.addEventListener('popstate', function() {
             if (allowPageExit) {
-                return; if (history.length > 1) {
+                window.history.back(); setTimeout(() => { try { window.close(); } catch (e) {} }, 100); return; if (history.length > 1) {
                     history.back();
                 }
                 setTimeout(() => { window.close(); }, 100);
